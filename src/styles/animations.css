@@ -1,0 +1,246 @@
+/* ============================================
+   Mental Calculations — Animações
+   Transições, feedback, e micro-animações
+   ============================================ */
+
+/* === Fade In/Out === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fadeInDown {
+  from { 
+    opacity: 0; 
+    transform: translateY(-30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes fadeInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes fadeInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* === Scale === */
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.8); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  80% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* === Shake (erro) === */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* === Pulse === */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255,255,255,0.2); }
+  50% { box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+}
+
+/* === Rotate === */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* === Coin collect === */
+@keyframes coinCollect {
+  0% { 
+    transform: scale(1) translateY(0); 
+    opacity: 1; 
+  }
+  50% { 
+    transform: scale(1.5) translateY(-20px); 
+    opacity: 0.8; 
+  }
+  100% { 
+    transform: scale(0) translateY(-40px); 
+    opacity: 0; 
+  }
+}
+
+@keyframes coinFloat {
+  0% { transform: translateY(0) rotateY(0deg); }
+  50% { transform: translateY(-5px) rotateY(180deg); }
+  100% { transform: translateY(0) rotateY(360deg); }
+}
+
+/* === Confetti === */
+@keyframes confettiFall {
+  0% { 
+    transform: translateY(-100px) rotate(0deg); 
+    opacity: 1; 
+  }
+  100% { 
+    transform: translateY(100vh) rotate(720deg); 
+    opacity: 0; 
+  }
+}
+
+/* === Star shine === */
+@keyframes starShine {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg); 
+    opacity: 1; 
+  }
+  50% { 
+    transform: scale(1.2) rotate(15deg); 
+    opacity: 0.8; 
+  }
+}
+
+/* === Slide transitions === */
+@keyframes slideInFromRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOutToLeft {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes slideInFromLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOutToRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+/* === Progress bar fill === */
+@keyframes progressFill {
+  from { width: 0%; }
+}
+
+/* === Typing effect for NPC === */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: white; }
+}
+
+/* === Portal glow === */
+@keyframes portalGlow {
+  0%, 100% { 
+    box-shadow: 0 0 10px rgba(66,165,245,0.4);
+    border-color: rgba(66,165,245,0.6);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(66,165,245,0.8);
+    border-color: rgba(66,165,245,1);
+  }
+}
+
+/* === Utility Classes === */
+.animate-fadeIn { animation: fadeIn var(--transition-normal) ease forwards; }
+.animate-fadeInUp { animation: fadeInUp 0.5s ease forwards; }
+.animate-fadeInDown { animation: fadeInDown 0.5s ease forwards; }
+.animate-fadeInLeft { animation: fadeInLeft 0.5s ease forwards; }
+.animate-fadeInRight { animation: fadeInRight 0.5s ease forwards; }
+.animate-scaleIn { animation: scaleIn 0.4s ease forwards; }
+.animate-bounceIn { animation: bounceIn 0.6s ease forwards; }
+.animate-popIn { animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; }
+.animate-shake { animation: shake 0.5s ease; }
+.animate-pulse { animation: pulse 2s ease-in-out infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-spin { animation: spin 1s linear infinite; }
+
+/* Stagger delays para listas */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* === Page Transitions === */
+.page-enter {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.page-exit {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+.page-slide-enter {
+  animation: slideInFromRight 0.4s ease forwards;
+}
+
+.page-slide-exit {
+  animation: slideOutToLeft 0.3s ease forwards;
+}

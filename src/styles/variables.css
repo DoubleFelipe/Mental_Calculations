@@ -1,0 +1,105 @@
+/* ============================================
+   Mental Calculations — Design System Variables
+   Tema: Lousa verde (Chalkboard)
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Patrick+Hand&family=Inter:wght@400;600;700&display=swap');
+
+:root {
+  /* === Cores do Chalkboard === */
+  --chalk-board: #2d5016;
+  --chalk-board-dark: #1a3a0a;
+  --chalk-board-light: #3a6b1e;
+  --chalk-border-wood: #8B4513;
+  --chalk-border-wood-light: #A0522D;
+  --chalk-border-wood-dark: #5C2E0A;
+
+  /* === Cores dos Botões (estilo giz) === */
+  --chalk-green: #4CAF50;
+  --chalk-green-light: #81C784;
+  --chalk-blue: #42A5F5;
+  --chalk-blue-light: #90CAF9;
+  --chalk-yellow: #FFD54F;
+  --chalk-yellow-light: #FFF176;
+  --chalk-red: #EF5350;
+  --chalk-red-light: #EF9A9A;
+
+  /* === Cores de Feedback === */
+  --color-success: #66BB6A;
+  --color-error: #EF5350;
+  --color-warning: #FFA726;
+  --color-info: #42A5F5;
+
+  /* === Cores de Texto === */
+  --text-chalk: #FFFFFFDD;
+  --text-chalk-strong: #FFFFFFEE;
+  --text-chalk-dim: #FFFFFF99;
+  --text-dark: #1a1a2e;
+
+  /* === Cores do Jogo (cenário) === */
+  --sky-blue: #87CEEB;
+  --sky-blue-light: #B0E2FF;
+  --grass-green: #228B22;
+  --grass-light: #32CD32;
+  --earth-brown: #8B6914;
+  --earth-dark: #654321;
+  --cloud-white: #FFFFFFCC;
+
+  /* === Moedas/Créditos === */
+  --coin-gold: #FFD700;
+  --coin-shine: #FFF8DC;
+
+  /* === Tipografia === */
+  --font-chalk: 'Fredericka the Great', cursive;
+  --font-handwriting: 'Patrick Hand', cursive;
+  --font-ui: 'Inter', sans-serif;
+
+  /* === Tamanhos de Fonte === */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 2rem;
+  --fs-3xl: 2.5rem;
+  --fs-4xl: 3rem;
+  --fs-5xl: 4rem;
+
+  /* === Espaçamentos === */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* === Bordas === */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-round: 50%;
+  --wood-border-width: 12px;
+
+  /* === Sombras === */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.4);
+  --shadow-glow-green: 0 0 20px rgba(76,175,80,0.4);
+  --shadow-glow-blue: 0 0 20px rgba(66,165,245,0.4);
+  --shadow-glow-gold: 0 0 20px rgba(255,215,0,0.4);
+
+  /* === Transições === */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+
+  /* === Z-Index Scale === */
+  --z-background: 0;
+  --z-game: 10;
+  --z-hud: 20;
+  --z-modal: 30;
+  --z-overlay: 40;
+  --z-toast: 50;
+}

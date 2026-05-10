@@ -1,0 +1,70 @@
+/* ============================================
+   Mental Calculations — Global Styles
+   ============================================ */
+@import './styles/variables.css';
+@import './styles/chalkboard.css';
+@import './styles/animations.css';
+
+/* === Reset === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-ui);
+  background: #1a1a2e;
+  color: white;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.app-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* === Selection === */
+::selection {
+  background: rgba(66,165,245,0.3);
+  color: white;
+}
+
+/* === Focus visible === */
+:focus-visible {
+  outline: 2px solid var(--chalk-blue);
+  outline-offset: 2px;
+}
+
+/* === Prevent text selection during game === */
+canvas {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+/* === Smooth scrolling === */
+html {
+  scroll-behavior: smooth;
+}
+
+/* === Mobile touch optimization === */
+button, a, input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}

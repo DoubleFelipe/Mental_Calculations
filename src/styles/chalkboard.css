@@ -1,0 +1,255 @@
+/* ============================================
+   Mental Calculations — Chalkboard Theme
+   Estilos de lousa verde com textura de giz
+   ============================================ */
+
+/* === Fundo de Lousa Verde === */
+.chalkboard {
+  background: 
+    /* Textura de giz sutil */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.015) 2px,
+      rgba(255,255,255,0.015) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.01) 2px,
+      rgba(255,255,255,0.01) 4px
+    ),
+    /* Gradiente de lousa */
+    radial-gradient(
+      ellipse at center,
+      var(--chalk-board-light) 0%,
+      var(--chalk-board) 50%,
+      var(--chalk-board-dark) 100%
+    );
+  background-color: var(--chalk-board);
+  color: var(--text-chalk);
+  font-family: var(--font-chalk);
+  position: relative;
+}
+
+/* === Borda de Madeira === */
+.chalkboard-frame {
+  border: var(--wood-border-width) solid var(--chalk-border-wood);
+  border-image: linear-gradient(
+    135deg,
+    var(--chalk-border-wood-light) 0%,
+    var(--chalk-border-wood) 30%,
+    var(--chalk-border-wood-dark) 60%,
+    var(--chalk-border-wood) 100%
+  ) 1;
+  box-shadow: 
+    inset 0 0 30px rgba(0,0,0,0.3),
+    0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* === Texto Estilo Giz === */
+.chalk-text {
+  font-family: var(--font-chalk);
+  color: var(--text-chalk);
+  text-shadow: 
+    0 0 5px rgba(255,255,255,0.1),
+    1px 1px 2px rgba(0,0,0,0.3);
+  letter-spacing: 1px;
+}
+
+.chalk-text-strong {
+  color: var(--text-chalk-strong);
+  text-shadow: 
+    0 0 8px rgba(255,255,255,0.15),
+    1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.chalk-text-dim {
+  color: var(--text-chalk-dim);
+}
+
+/* === Botão Estilo Giz === */
+.chalk-btn {
+  font-family: var(--font-chalk);
+  font-size: var(--fs-xl);
+  padding: var(--space-md) var(--space-2xl);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  letter-spacing: 1px;
+  min-width: 200px;
+  text-align: center;
+  /* Efeito de textura de giz no botão */
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.chalk-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 3px,
+      rgba(255,255,255,0.05) 3px,
+      rgba(255,255,255,0.05) 6px
+    );
+  pointer-events: none;
+}
+
+.chalk-btn:hover {
+  transform: scale(1.05);
+  filter: brightness(1.15);
+  box-shadow: var(--shadow-md);
+}
+
+.chalk-btn:active {
+  transform: scale(0.98);
+}
+
+/* Variantes de cor */
+.chalk-btn-green {
+  background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+  color: white;
+}
+
+.chalk-btn-blue {
+  background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+  color: white;
+}
+
+.chalk-btn-yellow {
+  background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+  color: var(--text-dark);
+}
+
+.chalk-btn-red {
+  background: linear-gradient(135deg, #EF5350 0%, #D32F2F 100%);
+  color: white;
+}
+
+.chalk-btn-purple {
+  background: linear-gradient(135deg, #AB47BC 0%, #7B1FA2 100%);
+  color: white;
+}
+
+/* === Botão de seta (navegação) === */
+.chalk-arrow-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--border-radius-lg);
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.3);
+  color: var(--text-chalk);
+  font-size: var(--fs-2xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.chalk-arrow-btn:hover {
+  background: rgba(255,255,255,0.25);
+  transform: scale(1.1);
+}
+
+/* === Card Estilo Chalkboard === */
+.chalk-card {
+  background: rgba(0,0,0,0.2);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg);
+  backdrop-filter: blur(4px);
+}
+
+/* === Input Estilo Chalk === */
+.chalk-input {
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-lg);
+  background: rgba(0,0,0,0.2);
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: var(--border-radius-md);
+  color: var(--text-chalk);
+  padding: var(--space-sm) var(--space-md);
+  outline: none;
+  transition: border-color var(--transition-normal);
+}
+
+.chalk-input:focus {
+  border-color: var(--chalk-green);
+}
+
+/* === Slider Estilo Chalk === */
+.chalk-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 200px;
+  height: 8px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+  outline: none;
+}
+
+.chalk-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.chalk-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: none;
+}
+
+/* === Fórmulas decorativas no fundo === */
+.chalk-formulas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.12;
+  font-family: var(--font-chalk);
+  font-size: var(--fs-lg);
+  color: white;
+}
+
+.chalk-formula-item {
+  position: absolute;
+  white-space: nowrap;
+  transform: rotate(var(--rotation, 0deg));
+}
+
+/* === Scrollbar customizada === */
+.chalkboard ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chalkboard ::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+}
+
+.chalkboard ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 4px;
+}
