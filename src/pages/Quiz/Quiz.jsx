@@ -10,6 +10,7 @@ import useTimer from '../../hooks/useTimer';
 import useAudio from '../../hooks/useAudio';
 import worlds from '../../data/worlds';
 import './Quiz.css';
+import Whiteboard from '../../components/Whiteboard/Whiteboard.jsx';
 
 export default function Quiz({ worldIndex, levelIndex, onComplete }) {
   const { settings } = useGameState();
@@ -81,6 +82,7 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
   };
 
   const question = questions[currentQ];
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
   const btnColors = ['chalk-btn-green', 'chalk-btn-blue', 'chalk-btn-red', 'chalk-btn-yellow'];
 
   // Tela de introdução/explicação
@@ -131,7 +133,18 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
       {/* Questão */}
       <div className="quiz-question animate-fadeInUp">
         <p className="question-text chalk-text-strong">{question.text}</p>
+          <div className="quiz-wb-toggle" style={{ marginTop: 12 }}>
+          <button className={`chalk-btn`} onClick={() => setShowWhiteboard(s => !s)}>
+            {showWhiteboard ? 'Fechar Quadro' : 'Abrir Quadro Branco'}
+          </button>
+        </div>
       </div>
+            {showWhiteboard && (
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <Whiteboard />
+        </div>
+      )}
+
 
       {/* Alternativas */}
       <div className="quiz-alternatives">

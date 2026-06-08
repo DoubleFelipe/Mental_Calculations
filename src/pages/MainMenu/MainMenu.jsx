@@ -52,9 +52,9 @@ export default function MainMenu({ onNavigate }) {
       <div className="menu-content">
         {/* Logo */}
         <div className="menu-logo animate-bounceIn">
-          <div className="brain-icon">🧠</div>
+          
           <h1 className="menu-title chalk-text-strong">Mental</h1>
-          <h1 className="menu-title-highlight">Calculations</h1>
+          <h1 className="menu-title chalk-text-strong">Calculations</h1>
         </div>
 
         {/* Botões */}
@@ -72,7 +72,7 @@ export default function MainMenu({ onNavigate }) {
             ⚙️ Configurações
           </button>
           <button className="chalk-btn chalk-btn-red stagger-5 animate-fadeInUp" onClick={() => handleClick('exit')}>
-            🚪 Sair
+             Sair
           </button>
         </div>
       </div>
