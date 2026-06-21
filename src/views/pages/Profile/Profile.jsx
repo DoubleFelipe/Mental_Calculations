@@ -2,7 +2,7 @@
  * Mental Calculations — Perfil do Jogador
  */
 import React from 'react';
-import useGameState from '../../hooks/useGameState';
+import useGameState from '../../../controllers/GameController';
 import './Profile.css';
 
 export default function Profile({ onNavigate }) {

@@ -3,7 +3,7 @@
  * Design: lousa verde com fórmulas decorativas e botões coloridos
  */
 import React, { useEffect, useState } from 'react';
-import useAudio from '../../hooks/useAudio';
+import useAudio from '../../../hooks/useAudio';
 import './MainMenu.css';
 
 const FORMULAS = [

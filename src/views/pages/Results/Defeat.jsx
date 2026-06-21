@@ -2,7 +2,7 @@
  * Mental Calculations — Tela de Derrota
  */
 import React, { useEffect } from 'react';
-import useAudio from '../../hooks/useAudio';
+import useAudio from '../../../hooks/useAudio';
 import './Result.css';
 
 export default function Defeat({ correct, total, onRetry, onMenu }) {

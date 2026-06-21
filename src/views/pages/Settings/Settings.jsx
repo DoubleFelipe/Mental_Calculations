@@ -2,8 +2,8 @@
  * Mental Calculations — Configurações
  */
 import React from 'react';
-import useGameState from '../../hooks/useGameState';
-import useAudio from '../../hooks/useAudio';
+import useGameState from '../../../controllers/GameController';
+import useAudio from '../../../hooks/useAudio';
 import './Settings.css';
 
 export default function Settings({ onNavigate }) {
