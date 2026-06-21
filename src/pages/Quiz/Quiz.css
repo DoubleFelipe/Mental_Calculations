@@ -192,3 +192,7 @@
   .quiz-alt { font-size: var(--fs-md) !important; }
   .intro-info { flex-direction: column; gap: var(--space-sm); }
 }
+
+
+/* Whiteboard toggle */
+.quiz-wb-toggle { display:flex; justify-content:center; margin-top:6px; }
