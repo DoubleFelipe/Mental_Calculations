@@ -1,87 +1,34 @@
 /**
- * Mental Calculations — Tela de Quiz
- * Mostra questões uma por vez com timer e feedback
+ * Mental Calculations — Tela de Quiz (View)
+ * Mostra questões uma por vez com timer e feedback, consumindo o controlador.
  */
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { generateQuestionSet, getTimeLimit } from '../../services/mathGenerator';
-import { getLevelDifficulty } from '../../services/progressService';
-import useGameState from '../../hooks/useGameState';
-import useTimer from '../../hooks/useTimer';
-import useAudio from '../../hooks/useAudio';
-import worlds from '../../data/worlds';
-import './Quiz.css';
+import React, { useState } from 'react';
+import useQuizController from '../../../controllers/useQuizController';
 import Whiteboard from '../../components/Whiteboard/Whiteboard.jsx';
+import './Quiz.css';
 
 export default function Quiz({ worldIndex, levelIndex, onComplete }) {
-  const { settings } = useGameState();
-  const { playCorrect, playWrong } = useAudio(settings);
+  const {
+    level,
+    difficulty,
+    questionsCount,
+    timeLimit,
+    questions,
+    currentQ,
+    selected,
+    showFeedback,
+    isCorrect,
+    score,
+    showExplanation,
+    setShowExplanation,
+    showIntro,
+    startQuiz,
+    timeLeft,
+    percentage,
+    handleAnswer,
+    handleNext,
+  } = useQuizController({ worldIndex, levelIndex, onComplete });
 
-  const difficulty = getLevelDifficulty(worldIndex, levelIndex);
-  const world = worlds[worldIndex];
-  const level = world?.levels[levelIndex];
-  const questionsCount = level?.questionsCount || 5;
-  const timeLimit = getTimeLimit(difficulty);
-
-  const [questions] = useState(() => generateQuestionSet(questionsCount, difficulty));
-  const [currentQ, setCurrentQ] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
-  const [score, setScore] = useState({ correct: 0, wrong: 0, times: [] });
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
-  const questionStartRef = useRef(Date.now());
-
-  const handleTimeUp = useCallback(() => {
-    if (showFeedback) return;
-    setShowFeedback(true);
-    setIsCorrect(false);
-    setScore(prev => ({ ...prev, wrong: prev.wrong + 1, times: [...prev.times, timeLimit * 1000] }));
-    playWrong();
-  }, [showFeedback, timeLimit, playWrong]);
-
-  const { timeLeft, percentage, start, reset } = useTimer(timeLimit, handleTimeUp);
-
-  useEffect(() => {
-    if (!showIntro) {
-      questionStartRef.current = Date.now();
-      start();
-    }
-  }, [currentQ, showIntro]); // eslint-disable-line
-
-  const handleAnswer = (index) => {
-    if (showFeedback || selected !== null) return;
-    const elapsed = Date.now() - questionStartRef.current;
-    setSelected(index);
-    setShowFeedback(true);
-
-    const correct = index === questions[currentQ].correctIndex;
-    setIsCorrect(correct);
-    if (correct) {
-      playCorrect();
-      setScore(prev => ({ ...prev, correct: prev.correct + 1, times: [...prev.times, elapsed] }));
-    } else {
-      playWrong();
-      setScore(prev => ({ ...prev, wrong: prev.wrong + 1, times: [...prev.times, elapsed] }));
-    }
-  };
-
-  const handleNext = () => {
-    if (currentQ + 1 >= questions.length) {
-      // Quiz finalizado
-      const avgTime = score.times.length > 0 ? score.times.reduce((a, b) => a + b, 0) / score.times.length : 0;
-      onComplete(score.correct, questions.length, avgTime);
-      return;
-    }
-    setCurrentQ(prev => prev + 1);
-    setSelected(null);
-    setShowFeedback(false);
-    setIsCorrect(false);
-    setShowExplanation(false);
-    reset(timeLimit);
-  };
-
-  const question = questions[currentQ];
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const btnColors = ['chalk-btn-green', 'chalk-btn-blue', 'chalk-btn-red', 'chalk-btn-yellow'];
 
@@ -101,13 +48,15 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
             <span>⏱️ {timeLimit}s por questão</span>
             <span>📊 Dificuldade: {difficulty === 'easy' ? 'Fácil' : difficulty === 'medium' ? 'Médio' : 'Difícil'}</span>
           </div>
-          <button className="chalk-btn chalk-btn-green" onClick={() => setShowIntro(false)}>
+          <button className="chalk-btn chalk-btn-green" onClick={startQuiz}>
             Começar! →
           </button>
         </div>
       </div>
     );
   }
+
+  const question = questions[currentQ];
 
   return (
     <div className="quiz-page chalkboard chalkboard-frame">
@@ -133,18 +82,18 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
       {/* Questão */}
       <div className="quiz-question animate-fadeInUp">
         <p className="question-text chalk-text-strong">{question.text}</p>
-          <div className="quiz-wb-toggle" style={{ marginTop: 12 }}>
+        <div className="quiz-wb-toggle" style={{ marginTop: 12 }}>
           <button className={`chalk-btn`} onClick={() => setShowWhiteboard(s => !s)}>
             {showWhiteboard ? 'Fechar Quadro' : 'Abrir Quadro Branco'}
           </button>
         </div>
       </div>
-            {showWhiteboard && (
+
+      {showWhiteboard && (
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
           <Whiteboard />
         </div>
       )}
-
 
       {/* Alternativas */}
       <div className="quiz-alternatives">

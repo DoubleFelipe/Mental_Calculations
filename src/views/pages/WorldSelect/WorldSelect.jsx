@@ -2,8 +2,8 @@
  * Mental Calculations — Seleção de Mundo
  */
 import React, { useState } from 'react';
-import useGameState from '../../hooks/useGameState';
-import worlds from '../../data/worlds';
+import useGameState from '../../../controllers/GameController';
+import worlds from '../../../data/worlds';
 import './WorldSelect.css';
 
 export default function WorldSelect({ onNavigate, onSelectWorld }) {

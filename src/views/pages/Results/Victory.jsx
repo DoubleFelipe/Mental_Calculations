@@ -2,7 +2,7 @@
  * Mental Calculations — Tela de Vitória
  */
 import React, { useEffect } from 'react';
-import useAudio from '../../hooks/useAudio';
+import useAudio from '../../../hooks/useAudio';
 import './Result.css';
 
 export default function Victory({ stars, score, credits, correct, total, onContinue, onRetry }) {

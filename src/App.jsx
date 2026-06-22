@@ -3,17 +3,17 @@
  * Roteamento entre telas e gerenciamento de estado global
  */
 import React, { useState, useCallback } from 'react';
-import { GameProvider } from './hooks/useGameState';
-import useGameState from './hooks/useGameState';
-import MainMenu from './pages/MainMenu/MainMenu';
-import WorldSelect from './pages/WorldSelect/WorldSelect';
-import PlatformGame from './pages/PlatformGame/PlatformGame';
-import Quiz from './pages/Quiz/Quiz';
-import Profile from './pages/Profile/Profile';
-import Settings from './pages/Settings/Settings';
-import Shop from './pages/Shop/Shop';
-import Victory from './pages/Results/Victory';
-import Defeat from './pages/Results/Defeat';
+import { GameProvider } from './controllers/GameController';
+import useGameState from './controllers/GameController';
+import MainMenu from './views/pages/MainMenu/MainMenu';
+import WorldSelect from './views/pages/WorldSelect/WorldSelect';
+import PlatformGame from './views/pages/PlatformGame/PlatformGame';
+import Quiz from './views/pages/Quiz/Quiz';
+import Profile from './views/pages/Profile/Profile';
+import Settings from './views/pages/Settings/Settings';
+import Shop from './views/pages/Shop/Shop';
+import Victory from './views/pages/Results/Victory';
+import Defeat from './views/pages/Results/Defeat';
 
 /** Componente que processa resultado e mostra vitória ou derrota */
 function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onMenu }) {

@@ -3,9 +3,9 @@
  * Controla o canvas do jogo + HUD + pause
  */
 import React, { useState, useCallback } from 'react';
-import GameCanvas from '../../engine/GameCanvas';
-import useGameState from '../../hooks/useGameState';
-import worlds from '../../data/worlds';
+import GameCanvas from '../../../engine/GameCanvas';
+import useGameState from '../../../controllers/GameController';
+import worlds from '../../../data/worlds';
 import './PlatformGame.css';
 
 export default function PlatformGame({ worldIndex, levelIndex, onStartQuiz, onNavigate }) {
