@@ -1,10 +1,12 @@
 /**
  * Mental Calculations — App Principal
- * Roteamento entre telas e gerenciamento de estado global
+ * Roteamento entre telas e gerenciamento de estado global.
+ * Suporta autenticação Google OAuth + modo guest (sem login).
  */
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { GameProvider } from './controllers/GameController';
 import useGameState from './controllers/GameController';
+import Login from './views/pages/Login/Login';
 import MainMenu from './views/pages/MainMenu/MainMenu';
 import WorldSelect from './views/pages/WorldSelect/WorldSelect';
 import PlatformGame from './views/pages/PlatformGame/PlatformGame';
@@ -14,25 +16,37 @@ import Settings from './views/pages/Settings/Settings';
 import Shop from './views/pages/Shop/Shop';
 import Victory from './views/pages/Results/Victory';
 import Defeat from './views/pages/Results/Defeat';
+import { isAuthenticated, getStoredUser, processOAuthCallback } from './services/authService';
 
 /** Componente que processa resultado e mostra vitória ou derrota */
 function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onMenu }) {
   const { completeLevelAction } = useGameState();
 
-  // Processa resultado uma única vez
   const [data] = useState(() => {
     if (!result) return { passed: false, stars: 0, score: 0, credits: 0 };
+    // completeLevelAction agora é async, mas retorna um resultado local imediato
     return completeLevelAction(worldIndex, levelIndex, result.correct, result.total, result.avgTime);
   });
 
-  if (!result) return null;
+  // Aguardar resolução se for Promise
+  const [resolved, setResolved] = useState(null);
 
-  if (data.passed) {
+  useEffect(() => {
+    if (data && typeof data.then === 'function') {
+      data.then(setResolved);
+    } else {
+      setResolved(data);
+    }
+  }, [data]);
+
+  if (!result || !resolved) return null;
+
+  if (resolved.passed) {
     return (
       <Victory
-        stars={data.stars}
-        score={data.score}
-        credits={data.credits}
+        stars={resolved.stars}
+        score={resolved.score}
+        credits={resolved.credits}
         correct={result.correct}
         total={result.total}
         onContinue={onContinue}
@@ -52,6 +66,18 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
 
 /** Conteúdo principal (dentro do GameProvider) */
 function AppContent() {
+  const { handleLogin, authUser, isOnline } = useGameState();
+
+  // Determinar se o usuário já passou pela tela de login nesta sessão
+  const [loginDone, setLoginDone] = useState(() => {
+    // Se há callback OAuth na URL, processar imediatamente
+    if (window.location.search.includes('token=') || window.location.search.includes('error=')) {
+      return false; // vai mostrar a tela de Login para processar o callback
+    }
+    // Se já tem token ou usuário armazenado, pular login
+    return isAuthenticated() || getStoredUser() !== null || localStorage.getItem('mc_guest_mode') === 'true';
+  });
+
   const [currentPage, setCurrentPage] = useState('mainMenu');
   const [selectedWorld, setSelectedWorld] = useState(0);
   const [selectedLevel, setSelectedLevel] = useState(0);
@@ -59,6 +85,19 @@ function AppContent() {
   const [quizKey, setQuizKey] = useState(0);
 
   const navigate = useCallback((page) => { setCurrentPage(page); }, []);
+
+  const handleAuthDone = useCallback((user) => {
+    handleLogin(user);
+    if (!user) {
+      // Modo guest — marcar para não pedir login novamente nesta sessão
+      localStorage.setItem('mc_guest_mode', 'true');
+    } else {
+      localStorage.removeItem('mc_guest_mode');
+    }
+    // Limpar URL (remover ?token= ou ?error=)
+    window.history.replaceState({}, document.title, '/');
+    setLoginDone(true);
+  }, [handleLogin]);
 
   const handleSelectWorld = useCallback((worldIndex) => {
     setSelectedWorld(worldIndex);
@@ -83,6 +122,11 @@ function AppContent() {
     setQuizResult(null);
     setCurrentPage('quiz');
   }, []);
+
+  // Mostrar login se ainda não passou pela tela
+  if (!loginDone) {
+    return <Login onAuthenticated={handleAuthDone} />;
+  }
 
   switch (currentPage) {
     case 'mainMenu':
