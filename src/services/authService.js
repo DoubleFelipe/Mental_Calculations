@@ -6,6 +6,22 @@
 const TOKEN_KEY = 'mc_jwt_token';
 const USER_KEY = 'mc_user';
 
+async function requestAuth(endpoint, payload) {
+  const response = await fetch(`/api/auth/${endpoint}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.error || 'Nao foi possivel autenticar.');
+  }
+
+  saveAuthData(data.token, data.user);
+  return data.user;
+}
+
 /**
  * Retorna o JWT armazenado (ou null se não autenticado)
  */
@@ -54,6 +70,20 @@ export function isAuthenticated() {
  */
 export function loginWithGoogle() {
   window.location.href = `${window.location.protocol}//${window.location.hostname}:3001/api/auth/google`;
+}
+
+/**
+ * Faz login com email e senha.
+ */
+export function loginWithEmail(email, password) {
+  return requestAuth('login', { email, password });
+}
+
+/**
+ * Cria uma conta com nome, email e senha.
+ */
+export function registerWithEmail(name, email, password) {
+  return requestAuth('register', { name, email, password });
 }
 
 /**

@@ -249,10 +249,13 @@ export function GameProvider({ children }) {
   }, [setAuthUser, setIsOnline, syncFromServer]);
 
   const handleLogout = useCallback(() => {
+    if (isAuthenticated()) {
+      authApi.logout().catch(() => {});
+    }
     clearAuth();
+    localStorage.removeItem('mc_guest_mode');
     setAuthUser(null);
     setIsOnline(false);
-    authApi.logout().catch(() => {});
   }, [setAuthUser, setIsOnline]);
 
   const value = {

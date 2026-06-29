@@ -3,7 +3,7 @@
  * Roteamento entre telas e gerenciamento de estado global.
  * Suporta autenticação Google OAuth + modo guest (sem login).
  */
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { GameProvider } from './controllers/GameController';
 import useGameState from './controllers/GameController';
 import Login from './views/pages/Login/Login';
@@ -16,7 +16,7 @@ import Settings from './views/pages/Settings/Settings';
 import Shop from './views/pages/Shop/Shop';
 import Victory from './views/pages/Results/Victory';
 import Defeat from './views/pages/Results/Defeat';
-import { isAuthenticated, getStoredUser, processOAuthCallback } from './services/authService';
+import { isAuthenticated, getStoredUser } from './services/authService';
 
 /** Componente que processa resultado e mostra vitória ou derrota */
 function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onMenu }) {
@@ -29,13 +29,19 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
   });
 
   // Aguardar resolução se for Promise
-  const [resolved, setResolved] = useState(null);
+  const [resolved, setResolved] = useState(() => (
+    data && typeof data.then === 'function' ? null : data
+  ));
 
   useEffect(() => {
     if (data && typeof data.then === 'function') {
-      data.then(setResolved);
-    } else {
-      setResolved(data);
+      let active = true;
+      data.then((value) => {
+        if (active) setResolved(value);
+      });
+      return () => {
+        active = false;
+      };
     }
   }, [data]);
 
@@ -66,7 +72,7 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
 
 /** Conteúdo principal (dentro do GameProvider) */
 function AppContent() {
-  const { handleLogin, authUser, isOnline } = useGameState();
+  const { handleLogin, handleLogout } = useGameState();
 
   // Determinar se o usuário já passou pela tela de login nesta sessão
   const [loginDone, setLoginDone] = useState(() => {
@@ -99,6 +105,14 @@ function AppContent() {
     setLoginDone(true);
   }, [handleLogin]);
 
+  const handleLogoutDone = useCallback(() => {
+    handleLogout();
+    localStorage.removeItem('mc_guest_mode');
+    setCurrentPage('mainMenu');
+    setLoginDone(false);
+    window.history.replaceState({}, document.title, '/');
+  }, [handleLogout]);
+
   const handleSelectWorld = useCallback((worldIndex) => {
     setSelectedWorld(worldIndex);
     setSelectedLevel(0);
@@ -130,7 +144,7 @@ function AppContent() {
 
   switch (currentPage) {
     case 'mainMenu':
-      return <MainMenu onNavigate={navigate} />;
+      return <MainMenu onNavigate={navigate} onLogout={handleLogoutDone} />;
     case 'worldSelect':
       return <WorldSelect onNavigate={navigate} onSelectWorld={handleSelectWorld} />;
     case 'platformGame':

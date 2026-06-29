@@ -27,6 +27,10 @@ passport.use(
         // Buscar ou criar usuário
         let user = await User.findOne({ where: { google_id: googleId } });
 
+        if (!user && email) {
+          user = await User.findOne({ where: { email } });
+        }
+
         if (!user) {
           // Criar novo usuário com dados padrão
           user = await User.create({
@@ -48,7 +52,11 @@ passport.use(
           await initializeUserProgress(user.id);
         } else {
           // Atualizar último login
-          await user.update({ last_login_at: new Date(), avatar_url: avatarUrl });
+          await user.update({
+            google_id: user.google_id || googleId,
+            last_login_at: new Date(),
+            avatar_url: avatarUrl,
+          });
         }
 
         return done(null, user);

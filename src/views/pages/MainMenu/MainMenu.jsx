@@ -2,7 +2,7 @@
  * Mental Calculations — Tela Inicial (Main Menu)
  * Design: lousa verde com fórmulas decorativas e botões coloridos
  */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useAudio from '../../../hooks/useAudio';
 import './MainMenu.css';
 
@@ -19,7 +19,7 @@ const FORMULAS = [
   { text: '√9 = 3', x: '3%', y: '35%', rot: '-8deg' },
 ];
 
-export default function MainMenu({ onNavigate }) {
+export default function MainMenu({ onNavigate, onLogout }) {
   const [visible, setVisible] = useState(false);
   const { initAudio, playClick, startMusic } = useAudio();
 
@@ -38,6 +38,16 @@ export default function MainMenu({ onNavigate }) {
     playClick();
     startMusic();
     onNavigate('worldSelect');
+  };
+
+  const handleExit = () => {
+    initAudio();
+    playClick();
+    if (onLogout) {
+      onLogout();
+    } else {
+      onNavigate('exit');
+    }
   };
 
   return (
@@ -71,7 +81,7 @@ export default function MainMenu({ onNavigate }) {
           <button className="chalk-btn chalk-btn-purple stagger-4 animate-fadeInUp" onClick={() => handleClick('settings')}>
             ⚙️ Configurações
           </button>
-          <button className="chalk-btn chalk-btn-red stagger-5 animate-fadeInUp" onClick={() => handleClick('exit')}>
+          <button className="chalk-btn chalk-btn-red stagger-5 animate-fadeInUp" onClick={handleExit}>
              Sair
           </button>
         </div>

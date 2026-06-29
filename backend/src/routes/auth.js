@@ -4,11 +4,21 @@
  */
 const express = require('express');
 const passport = require('../config/passport');
-const { googleCallback, getMe, logout } = require('../controllers/authController');
+const {
+  registerWithPassword,
+  loginWithPassword,
+  googleCallback,
+  getMe,
+  logout,
+} = require('../controllers/authController');
 const authMiddleware = require('../middleware/auth');
 const { authLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
+
+// Cadastro/login com email e senha
+router.post('/register', authLimiter, registerWithPassword);
+router.post('/login', authLimiter, loginWithPassword);
 
 // Iniciar fluxo Google OAuth
 router.get('/google', authLimiter, passport.authenticate('google', {

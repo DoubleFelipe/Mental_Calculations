@@ -10,7 +10,7 @@ const User = sequelize.define('User', {
   },
   google_id: {
     type: DataTypes.STRING(100),
-    allowNull: false,
+    allowNull: true,
     unique: true,
   },
   email: {
@@ -25,6 +25,10 @@ const User = sequelize.define('User', {
   },
   avatar_url: {
     type: DataTypes.STRING(500),
+    allowNull: true,
+  },
+  password_hash: {
+    type: DataTypes.STRING(255),
     allowNull: true,
   },
   created_at: {

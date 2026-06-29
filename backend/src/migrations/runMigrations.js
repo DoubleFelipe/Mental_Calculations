@@ -5,6 +5,7 @@
  * Execute com: node src/migrations/runMigrations.js
  */
 require('dotenv').config({ path: require('path').join(__dirname, '../../.env') });
+const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
 // Importar todos os models para registrar no Sequelize
@@ -16,6 +17,7 @@ async function runMigrations() {
 
     // Sincronizar todos os models com o banco (CREATE TABLE IF NOT EXISTS)
     await sequelize.sync({ alter: false, force: false });
+    await ensureAuthColumns();
     console.log('✅ Tabelas criadas com sucesso!');
 
     // Executar seeds
@@ -29,6 +31,33 @@ async function runMigrations() {
   } catch (error) {
     console.error('❌ Erro na migration:', error);
     process.exit(1);
+  }
+}
+
+async function ensureAuthColumns() {
+  const queryInterface = sequelize.getQueryInterface();
+  const tables = await queryInterface.showAllTables();
+  const tableNames = tables.map((table) => (
+    typeof table === 'string' ? table : table.tableName || table.table_name
+  ));
+  if (!tableNames.includes('users')) return;
+
+  const usersTable = await queryInterface.describeTable('users');
+
+  if (usersTable.google_id && usersTable.google_id.allowNull === false) {
+    await queryInterface.changeColumn('users', 'google_id', {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+    });
+    console.log('  -> users.google_id agora aceita contas sem Google');
+  }
+
+  if (!usersTable.password_hash) {
+    await queryInterface.addColumn('users', 'password_hash', {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    });
+    console.log('  -> users.password_hash criado');
   }
 }
 
