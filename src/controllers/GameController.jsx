@@ -6,6 +6,7 @@ import {
   addCredits as addCreditsModel,
   spendCredits as spendCreditsModel,
   purchaseItem as purchaseItemModel,
+  consumePowerUp as consumePowerUpModel,
   equipSkin as equipSkinModel,
   loseLife as loseLifeModel,
   resetLives as resetLivesModel,
@@ -86,6 +87,9 @@ export function GameProvider({ children }) {
           completedLevels: mapLevelUnlocks(levelProgress, 'is_completed'),
           levelStars: mapLevelStars(levelProgress),
           purchasedItems: (purchasedItems || []).map((p) => p.item?.item_key).filter(Boolean),
+          powerUpUses: Object.fromEntries((purchasedItems || [])
+            .filter((p) => p.item?.type === 'powerup')
+            .map((p) => [p.item.item_key, p.uses_remaining || 0])),
         }));
       }
 
@@ -172,9 +176,9 @@ export function GameProvider({ children }) {
   /**
    * Completa uma fase: atualiza localmente e sincroniza com o servidor
    */
-  const completeLevelAction = useCallback(async (worldIndex, levelIndex, correct, total, avgTimeMs) => {
+  const completeLevelAction = useCallback(async (worldIndex, levelIndex, correct, total, avgTimeMs, creditMultiplier = 1) => {
     // Processar localmente (imediato, para a UI não travar)
-    const result = processLevelComplete(gameState, worldIndex, levelIndex, correct, total, avgTimeMs);
+    const result = processLevelComplete(gameState, worldIndex, levelIndex, correct, total, avgTimeMs, creditMultiplier);
     setGameState(result.newState);
 
     // Sincronizar com o servidor em background
@@ -204,10 +208,20 @@ export function GameProvider({ children }) {
     return success;
   }, [setGameState]);
 
-  const purchaseItem = useCallback((itemId, price) => {
+  const purchaseItem = useCallback((itemId, price, uses = 0) => {
     let success = false;
     setGameState((prev) => {
-      const next = purchaseItemModel(prev, itemId, price);
+      const next = purchaseItemModel(prev, itemId, price, uses);
+      if (next) { success = true; return next; }
+      return prev;
+    });
+    return success;
+  }, [setGameState]);
+
+  const consumePowerUp = useCallback((itemId) => {
+    let success = false;
+    setGameState((prev) => {
+      const next = consumePowerUpModel(prev, itemId);
       if (next) { success = true; return next; }
       return prev;
     });
@@ -280,6 +294,7 @@ export function GameProvider({ children }) {
     addCredits,
     spendCredits,
     purchaseItem,
+    consumePowerUp,
     equipSkin,
     loseLife,
     resetLives,

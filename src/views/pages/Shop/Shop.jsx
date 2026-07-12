@@ -9,6 +9,7 @@ export default function Shop({ onNavigate }) {
   const {
     credits,
     purchasedItems,
+    powerUpUses,
     equippedSkin,
     tab,
     changeTab,
@@ -36,14 +37,20 @@ export default function Shop({ onNavigate }) {
         {filteredItems.map(item => {
           const owned = purchasedItems.includes(item.id);
           const equipped = equippedSkin === item.id;
+          const uses = powerUpUses[item.id] || 0;
           return (
             <div key={item.id} className={`shop-item chalk-card animate-fadeInUp ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`}>
               <span className="shop-item-icon">{item.icon}</span>
               <span className="shop-item-name">{item.name}</span>
               <span className="shop-item-desc">{item.description}</span>
+              {item.type === 'powerup' && uses > 0 && <span className="shop-item-uses">Disponível: {uses}</span>}
               {item.type === 'credit_pack' ? (
                 <button className="chalk-btn chalk-btn-yellow shop-buy-btn" onClick={() => handleBuy(item)}>
                   {item.realPrice} (simulado)
+                </button>
+              ) : item.type === 'powerup' ? (
+                <button className="chalk-btn chalk-btn-blue shop-buy-btn" onClick={() => handleBuy(item)}>
+                  {uses > 0 ? `Comprar mais · 💰 ${item.price}` : `💰 ${item.price}`}
                 </button>
               ) : (
                 <button className={`chalk-btn ${owned ? 'chalk-btn-green' : 'chalk-btn-blue'} shop-buy-btn`}

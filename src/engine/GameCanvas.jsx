@@ -134,8 +134,7 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
       }
 
       // Player
-      const skinColor = equippedSkin === 'default' ? '#222' : '#1976D2';
-      drawPlayer(ctx, player, cameraX, cameraY, skinColor);
+      drawPlayer(ctx, player, cameraX, cameraY, equippedSkin);
 
       // Instrução de interação
       for (const p of portals) {

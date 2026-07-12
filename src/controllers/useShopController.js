@@ -50,7 +50,7 @@ export default function useShopController() {
     }
 
     // ─── Item já possuído ───
-    if (gameState.purchasedItems.includes(item.id)) {
+    if (gameState.purchasedItems.includes(item.id) && item.type !== 'powerup') {
       if (item.type === 'skin') {
         equipSkin(item.id);
         if (isOnline && isAuthenticated()) {
@@ -69,7 +69,7 @@ export default function useShopController() {
         await shopApi.buyItem(item.id);
         playCoin();
         // Atualizar estado local após compra confirmada pelo servidor
-        purchaseItem(item.id, item.price);
+        purchaseItem(item.id, item.price, item.uses);
         showMessage(`"${item.name}" comprado!`);
         if (item.type === 'skin') {
           equipSkin(item.id);
@@ -80,7 +80,7 @@ export default function useShopController() {
       }
     } else {
       // Modo offline/guest: lógica local original
-      const success = purchaseItem(item.id, item.price);
+      const success = purchaseItem(item.id, item.price, item.uses);
       if (success) {
         playCoin();
         showMessage(`"${item.name}" comprado!`);
@@ -101,6 +101,7 @@ export default function useShopController() {
   return {
     credits: gameState.credits,
     purchasedItems: gameState.purchasedItems,
+    powerUpUses: gameState.powerUpUses || {},
     equippedSkin: gameState.equippedSkin,
     tab,
     changeTab,

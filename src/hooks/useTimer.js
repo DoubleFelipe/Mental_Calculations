@@ -18,6 +18,9 @@ export default function useTimer(initialSeconds, onTimeUp) {
     setIsRunning(false);
     setTimeLeft(newTime ?? initialSeconds);
   }, [initialSeconds]);
+  const addTime = useCallback((seconds) => {
+    setTimeLeft((prev) => prev + seconds);
+  }, []);
 
   useEffect(() => {
     if (!isRunning) {
@@ -38,6 +41,6 @@ export default function useTimer(initialSeconds, onTimeUp) {
     return () => clearInterval(intervalRef.current);
   }, [isRunning]);
 
-  const percentage = (timeLeft / initialSeconds) * 100;
-  return { timeLeft, percentage, isRunning, start, pause, reset };
+  const percentage = Math.min(100, (timeLeft / initialSeconds) * 100);
+  return { timeLeft, percentage, isRunning, start, pause, reset, addTime };
 }

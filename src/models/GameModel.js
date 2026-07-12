@@ -35,6 +35,7 @@ export const DEFAULT_GAME_STATE = {
   totalTime: 0,
   questionsAnswered: 0,
   purchasedItems: [],
+  powerUpUses: {},
   equippedSkin: 'default',
 };
 
@@ -94,12 +95,12 @@ export function getLevelDifficulty(worldIndex, levelIndex) {
 /**
  * Atualiza o estado do jogo após completar uma fase
  */
-export function processLevelComplete(gameState, worldIndex, levelIndex, correct, total, avgTimeMs) {
+export function processLevelComplete(gameState, worldIndex, levelIndex, correct, total, avgTimeMs, creditMultiplier = 1) {
   const newState = JSON.parse(JSON.stringify(gameState));
   const difficulty = getLevelDifficulty(worldIndex, levelIndex);
   const stars = calculateStars(correct, total);
   const passed = didPassLevel(correct, total);
-  const credits = calculateCredits(stars, difficulty);
+  const credits = calculateCredits(stars, difficulty) * creditMultiplier;
   const score = calculateScore(correct, total, avgTimeMs, difficulty);
 
   // Atualizar estrelas (manter o melhor resultado)
@@ -162,14 +163,30 @@ export function addCredits(gameState, amount) {
 /**
  * Realiza a compra de um item da loja, se aplicável
  */
-export function purchaseItem(gameState, itemId, price) {
-  if (gameState.purchasedItems.includes(itemId)) return null;
+export function purchaseItem(gameState, itemId, price, uses = 0) {
+  const isPowerUp = uses > 0;
+  if (gameState.purchasedItems.includes(itemId) && !isPowerUp) return null;
   if (!canSpendCredits(gameState, price)) return null;
 
   return {
     ...gameState,
     credits: gameState.credits - price,
-    purchasedItems: [...gameState.purchasedItems, itemId]
+    purchasedItems: gameState.purchasedItems.includes(itemId)
+      ? gameState.purchasedItems
+      : [...gameState.purchasedItems, itemId],
+    powerUpUses: isPowerUp
+      ? { ...gameState.powerUpUses, [itemId]: (gameState.powerUpUses?.[itemId] || 0) + uses }
+      : gameState.powerUpUses,
+  };
+}
+
+/** Consome uma unidade de um power-up do inventário. */
+export function consumePowerUp(gameState, itemId) {
+  const remaining = gameState.powerUpUses?.[itemId] || 0;
+  if (remaining <= 0) return null;
+  return {
+    ...gameState,
+    powerUpUses: { ...gameState.powerUpUses, [itemId]: remaining - 1 },
   };
 }
 

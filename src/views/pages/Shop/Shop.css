@@ -62,6 +62,7 @@
 .shop-item-icon { font-size: 2.5rem; }
 .shop-item-name { font-family: var(--font-chalk); font-size: var(--fs-md); }
 .shop-item-desc { font-family: var(--font-handwriting); font-size: var(--fs-sm); color: var(--text-chalk-dim); }
+.shop-item-uses { font-family: var(--font-handwriting); font-size: var(--fs-sm); color: var(--chalk-green-light); }
 
 .shop-buy-btn {
   font-size: var(--fs-sm) !important;
