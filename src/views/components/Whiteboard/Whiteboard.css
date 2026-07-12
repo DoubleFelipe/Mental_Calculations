@@ -1,14 +1,206 @@
 .whiteboard-root {
-  width: 100%; max-width: 700px; margin: var(--space-lg) 0; display:flex; flex-direction:column; gap:8px;
+  width: 100%;
+  max-width: 760px;
+  margin: var(--space-lg) 0;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #f7f4e8;
+  color: #1f2a22;
+  border: 3px solid rgba(255, 255, 255, 0.58);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
 }
-.whiteboard-toolbar {
-  display:flex; gap:8px; align-items:center; flex-wrap:wrap;
-}
-.whiteboard-toolbar label { font-family: var(--font-handwriting); font-size: 0.95rem; color:var(--text-chalk); }
-.wb-text-input { flex:1; min-width:180px; padding:6px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.12); color:var(--text-chalk); }
-.whiteboard-container { background: #fff; border-radius:8px; padding:8px; box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
-.whiteboard-canvas { width:100%; height:300px; touch-action: none; display:block; background: #fff; border-radius:6px; }
 
-@media (max-width:600px) {
-  .whiteboard-root { max-width: 100%; }
+.whiteboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 2px solid rgba(31, 42, 34, 0.16);
+  padding-bottom: 12px;
+}
+
+.whiteboard-header h3 {
+  margin: 0;
+  font-family: var(--font-chalk);
+  font-size: 1.35rem;
+  color: #1c4b36;
+}
+
+.whiteboard-header p {
+  margin: 4px 0 0;
+  font-family: var(--font-handwriting);
+  font-size: 0.95rem;
+  color: rgba(31, 42, 34, 0.72);
+}
+
+.whiteboard-clear {
+  min-width: 96px;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+}
+
+.coefficient-grid,
+.roots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.roots-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 14px;
+}
+
+.coefficient-grid label,
+.roots-grid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(28, 75, 54, 0.08);
+  border: 1px solid rgba(28, 75, 54, 0.18);
+  border-radius: 8px;
+  font-family: var(--font-chalk);
+  font-weight: 700;
+}
+
+.coefficient-grid span,
+.roots-grid span {
+  min-width: 22px;
+  color: #1c4b36;
+}
+
+.coefficient-grid input,
+.roots-grid input,
+.math-input {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  border: 0;
+  border-bottom: 2px solid rgba(28, 75, 54, 0.45);
+  background: rgba(255, 255, 255, 0.62);
+  color: #18231c;
+  border-radius: 4px 4px 0 0;
+  padding: 6px 8px;
+  font-family: var(--font-chalk);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.coefficient-grid input:focus,
+.roots-grid input:focus,
+.math-input:focus {
+  outline: 2px solid rgba(66, 165, 245, 0.55);
+  outline-offset: 2px;
+  border-bottom-color: #1c4b36;
+}
+
+.formula-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.formula-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.72)),
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(28, 75, 54, 0.12) 32px);
+  border: 1px solid rgba(28, 75, 54, 0.18);
+  border-radius: 8px;
+}
+
+.formula-card h4 {
+  margin: 0;
+  color: #1c4b36;
+  font-family: var(--font-chalk);
+  font-size: 1.15rem;
+}
+
+.formula-row,
+.fraction-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #18231c;
+  font-family: var(--font-chalk);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.result-row {
+  padding-top: 6px;
+  border-top: 1px dashed rgba(28, 75, 54, 0.28);
+}
+
+.sup {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  margin-left: -4px;
+}
+
+.math-input {
+  max-width: 84px;
+}
+
+.fraction-formula {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.fraction-line {
+  justify-content: center;
+}
+
+.fraction-divider {
+  width: min(100%, 310px);
+  height: 2px;
+  background: #18231c;
+  border-radius: 999px;
+}
+
+@media (max-width: 720px) {
+  .formula-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .whiteboard-root {
+    padding: 14px;
+  }
+
+  .whiteboard-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .whiteboard-clear {
+    width: 100%;
+  }
+
+  .coefficient-grid,
+  .roots-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .formula-row,
+  .fraction-line {
+    font-size: 0.98rem;
+  }
+
+  .math-input {
+    max-width: 76px;
+  }
 }
