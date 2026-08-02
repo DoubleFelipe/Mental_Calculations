@@ -86,6 +86,11 @@
   max-width: 600px;
   width: 100%;
 }
+.quiz-powerups { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-sm); margin: 0 0 var(--space-md); }
+.quiz-powerup { min-width: auto !important; font-size: var(--fs-sm) !important; padding: var(--space-xs) var(--space-sm) !important; }
+.quiz-powerup:disabled { opacity: .45; cursor: not-allowed; }
+.powerup-message { min-height: 1.5em; margin-bottom: var(--space-sm); color: var(--chalk-yellow); font-family: var(--font-handwriting); text-align: center; }
+.powerup-hidden { visibility: hidden; pointer-events: none; }
 
 .quiz-alt {
   font-size: var(--fs-lg) !important;

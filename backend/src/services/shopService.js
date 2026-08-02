@@ -51,7 +51,9 @@ async function purchaseItem(userId, itemKey) {
       where: { user_id: userId, shop_item_id: item.id },
       transaction: t,
     });
-    if (existing) throw Object.assign(new Error('Item já adquirido.'), { status: 409 });
+    if (existing && item.type !== 'powerup') {
+      throw Object.assign(new Error('Item já adquirido.'), { status: 409 });
+    }
 
     // Verificar créditos suficientes
     if (gameState.credits < item.credit_price) {
@@ -64,11 +66,18 @@ async function purchaseItem(userId, itemKey) {
       { transaction: t }
     );
 
-    await UserPurchasedItem.create({
-      user_id: userId,
-      shop_item_id: item.id,
-      uses_remaining: item.uses || 0,
-    }, { transaction: t });
+    if (existing) {
+      await existing.update(
+        { uses_remaining: existing.uses_remaining + (item.uses || 0) },
+        { transaction: t }
+      );
+    } else {
+      await UserPurchasedItem.create({
+        user_id: userId,
+        shop_item_id: item.id,
+        uses_remaining: item.uses || 0,
+      }, { transaction: t });
+    }
 
     await t.commit();
     return { type: item.type, item };

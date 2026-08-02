@@ -27,6 +27,11 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
     percentage,
     handleAnswer,
     handleNext,
+    activatePowerUp,
+    hiddenAlternatives,
+    powerUpMessage,
+    powerUpUses,
+    shieldActive,
   } = useQuizController({ worldIndex, levelIndex, onComplete });
 
   const [showWhiteboard, setShowWhiteboard] = useState(false);
@@ -95,6 +100,14 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
         </div>
       )}
 
+      <div className="quiz-powerups" aria-label="Consumíveis">
+        <button className="chalk-btn quiz-powerup" onClick={() => activatePowerUp('item_hint')} disabled={showFeedback || !powerUpUses.item_hint}>💡 Dica ({powerUpUses.item_hint || 0})</button>
+        <button className="chalk-btn quiz-powerup" onClick={() => activatePowerUp('item_time')} disabled={showFeedback || !powerUpUses.item_time}>⏰ +15s ({powerUpUses.item_time || 0})</button>
+        <button className="chalk-btn quiz-powerup" onClick={() => activatePowerUp('item_shield')} disabled={showFeedback || shieldActive || !powerUpUses.item_shield}>🛡️ Escudo ({powerUpUses.item_shield || 0})</button>
+        <button className="chalk-btn quiz-powerup" onClick={() => activatePowerUp('item_double')} disabled={showFeedback || !powerUpUses.item_double}>✨ Dobrar ({powerUpUses.item_double || 0})</button>
+      </div>
+      {powerUpMessage && <div className="powerup-message">{powerUpMessage}</div>}
+
       {/* Alternativas */}
       <div className="quiz-alternatives">
         {question.alternatives.map((alt, i) => {
@@ -103,12 +116,13 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
             if (i === question.correctIndex) extraClass = 'correct';
             else if (i === selected && !isCorrect) extraClass = 'wrong';
           }
+          const hidden = hiddenAlternatives.includes(i);
           return (
             <button
               key={i}
-              className={`chalk-btn ${btnColors[i]} quiz-alt ${extraClass} ${showFeedback && i === question.correctIndex ? 'animate-pulse' : ''} ${showFeedback && i === selected && !isCorrect ? 'animate-shake' : ''}`}
+              className={`chalk-btn ${btnColors[i]} quiz-alt ${hidden ? 'powerup-hidden' : ''} ${extraClass} ${showFeedback && i === question.correctIndex ? 'animate-pulse' : ''} ${showFeedback && i === selected && !isCorrect ? 'animate-shake' : ''}`}
               onClick={() => handleAnswer(i)}
-              disabled={showFeedback}
+              disabled={showFeedback || hidden}
             >
               {alt}
             </button>
@@ -128,7 +142,7 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
             <div className="feedback-content">
               <span className="feedback-icon">❌</span>
               <span className="feedback-text">
-                {timeLeft === 0 ? 'Tempo esgotado!' : 'Resposta incorreta!'}
+                {powerUpMessage || (timeLeft === 0 ? 'Tempo esgotado!' : 'Resposta incorreta!')}
               </span>
               <button className="show-explanation-btn" onClick={() => setShowExplanation(!showExplanation)}>
                 {showExplanation ? 'Ocultar' : 'Ver'} explicação

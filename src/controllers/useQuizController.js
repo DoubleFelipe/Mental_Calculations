@@ -9,9 +9,10 @@ import useGameState from './GameController';
 import useTimer from '../hooks/useTimer';
 import useAudio from '../hooks/useAudio';
 import worlds from '../data/worlds';
+import { shopApi } from '../services/apiService';
 
 export default function useQuizController({ worldIndex, levelIndex, onComplete }) {
-  const { settings } = useGameState();
+  const { settings, gameState, consumePowerUp, isOnline } = useGameState();
   const { playCorrect, playWrong } = useAudio(settings);
 
   const difficulty = getLevelDifficulty(worldIndex, levelIndex);
@@ -28,17 +29,32 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   const [score, setScore] = useState({ correct: 0, wrong: 0, times: [] });
   const [showExplanation, setShowExplanation] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
-  const questionStartRef = useRef(Date.now());
+  const [hiddenAlternatives, setHiddenAlternatives] = useState([]);
+  const [shieldActive, setShieldActive] = useState(false);
+  const [creditMultiplier, setCreditMultiplier] = useState(1);
+  const [powerUpMessage, setPowerUpMessage] = useState('');
+  const questionStartRef = useRef(null);
+
+  const registerWrongAnswer = useCallback((elapsed) => {
+    if (shieldActive) {
+      setShieldActive(false);
+      setIsCorrect(true);
+      setPowerUpMessage('🛡️ O escudo protegeu este erro!');
+      setScore(prev => ({ ...prev, correct: prev.correct + 1, times: [...prev.times, elapsed] }));
+      return;
+    }
+    setIsCorrect(false);
+    setScore(prev => ({ ...prev, wrong: prev.wrong + 1, times: [...prev.times, elapsed] }));
+  }, [shieldActive]);
 
   const handleTimeUp = useCallback(() => {
     if (showFeedback) return;
     setShowFeedback(true);
-    setIsCorrect(false);
-    setScore(prev => ({ ...prev, wrong: prev.wrong + 1, times: [...prev.times, timeLimit * 1000] }));
+    registerWrongAnswer(timeLimit * 1000);
     playWrong();
-  }, [showFeedback, timeLimit, playWrong]);
+  }, [showFeedback, timeLimit, playWrong, registerWrongAnswer]);
 
-  const { timeLeft, percentage, start, reset } = useTimer(timeLimit, handleTimeUp);
+  const { timeLeft, percentage, start, reset, addTime } = useTimer(timeLimit, handleTimeUp);
 
   useEffect(() => {
     if (!showIntro) {
@@ -60,15 +76,41 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
       setScore(prev => ({ ...prev, correct: prev.correct + 1, times: [...prev.times, elapsed] }));
     } else {
       playWrong();
-      setScore(prev => ({ ...prev, wrong: prev.wrong + 1, times: [...prev.times, elapsed] }));
+      registerWrongAnswer(elapsed);
     }
+  };
+
+  const activatePowerUp = (itemId) => {
+    if (showFeedback || (gameState.powerUpUses?.[itemId] || 0) <= 0) return;
+    if (!consumePowerUp(itemId)) return;
+    if (itemId === 'item_hint') {
+      const incorrect = questions[currentQ].alternatives
+        .map((_, index) => index)
+        .filter((index) => index !== questions[currentQ].correctIndex && !hiddenAlternatives.includes(index))
+        .slice(0, 2);
+      setHiddenAlternatives((prev) => [...prev, ...incorrect]);
+      setPowerUpMessage('💡 Duas alternativas incorretas foram eliminadas.');
+    }
+    if (itemId === 'item_time') {
+      addTime(15);
+      setPowerUpMessage('⏰ +15 segundos adicionados.');
+    }
+    if (itemId === 'item_shield') {
+      setShieldActive(true);
+      setPowerUpMessage('🛡️ Escudo ativo para esta questão.');
+    }
+    if (itemId === 'item_double') {
+      setCreditMultiplier(2);
+      setPowerUpMessage('✨ Créditos desta fase serão dobrados.');
+    }
+    if (isOnline) shopApi.consumePowerUp(itemId).catch(() => {});
   };
 
   const handleNext = () => {
     if (currentQ + 1 >= questions.length) {
       // Quiz finalizado
       const avgTime = score.times.length > 0 ? score.times.reduce((a, b) => a + b, 0) / score.times.length : 0;
-      onComplete(score.correct, questions.length, avgTime);
+      onComplete(score.correct, questions.length, avgTime, creditMultiplier);
       return;
     }
     setCurrentQ(prev => prev + 1);
@@ -76,6 +118,9 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
     setShowFeedback(false);
     setIsCorrect(false);
     setShowExplanation(false);
+    setHiddenAlternatives([]);
+    setShieldActive(false);
+    setPowerUpMessage('');
     reset(timeLimit);
   };
 
@@ -102,5 +147,10 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
     percentage,
     handleAnswer,
     handleNext,
+    activatePowerUp,
+    hiddenAlternatives,
+    shieldActive,
+    powerUpMessage,
+    powerUpUses: gameState.powerUpUses || {},
   };
 }

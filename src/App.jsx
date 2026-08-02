@@ -25,7 +25,7 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
   const [data] = useState(() => {
     if (!result) return { passed: false, stars: 0, score: 0, credits: 0 };
     // completeLevelAction agora é async, mas retorna um resultado local imediato
-    return completeLevelAction(worldIndex, levelIndex, result.correct, result.total, result.avgTime);
+    return completeLevelAction(worldIndex, levelIndex, result.correct, result.total, result.avgTime, result.creditMultiplier);
   });
 
   // Aguardar resolução se for Promise
@@ -126,8 +126,8 @@ function AppContent() {
     setCurrentPage('quiz');
   }, []);
 
-  const handleQuizComplete = useCallback((correct, total, avgTime) => {
-    setQuizResult({ correct, total, avgTime });
+  const handleQuizComplete = useCallback((correct, total, avgTime, creditMultiplier = 1) => {
+    setQuizResult({ correct, total, avgTime, creditMultiplier });
     setCurrentPage('result');
   }, []);
 
