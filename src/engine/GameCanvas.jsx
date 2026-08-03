@@ -2,22 +2,35 @@
  * Mental Calculations — Game Canvas (main game loop)
  * Renderiza o jogo 2D de plataforma dentro de um canvas React
  */
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useMemo, useState, useCallback } from 'react';
 import { createPlayer, drawPlayer, updatePlayerAnimation } from './Player';
-import { createLevelPlatforms, createPortals, drawPlatform, drawNPC, drawPortal } from './Platform';
+import { createWorldPlatforms, createWorldCharacters, drawPlatform, drawNPC } from './Platform';
 import { drawBackground, drawHouse } from './Background';
 import { applyGravity, isOnPlatform, checkCollision, clampToLevel } from './Physics';
 
 const LEVEL_WIDTH = 1600;
 const LEVEL_HEIGHT = 500;
+const INTERACTION_PADDING = 24;
 
-export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNPCInteract, isPaused, equippedSkin }) {
+function isNearCharacter(player, character) {
+  return checkCollision(player, {
+    x: character.x - INTERACTION_PADDING,
+    y: character.y - 12,
+    width: character.width + INTERACTION_PADDING * 2,
+    height: character.height + 24,
+  });
+}
+
+export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, isPaused, equippedSkin }) {
   const canvasRef = useRef(null);
   const frameRef = useRef(0);
   const keysRef = useRef({});
   const playerRef = useRef(createPlayer(50, 300));
-  const [platforms] = useState(() => createLevelPlatforms(levelIndex));
-  const [portals] = useState(() => createPortals(platforms));
+  const platforms = useMemo(() => createWorldPlatforms(worldIndex), [worldIndex]);
+  const characters = useMemo(
+    () => createWorldCharacters(platforms, worldIndex, levelProgress),
+    [platforms, worldIndex, levelProgress],
+  );
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 450 });
   const touchRef = useRef({ left: false, right: false, jump: false });
   const interactCooldownRef = useRef(0);
@@ -106,12 +119,11 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
       if (interactCooldownRef.current > 0) interactCooldownRef.current--;
       const interact = keys['e'] || keys['enter'];
       if (interact && interactCooldownRef.current <= 0) {
-        for (const p of portals) {
-          if (!p.activated && checkCollision(player, p)) {
+        for (const p of characters) {
+          if (!p.activated && isNearCharacter(player, p)) {
             interactCooldownRef.current = 30;
-            p.activated = true;
-            if (p.type === 'portal') { onPortalEnter?.(); }
-            else { onNPCInteract?.(p); }
+            if (!p.locked) p.activated = true;
+            onNPCInteract?.(p);
             break;
           }
         }
@@ -127,18 +139,15 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
       // Plataformas
       for (const plat of platforms) drawPlatform(ctx, plat, cameraX, cameraY);
 
-      // Portais/NPCs
-      for (const p of portals) {
-        if (p.type === 'portal') drawPortal(ctx, p, cameraX, cameraY, frame);
-        else drawNPC(ctx, p, cameraX, cameraY, frame);
-      }
+      // Cinco personagens que dão acesso às fases do mundo
+      for (const p of characters) drawNPC(ctx, p, cameraX, cameraY, frame);
 
       // Player
       drawPlayer(ctx, player, cameraX, cameraY, equippedSkin);
 
       // Instrução de interação
-      for (const p of portals) {
-        if (!p.activated && checkCollision(player, p)) {
+      for (const p of characters) {
+        if (!p.activated && isNearCharacter(player, p)) {
           const px = p.x + p.width / 2 - cameraX;
           const py = p.y - 20 - cameraY;
           ctx.fillStyle = 'rgba(0,0,0,0.7)';
@@ -148,7 +157,7 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
           ctx.fillStyle = 'white';
           ctx.font = 'bold 11px Inter, sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('Pressione E', px, py + 2);
+          ctx.fillText(p.locked ? 'Bloqueado' : 'Pressione E', px, py + 2);
         }
       }
 
@@ -157,7 +166,7 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isPaused, platforms, portals, canvasSize, onPortalEnter, onNPCInteract, equippedSkin]);
+  }, [isPaused, platforms, characters, canvasSize, onNPCInteract, equippedSkin]);
 
   return (
     <div style={{ position: 'relative' }}>

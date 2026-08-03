@@ -32,26 +32,17 @@
 .world-card.locked { opacity: 0.5; cursor: not-allowed; }
 .world-icon { font-size: 4rem; margin-bottom: var(--space-md); }
 .world-stars { font-size: var(--fs-lg); margin: var(--space-sm) 0; letter-spacing: 2px; }
+.world-stars span { color: #FFD54F; }
 .world-progress { font-family: var(--font-handwriting); font-size: var(--fs-lg); color: var(--text-chalk-dim); }
-
-.world-levels {
-  display: flex; gap: var(--space-sm); justify-content: center;
-  margin: var(--space-md) 0;
+.world-hint {
+  max-width: 230px;
+  min-height: 42px;
+  margin: var(--space-md) auto 0;
+  color: var(--text-chalk-dim);
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-md);
+  line-height: 1.15;
 }
-
-.level-dot {
-  width: 32px; height: 32px;
-  border-radius: var(--border-radius-round);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-handwriting); font-size: var(--fs-sm);
-  font-weight: bold;
-  border: 2px solid rgba(255,255,255,0.3);
-  color: var(--text-chalk);
-}
-
-.level-dot.unlocked { background: rgba(76,175,80,0.3); border-color: #4CAF50; }
-.level-dot.completed { background: #4CAF50; }
-.level-dot.locked { opacity: 0.4; }
 
 .world-play-btn {
   margin-top: var(--space-md);

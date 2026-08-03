@@ -1,7 +1,7 @@
 /**
  * Mental Calculations — Seleção de Mundo
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import useGameState from '../../../controllers/GameController';
 import worlds from '../../../data/worlds';
 import './WorldSelect.css';
@@ -34,21 +34,15 @@ export default function WorldSelect({ onNavigate, onSelectWorld }) {
         <div className={`world-card animate-scaleIn ${!isUnlocked ? 'locked' : ''}`} onClick={handleSelectWorld}>
           <div className="world-icon">{isUnlocked ? world.icon : '🔒'}</div>
           <div className="world-stars">
-            {'⭐'.repeat(totalStars)}{'☆'.repeat(maxStars - totalStars)}
+            <span aria-hidden="true">★</span> {totalStars}/{maxStars}
           </div>
           <div className="world-progress">
-            {gameState.completedLevels[currentIndex].filter(Boolean).length}/{world.levels.length} fases
+            estrelas do mundo
           </div>
-          {isUnlocked && (
-            <div className="world-levels">
-              {world.levels.map((level, i) => (
-                <div key={i} className={`level-dot ${gameState.unlockedLevels[currentIndex][i] ? 'unlocked' : 'locked'} ${gameState.completedLevels[currentIndex][i] ? 'completed' : ''}`}>
-                  {i + 1}
-                </div>
-              ))}
-            </div>
-          )}
-          {isUnlocked && <button className="chalk-btn chalk-btn-green world-play-btn" onClick={handleSelectWorld}>Entrar</button>}
+          <p className="world-hint">
+            {isUnlocked ? 'Explore o mapa e converse com os 5 personagens' : 'Conclua o mundo anterior para desbloquear'}
+          </p>
+          {isUnlocked && <button className="chalk-btn chalk-btn-green world-play-btn" onClick={(event) => { event.stopPropagation(); handleSelectWorld(); }}>Explorar mundo</button>}
         </div>
 
         <button className="chalk-arrow-btn" onClick={goRight}>▶</button>

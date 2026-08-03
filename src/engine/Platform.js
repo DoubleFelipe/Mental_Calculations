@@ -3,7 +3,69 @@
  * Plataformas com visual de terra/grama e portais interativos
  */
 
-/** Cria definições de plataformas para uma fase */
+/** Cria definições de plataformas para o mapa de um mundo. */
+export function createWorldPlatforms(worldIndex = 0) {
+  const layouts = [
+    [
+      { x: 0, y: 400, width: 300, height: 30 },
+      { x: 330, y: 350, width: 220, height: 30 },
+      { x: 590, y: 300, width: 220, height: 30 },
+      { x: 850, y: 360, width: 220, height: 30 },
+      { x: 1110, y: 320, width: 220, height: 30 },
+      { x: 1370, y: 400, width: 230, height: 30 },
+    ],
+    [
+      { x: 0, y: 420, width: 260, height: 30 },
+      { x: 290, y: 370, width: 200, height: 30 },
+      { x: 520, y: 320, width: 200, height: 30 },
+      { x: 750, y: 270, width: 200, height: 30 },
+      { x: 980, y: 340, width: 220, height: 30 },
+      { x: 1230, y: 390, width: 370, height: 30 },
+    ],
+    [
+      { x: 0, y: 400, width: 240, height: 30 },
+      { x: 300, y: 360, width: 180, height: 30 },
+      { x: 540, y: 330, width: 180, height: 30 },
+      { x: 780, y: 370, width: 180, height: 30 },
+      { x: 1020, y: 310, width: 180, height: 30 },
+      { x: 1260, y: 400, width: 340, height: 30 },
+    ],
+    [
+      { x: 0, y: 420, width: 320, height: 30 },
+      { x: 360, y: 340, width: 190, height: 30 },
+      { x: 590, y: 280, width: 190, height: 30 },
+      { x: 820, y: 350, width: 190, height: 30 },
+      { x: 1050, y: 290, width: 190, height: 30 },
+      { x: 1280, y: 400, width: 320, height: 30 },
+    ],
+  ];
+
+  return layouts[worldIndex % layouts.length];
+}
+
+/** Cria os cinco personagens que representam as fases do mundo. */
+export function createWorldCharacters(platforms, worldIndex = 0, levelProgress = []) {
+  const positions = [0, 1, 2, 3, 4];
+  return positions.map((levelIndex) => {
+    const platform = platforms[levelIndex + 1] || platforms[platforms.length - 1];
+    const progress = levelProgress[levelIndex] || {};
+    return {
+      x: platform.x + platform.width / 2 - 15,
+      y: platform.y - 55,
+      width: 30,
+      height: 50,
+      type: 'npc',
+      levelIndex,
+      levelName: progress.levelName || `Fase ${levelIndex + 1}`,
+      stars: progress.stars || 0,
+      locked: progress.unlocked === false,
+      color: ['#4CAF50', '#42A5F5', '#FFD54F', '#EF5350'][worldIndex % 4],
+      activated: false,
+    };
+  });
+}
+
+/** Cria definições de plataformas para uma fase legada. */
 export function createLevelPlatforms(levelIndex) {
   const layouts = [
     // Layout 0 - Introdutório
@@ -81,7 +143,7 @@ export function drawPlatform(ctx, plat, cameraX, cameraY) {
   }
 }
 
-/** Cria portais/NPCs para uma fase */
+/** Cria portais/NPCs para uma fase legada. */
 export function createPortals(platforms) {
   // Coloca um portal na última plataforma e NPCs em plataformas do meio
   const portals = [];
@@ -114,7 +176,8 @@ export function drawNPC(ctx, npc, cameraX, cameraY, frame) {
   const y = npc.y - cameraY;
 
   ctx.save();
-  ctx.strokeStyle = '#555';
+  ctx.strokeStyle = npc.color || '#555';
+  ctx.fillStyle = npc.locked ? 'rgba(70,70,70,0.75)' : 'rgba(255,255,255,0.9)';
   ctx.lineWidth = 2;
   ctx.lineCap = 'round';
 
@@ -124,10 +187,11 @@ export function drawNPC(ctx, npc, cameraX, cameraY, frame) {
   ctx.lineTo(x - 8, y + 14);
   ctx.lineTo(x + 8, y + 14);
   ctx.closePath();
+  ctx.fill();
   ctx.stroke();
 
   // Olhos
-  ctx.fillStyle = '#555';
+  ctx.fillStyle = npc.color || '#555';
   ctx.beginPath();
   ctx.arc(x - 2, y + 8, 1.5, 0, Math.PI * 2);
   ctx.arc(x + 2, y + 8, 1.5, 0, Math.PI * 2);
@@ -155,12 +219,12 @@ export function drawNPC(ctx, npc, cameraX, cameraY, frame) {
   ctx.lineTo(x + 7, y + 45);
   ctx.stroke();
 
-  // Balão de fala
+  // Identificação do personagem e estrelas conquistadas
   if (!npc.activated) {
     const bobY = Math.sin(frame * 0.05) * 3;
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.fillStyle = npc.locked ? 'rgba(35,35,35,0.88)' : 'rgba(255,255,255,0.92)';
     ctx.beginPath();
-    ctx.roundRect(x - 50, y - 35 + bobY, 100, 25, 8);
+    ctx.roundRect(x - 70, y - 48 + bobY, 140, 38, 8);
     ctx.fill();
     // Pontinha do balão
     ctx.beginPath();
@@ -169,10 +233,12 @@ export function drawNPC(ctx, npc, cameraX, cameraY, frame) {
     ctx.lineTo(x + 5, y - 10 + bobY);
     ctx.fill();
 
-    ctx.fillStyle = '#333';
+    ctx.fillStyle = npc.locked ? '#FFD54F' : '#333';
     ctx.font = '11px Patrick Hand, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(npc.message, x, y - 18 + bobY);
+    ctx.fillText(npc.locked ? 'BLOQUEADO' : `Fase ${npc.levelIndex + 1}`, x, y - 30 + bobY);
+    ctx.font = '12px Patrick Hand, sans-serif';
+    ctx.fillText('★'.repeat(npc.stars) + '☆'.repeat(3 - npc.stars), x, y - 16 + bobY);
   }
 
   ctx.restore();
