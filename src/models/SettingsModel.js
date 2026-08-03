@@ -7,6 +7,7 @@ export const DEFAULT_SETTINGS = {
   musicVolume: 80,
   sfxVolume: 50,
   language: 'pt-br',
+  doubleJump: false,
 };
 
 /**

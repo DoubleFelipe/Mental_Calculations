@@ -9,7 +9,7 @@ import worlds from '../../../data/worlds';
 import './PlatformGame.css';
 
 export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
-  const { gameState } = useGameState();
+  const { gameState, settings, loseLife } = useGameState();
   const [isPaused, setIsPaused] = useState(false);
   const [dialogue, setDialogue] = useState(null);
 
@@ -29,6 +29,10 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
   const handleNPCInteract = useCallback((character) => {
     setDialogue(character);
   }, []);
+
+  const handlePlayerHit = useCallback(() => {
+    loseLife();
+  }, [loseLife]);
 
   const levelProgress = world?.levels.map((level, index) => ({
     levelIndex: index,
@@ -61,9 +65,11 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
         <GameCanvas
           worldIndex={worldIndex}
           onNPCInteract={handleNPCInteract}
+          onPlayerHit={handlePlayerHit}
           levelProgress={levelProgress}
           isPaused={isPaused || Boolean(dialogue)}
           equippedSkin={gameState.equippedSkin}
+          doubleJumpEnabled={Boolean(settings.doubleJump)}
         />
       </div>
 
@@ -77,11 +83,9 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
           <div className="dialogue-card chalkboard animate-scaleIn">
             <div className="dialogue-character">△</div>
             <div>
-              <p className="dialogue-name">{dialogue.levelName}</p>
+              <p className="dialogue-name">{dialogue.phaseName || dialogue.levelName}</p>
               <p className="dialogue-text">
-                {dialogue.locked
-                  ? 'Este caminho ainda está fechado. Complete o desafio anterior para continuar sua jornada.'
-                  : 'Olá, explorador! Prepare-se para este desafio...'}
+                {dialogue.locked ? 'Este caminho ainda está fechado. Complete o desafio anterior para continuar sua jornada.' : dialogue.message}
               </p>
               {!dialogue.locked && <span className="dialogue-loading">A fase começará em instantes...</span>}
             </div>

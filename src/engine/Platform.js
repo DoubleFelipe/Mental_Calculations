@@ -5,6 +5,34 @@
 
 /** Cria definições de plataformas para o mapa de um mundo. */
 export function createWorldPlatforms(worldIndex = 0) {
+  // Mundo das Equações: uma única fase panorâmica com cinco áreas conectadas.
+  const equationsWorld = [
+    { x: 0, y: 520, width: 340, height: 34, area: 1 },
+    { x: 390, y: 470, width: 190, height: 30, area: 1 },
+    { x: 625, y: 430, width: 165, height: 30, area: 1 },
+    { x: 830, y: 500, width: 145, height: 30, area: 2 },
+    { x: 1010, y: 440, width: 145, height: 30, area: 2 },
+    { x: 1190, y: 380, width: 145, height: 30, area: 2, elevated: true },
+    { x: 1370, y: 475, width: 155, height: 30, area: 3 },
+    { x: 1550, y: 415, width: 112, height: 30, area: 3, narrow: true },
+    { x: 1705, y: 350, width: 115, height: 30, area: 3, narrow: true },
+    { x: 1860, y: 455, width: 110, height: 30, area: 3, narrow: true },
+    { x: 2010, y: 315, width: 138, height: 30, area: 4, suspended: true },
+    { x: 2180, y: 405, width: 116, height: 30, area: 4, moving: true, baseX: 2180, range: 80 },
+    { x: 2315, y: 300, width: 105, height: 30, area: 4, suspended: true },
+    { x: 2455, y: 445, width: 125, height: 30, area: 4, moving: true, baseX: 2455, range: 70 },
+    { x: 2600, y: 385, width: 150, height: 30, area: 5 },
+    { x: 2780, y: 470, width: 165, height: 30, area: 5 },
+    { x: 2980, y: 520, width: 240, height: 34, area: 5 },
+    // Rotas alternativas nas áreas intermediária e avançada.
+    { x: 1480, y: 285, width: 145, height: 24, area: 3, alternate: true },
+    { x: 1775, y: 225, width: 135, height: 24, area: 3, alternate: true },
+    { x: 2090, y: 185, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+    { x: 2350, y: 170, width: 115, height: 24, area: 4, alternate: true, suspended: true },
+  ];
+
+  if (worldIndex === 0) return equationsWorld;
+
   const layouts = [
     [
       { x: 0, y: 400, width: 300, height: 30 },
@@ -45,9 +73,18 @@ export function createWorldPlatforms(worldIndex = 0) {
 
 /** Cria os cinco personagens que representam as fases do mundo. */
 export function createWorldCharacters(platforms, worldIndex = 0, levelProgress = []) {
-  const positions = [0, 1, 2, 3, 4];
+  const positions = worldIndex === 0 ? [1, 5, 8, 20, 16] : [0, 1, 2, 3, 4];
+  const messages = [
+    'Bem-vindo! Sua jornada começa aqui.',
+    'Os desafios começaram!',
+    'Está ficando mais difícil!',
+    'Só os melhores chegam até aqui!',
+    'Parabéns! Me vença para concluir este mundo!',
+  ];
+  const areas = ['Introdução', 'Primeiros desafios', 'Dificuldade intermediária', 'Desafio avançado', 'Final'];
   return positions.map((levelIndex) => {
-    const platform = platforms[levelIndex + 1] || platforms[platforms.length - 1];
+    const platformIndex = positions[levelIndex];
+    const platform = platforms[platformIndex] || platforms[platforms.length - 1];
     const progress = levelProgress[levelIndex] || {};
     return {
       x: platform.x + platform.width / 2 - 15,
@@ -56,13 +93,34 @@ export function createWorldCharacters(platforms, worldIndex = 0, levelProgress =
       height: 50,
       type: 'npc',
       levelIndex,
+      phaseName: `Fase ${levelIndex + 1}`,
       levelName: progress.levelName || `Fase ${levelIndex + 1}`,
+      areaName: areas[levelIndex],
+      message: messages[levelIndex],
       stars: progress.stars || 0,
       locked: progress.unlocked === false,
       color: ['#4CAF50', '#42A5F5', '#FFD54F', '#EF5350'][worldIndex % 4],
       activated: false,
     };
   });
+}
+
+/** Obstáculos do percurso do Mundo das Equações. */
+export function createWorldHazards(worldIndex = 0) {
+  if (worldIndex !== 0) return [];
+  return [
+    { x: 705, y: 412, width: 48, height: 18, type: 'spikes', area: 2 },
+    { x: 875, y: 482, width: 42, height: 18, type: 'spikes', area: 2 },
+    { x: 1075, y: 422, width: 48, height: 18, type: 'spikes', area: 2 },
+    { x: 1430, y: 457, width: 54, height: 18, type: 'spikes', area: 3 },
+    { x: 1600, y: 397, width: 42, height: 18, type: 'spikes', area: 3 },
+    { x: 1818, y: 437, width: 42, height: 18, type: 'spikes', area: 3 },
+    { x: 2035, y: 297, width: 60, height: 18, type: 'spikes', area: 4 },
+    { x: 2215, y: 387, width: 42, height: 18, type: 'spikes', area: 4 },
+    { x: 2332, y: 282, width: 52, height: 18, type: 'spikes', area: 4 },
+    { x: 2485, y: 427, width: 48, height: 18, type: 'spikes', area: 4 },
+    { x: 2865, y: 452, width: 42, height: 18, type: 'spikes', area: 5 },
+  ];
 }
 
 /** Cria definições de plataformas para uma fase legada. */
@@ -120,8 +178,40 @@ export function createLevelPlatforms(levelIndex) {
 
 /** Desenha uma plataforma com visual de terra + grama */
 export function drawPlatform(ctx, plat, cameraX, cameraY) {
-  const x = plat.x - cameraX;
+  const animatedX = plat.moving
+    ? plat.baseX + Math.sin((performance.now() / 900) + plat.baseX) * plat.range
+    : plat.x;
+  const x = animatedX - cameraX;
   const y = plat.y - cameraY;
+
+  if (plat.suspended) {
+    ctx.save();
+    ctx.strokeStyle = '#6D4C41';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(x + 18, y - 42);
+    ctx.lineTo(x + 18, y);
+    ctx.moveTo(x + plat.width - 18, y - 42);
+    ctx.lineTo(x + plat.width - 18, y);
+    ctx.stroke();
+    for (let chainY = y - 38; chainY < y - 4; chainY += 9) {
+      ctx.fillStyle = '#A1887F';
+      ctx.fillRect(x + 14, chainY, 8, 4);
+      ctx.fillRect(x + plat.width - 22, chainY, 8, 4);
+    }
+    ctx.restore();
+  }
+
+  if (plat.moving) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(84, 110, 122, 0.7)';
+    ctx.fillRect(x + plat.width / 2 - 2, y - 30, 4, 30);
+    ctx.fillStyle = '#607D8B';
+    ctx.beginPath();
+    ctx.arc(x + plat.width / 2, y - 32, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
 
   // Terra
   ctx.fillStyle = '#8B6914';
@@ -141,6 +231,34 @@ export function drawPlatform(ctx, plat, cameraX, cameraY) {
   for (let i = 0; i < plat.width; i += 20) {
     ctx.fillRect(x + i + 5, y + 15, 8, 3);
   }
+
+  if (plat.narrow || plat.alternate) {
+    ctx.fillStyle = plat.alternate ? '#81C784' : '#66BB6A';
+    ctx.fillRect(x + 8, y - 2, Math.max(10, plat.width - 16), 3);
+  }
+}
+
+/** Desenha espinhos vermelhos com silhueta legível. */
+export function drawHazard(ctx, hazard, cameraX, cameraY) {
+  const x = hazard.x - cameraX;
+  const y = hazard.y - cameraY;
+  const spikes = Math.max(1, Math.floor(hazard.width / 14));
+  ctx.save();
+  ctx.fillStyle = '#E53935';
+  ctx.strokeStyle = '#8E2020';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < spikes; i += 1) {
+    const left = x + i * (hazard.width / spikes);
+    const right = x + (i + 1) * (hazard.width / spikes);
+    const mid = (left + right) / 2;
+    ctx.moveTo(left, y + hazard.height);
+    ctx.lineTo(mid, y);
+    ctx.lineTo(right, y + hazard.height);
+  }
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
 }
 
 /** Cria portais/NPCs para uma fase legada. */
@@ -171,7 +289,7 @@ export function createPortals(platforms) {
 }
 
 /** Desenha um NPC (stick figure com triângulo na cabeça) */
-export function drawNPC(ctx, npc, cameraX, cameraY, frame) {
+export function drawNPCLegacy(ctx, npc, cameraX, cameraY, frame) {
   const x = npc.x - cameraX + npc.width / 2;
   const y = npc.y - cameraY;
 
@@ -241,6 +359,78 @@ export function drawNPC(ctx, npc, cameraX, cameraY, frame) {
     ctx.fillText('★'.repeat(npc.stars) + '☆'.repeat(3 - npc.stars), x, y - 16 + bobY);
   }
 
+  ctx.restore();
+}
+
+/** NPCs do mapa atual, com cabeça triangular e balão de diálogo da área. */
+export function drawNPC(ctx, npc, cameraX, cameraY, frame) {
+  const x = npc.x - cameraX + npc.width / 2;
+  const y = npc.y - cameraY;
+  const bobY = Math.sin(frame * 0.05) * 3;
+  const message = npc.locked ? 'Complete a área anterior' : (npc.message || 'Prepare-se!');
+  const bubbleWidth = Math.min(250, Math.max(170, message.length * 5.2));
+  const bubbleHeight = message.length > 34 ? 58 : 44;
+
+  ctx.save();
+  ctx.strokeStyle = npc.color || '#555';
+  ctx.fillStyle = npc.locked ? 'rgba(70,70,70,0.8)' : '#FFFDF2';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+
+  // Cabeça triangular.
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x - 9, y + 15);
+  ctx.lineTo(x + 9, y + 15);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = npc.color || '#455A64';
+  ctx.beginPath();
+  ctx.arc(x - 2.5, y + 8, 1.7, 0, Math.PI * 2);
+  ctx.arc(x + 2.5, y + 8, 1.7, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Corpo simples e expressivo.
+  ctx.beginPath();
+  ctx.moveTo(x, y + 15); ctx.lineTo(x, y + 34);
+  ctx.moveTo(x, y + 22); ctx.lineTo(x - 11, y + 28);
+  ctx.moveTo(x, y + 22); ctx.lineTo(x + 11, y + 28);
+  ctx.moveTo(x, y + 34); ctx.lineTo(x - 7, y + 48);
+  ctx.moveTo(x, y + 34); ctx.lineTo(x + 7, y + 48);
+  ctx.stroke();
+
+  // Balão sempre visível no mapa, com quebra de linha para manter a leitura.
+  ctx.fillStyle = npc.locked ? 'rgba(35,35,35,0.9)' : 'rgba(255,253,242,0.96)';
+  ctx.beginPath();
+  ctx.roundRect(x - bubbleWidth / 2, y - 58 + bobY, bubbleWidth, bubbleHeight, 10);
+  ctx.fill();
+  ctx.strokeStyle = npc.color || '#78909C';
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x - 7, y - 10 + bobY);
+  ctx.lineTo(x, y - 3 + bobY);
+  ctx.lineTo(x + 7, y - 10 + bobY);
+  ctx.fill();
+
+  ctx.fillStyle = npc.locked ? '#FFD54F' : '#2D3A2E';
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 10px Patrick Hand, sans-serif';
+  ctx.fillText(npc.phaseName || `Fase ${npc.levelIndex + 1}`, x, y - 42 + bobY);
+  ctx.font = '11px Patrick Hand, sans-serif';
+  const words = message.split(' ');
+  let line = '';
+  const lines = [];
+  words.forEach((word) => {
+    const next = `${line} ${word}`.trim();
+    if (ctx.measureText(next).width > bubbleWidth - 18) {
+      lines.push(line);
+      line = word;
+    } else line = next;
+  });
+  if (line) lines.push(line);
+  lines.slice(0, 2).forEach((text, index) => ctx.fillText(text, x, y - 25 + index * 13 + bobY));
   ctx.restore();
 }
 

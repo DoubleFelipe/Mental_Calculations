@@ -1,7 +1,6 @@
 /**
  * Mental Calculations — Configurações
  */
-import React from 'react';
 import useGameState from '../../../controllers/GameController';
 import useAudio from '../../../hooks/useAudio';
 import './Settings.css';
@@ -44,12 +43,26 @@ export default function Settings({ onNavigate }) {
           <span className="setting-value">{settings.sfxVolume}%</span>
         </div>
 
-        <div className="setting-row animate-fadeInLeft stagger-3">
+        <div className="setting-row setting-toggle-row animate-fadeInLeft stagger-3">
+          <label className="chalk-text" htmlFor="double-jump-toggle">Pulo duplo:</label>
+          <label className="switch-control">
+            <input
+              id="double-jump-toggle"
+              type="checkbox"
+              checked={Boolean(settings.doubleJump)}
+              onChange={(e) => updateSettings('doubleJump', e.target.checked)}
+            />
+            <span className="switch-slider" aria-hidden="true" />
+          </label>
+          <span className="setting-value-text">{settings.doubleJump ? 'Ativado' : 'Desativado'}</span>
+        </div>
+
+        <div className="setting-row animate-fadeInLeft stagger-4">
           <label className="chalk-text">🌐 Linguagem:</label>
           <span className="setting-value-text">pt-br</span>
         </div>
 
-        <div className="setting-row animate-fadeInLeft stagger-4">
+        <div className="setting-row animate-fadeInLeft stagger-5">
           <label className="chalk-text">📐 Resolução:</label>
           <span className="setting-value-text">{window.innerWidth}x{window.innerHeight}</span>
         </div>
