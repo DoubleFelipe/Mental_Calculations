@@ -85,7 +85,7 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
             <div>
               <p className="dialogue-name">{dialogue.phaseName || dialogue.levelName}</p>
               <p className="dialogue-text">
-                {dialogue.locked ? 'Este caminho ainda está fechado. Complete o desafio anterior para continuar sua jornada.' : dialogue.message}
+                {dialogue.message}
               </p>
               {!dialogue.locked && <span className="dialogue-loading">A fase começará em instantes...</span>}
             </div>

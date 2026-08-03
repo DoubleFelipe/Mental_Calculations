@@ -73,17 +73,21 @@ export function createWorldPlatforms(worldIndex = 0) {
 
 /** Cria os cinco personagens que representam as fases do mundo. */
 export function createWorldCharacters(platforms, worldIndex = 0, levelProgress = []) {
-  const positions = worldIndex === 0 ? [1, 5, 8, 20, 16] : [0, 1, 2, 3, 4];
-  const messages = [
-    'Bem-vindo! Sua jornada começa aqui.',
-    'Os desafios começaram!',
-    'Está ficando mais difícil!',
-    'Só os melhores chegam até aqui!',
-    'Parabéns! Me vença para concluir este mundo!',
+  // Uma definição por fase evita que a ordem visual dos NPCs troque o desafio iniciado.
+  const worldNpcDefinitions = [
+    { phase: 1, platformIndex: 1, areaName: 'Introdução', message: 'Bem-vindo! Sua jornada começa aqui.' },
+    { phase: 2, platformIndex: 5, areaName: 'Primeiros desafios', message: 'Os desafios começaram!' },
+    { phase: 3, platformIndex: 8, areaName: 'Dificuldade intermediária', message: 'Está ficando mais difícil!' },
+    { phase: 4, platformIndex: 20, areaName: 'Desafio avançado', message: 'Só os melhores chegam até aqui!' },
+    { phase: 5, platformIndex: 16, areaName: 'Final', message: 'Parabéns! Me vença para concluir este mundo!' },
   ];
-  const areas = ['Introdução', 'Primeiros desafios', 'Dificuldade intermediária', 'Desafio avançado', 'Final'];
-  return positions.map((levelIndex) => {
-    const platformIndex = positions[levelIndex];
+  const definitions = worldIndex === 0
+    ? worldNpcDefinitions
+    : worldNpcDefinitions.map((definition, index) => ({ ...definition, platformIndex: index }));
+
+  return definitions.map((definition) => {
+    const levelIndex = definition.phase - 1;
+    const platformIndex = definition.platformIndex;
     const platform = platforms[platformIndex] || platforms[platforms.length - 1];
     const progress = levelProgress[levelIndex] || {};
     return {
@@ -93,10 +97,10 @@ export function createWorldCharacters(platforms, worldIndex = 0, levelProgress =
       height: 50,
       type: 'npc',
       levelIndex,
-      phaseName: `Fase ${levelIndex + 1}`,
+      phaseName: `Fase ${definition.phase}`,
       levelName: progress.levelName || `Fase ${levelIndex + 1}`,
-      areaName: areas[levelIndex],
-      message: messages[levelIndex],
+      areaName: definition.areaName,
+      message: definition.message,
       stars: progress.stars || 0,
       locked: progress.unlocked === false,
       color: ['#4CAF50', '#42A5F5', '#FFD54F', '#EF5350'][worldIndex % 4],
@@ -367,7 +371,7 @@ export function drawNPC(ctx, npc, cameraX, cameraY, frame) {
   const x = npc.x - cameraX + npc.width / 2;
   const y = npc.y - cameraY;
   const bobY = Math.sin(frame * 0.05) * 3;
-  const message = npc.locked ? 'Complete a área anterior' : (npc.message || 'Prepare-se!');
+  const message = npc.message || 'Prepare-se!';
   const bubbleWidth = Math.min(250, Math.max(170, message.length * 5.2));
   const bubbleHeight = message.length > 34 ? 58 : 44;
 
