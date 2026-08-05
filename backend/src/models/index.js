@@ -13,6 +13,7 @@ const UserLevelProgress = require('./UserLevelProgress');
 const ShopItem = require('./ShopItem');
 const UserPurchasedItem = require('./UserPurchasedItem');
 const LevelSession = require('./LevelSession');
+const LevelAttempt = require('./LevelAttempt');
 
 // =====================
 // Associações
@@ -61,6 +62,11 @@ LevelSession.belongsTo(User, { foreignKey: 'user_id' });
 Level.hasMany(LevelSession, { foreignKey: 'level_id', as: 'sessions', onDelete: 'CASCADE' });
 LevelSession.belongsTo(Level, { foreignKey: 'level_id', as: 'level' });
 
+User.hasMany(LevelAttempt, { foreignKey: 'user_id', as: 'attempts', onDelete: 'CASCADE' });
+LevelAttempt.belongsTo(User, { foreignKey: 'user_id' });
+Level.hasMany(LevelAttempt, { foreignKey: 'level_id', as: 'attempts', onDelete: 'CASCADE' });
+LevelAttempt.belongsTo(Level, { foreignKey: 'level_id' });
+
 module.exports = {
   User,
   UserSettings,
@@ -72,4 +78,5 @@ module.exports = {
   ShopItem,
   UserPurchasedItem,
   LevelSession,
+  LevelAttempt,
 };

@@ -9,9 +9,10 @@ import worlds from '../../../data/worlds';
 import './PlatformGame.css';
 
 export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
-  const { gameState, settings, loseLife } = useGameState();
+  const { gameState, settings, loseLife, resetLives } = useGameState();
   const [isPaused, setIsPaused] = useState(false);
   const [dialogue, setDialogue] = useState(null);
+  const [isGameOver, setIsGameOver] = useState(false);
 
   const world = worlds[worldIndex];
 
@@ -31,8 +32,14 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
   }, []);
 
   const handlePlayerHit = useCallback(() => {
+    if (gameState.lives <= 1) setIsGameOver(true);
     loseLife();
-  }, [loseLife]);
+  }, [gameState.lives, loseLife]);
+
+  const restartAfterGameOver = useCallback(() => {
+    resetLives();
+    setIsGameOver(false);
+  }, [resetLives]);
 
   const levelProgress = world?.levels.map((level, index) => ({
     levelIndex: index,
@@ -67,7 +74,7 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
           onNPCInteract={handleNPCInteract}
           onPlayerHit={handlePlayerHit}
           levelProgress={levelProgress}
-          isPaused={isPaused || Boolean(dialogue)}
+          isPaused={isPaused || Boolean(dialogue) || isGameOver}
           equippedSkin={gameState.equippedSkin}
           doubleJumpEnabled={Boolean(settings.doubleJump)}
         />
@@ -102,6 +109,19 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
               <button className="chalk-btn chalk-btn-green" onClick={() => setIsPaused(false)}>▶ Continuar</button>
               <button className="chalk-btn chalk-btn-yellow" onClick={() => onNavigate('worldSelect')}>🗺️ Mundos</button>
               <button className="chalk-btn chalk-btn-red" onClick={() => onNavigate('mainMenu')}>🏠 Menu</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isGameOver && (
+        <div className="pause-overlay" role="dialog" aria-modal="true" aria-label="Fim de jogo">
+          <div className="pause-modal chalkboard animate-scaleIn">
+            <h2 className="chalk-text-strong">Fim de jogo</h2>
+            <p className="chalk-text">Suas vidas acabaram. Tente novamente com 3 vidas.</p>
+            <div className="pause-buttons">
+              <button className="chalk-btn chalk-btn-green" onClick={restartAfterGameOver}>Recomeçar mapa</button>
+              <button className="chalk-btn chalk-btn-yellow" onClick={() => { resetLives(); onNavigate('worldSelect'); }}>Mundos</button>
+              <button className="chalk-btn chalk-btn-red" onClick={() => { resetLives(); onNavigate('mainMenu'); }}>Menu</button>
             </div>
           </div>
         </div>

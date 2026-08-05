@@ -52,7 +52,7 @@ export function calculateStars(correct, total) {
 }
 
 /**
- * Verifica se o jogador passou na fase (>60%)
+ * Verifica se o jogador passou na fase (60% ou mais)
  */
 export function didPassLevel(correct, total) {
   if (total === 0) return false;

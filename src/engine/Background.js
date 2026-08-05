@@ -112,37 +112,6 @@ export function drawHouse(ctx, x, y, cameraX, cameraY = 0) {
   ctx.restore();
 }
 
-/** Decoração fixa do mundo: natureza, placas e pequenos marcos de progressão. */
-export function drawLegacyWorldScenery(ctx, cameraX, cameraY) {
-  const scenery = [
-    { type: 'tree', x: 250, y: 520, scale: 1.1 },
-    { type: 'tree', x: 560, y: 470, scale: 0.75 },
-    { type: 'tree', x: 735, y: 430, scale: 0.7 },
-    { type: 'bush', x: 920, y: 500, scale: 1 },
-    { type: 'tree', x: 1260, y: 380, scale: 0.6 },
-    { type: 'tree', x: 1420, y: 475, scale: 0.8 },
-    { type: 'bush', x: 1670, y: 350, scale: 0.9 },
-    { type: 'tree', x: 1940, y: 455, scale: 0.65 },
-    { type: 'tree', x: 2260, y: 405, scale: 0.55 },
-    { type: 'bush', x: 2550, y: 445, scale: 1 },
-    { type: 'tree', x: 2710, y: 385, scale: 0.75 },
-    { type: 'tree', x: 2880, y: 470, scale: 0.9 },
-    { type: 'sign', x: 300, y: 520, label: 'INÍCIO' },
-    { type: 'sign', x: 650, y: 430, label: 'DESAFIOS' },
-    { type: 'sign', x: 1320, y: 380, label: 'ATENÇÃO' },
-    { type: 'sign', x: 2570, y: 445, label: 'FINAL' },
-  ];
-
-  scenery.forEach((item) => {
-    const x = item.x - cameraX;
-    const y = item.y - cameraY;
-    if (x < -180 || x > ctx.canvas.width + 180) return;
-    if (item.type === 'tree') drawTree(ctx, x, y, item.scale);
-    if (item.type === 'bush') drawBushDetail(ctx, x, y, item.scale);
-    if (item.type === 'sign') drawSignpost(ctx, x, y, item.label);
-  });
-}
-
 /** Decorações ancoradas diretamente nas plataformas estáticas do mapa. */
 export function drawWorldScenery(ctx, cameraX, cameraY, platforms = []) {
   const scenery = [
@@ -213,35 +182,6 @@ function drawSignpost(ctx, x, y, label) {
   ctx.font = 'bold 9px Inter, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(label, x, y - 45);
-  ctx.restore();
-}
-
-/** Cabeçalhos fixos que comunicam a progressão durante a rolagem lateral. */
-export function drawAreaLabels(ctx, width, height, cameraX) {
-  const areas = [
-    { start: 0, color: '#43A047', title: 'ÁREA 1 · INTRODUÇÃO' },
-    { start: 640, color: '#1E88E5', title: 'ÁREA 2 · PRIMEIROS DESAFIOS' },
-    { start: 1280, color: '#8E24AA', title: 'ÁREA 3 · INTERMEDIÁRIA' },
-    { start: 1920, color: '#E53935', title: 'ÁREA 4 · AVANÇADO' },
-    { start: 2560, color: '#FB8C00', title: 'ÁREA 5 · FINAL' },
-  ];
-  ctx.save();
-  areas.forEach((area) => {
-    const x = area.start - cameraX;
-    if (x < -260 || x > width + 20) return;
-    ctx.fillStyle = 'rgba(255,255,255,0.88)';
-    ctx.strokeStyle = area.color;
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.roundRect(x + 12, 14, 225, 28, 10); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = area.color;
-    ctx.font = 'bold 11px Inter, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(area.title, x + 25, 32);
-    ctx.strokeStyle = `${area.color}66`;
-    ctx.setLineDash([8, 8]);
-    ctx.beginPath(); ctx.moveTo(x, 52); ctx.lineTo(x, height - 24); ctx.stroke();
-    ctx.setLineDash([]);
-  });
   ctx.restore();
 }
 

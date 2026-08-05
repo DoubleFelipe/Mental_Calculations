@@ -9,7 +9,7 @@ import useGameState from './GameController';
 import useTimer from '../hooks/useTimer';
 import useAudio from '../hooks/useAudio';
 import worlds from '../data/worlds';
-import { shopApi } from '../services/apiService';
+import { progressApi, shopApi } from '../services/apiService';
 
 export default function useQuizController({ worldIndex, levelIndex, onComplete }) {
   const { settings, gameState, consumePowerUp, isOnline } = useGameState();
@@ -34,6 +34,7 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   const [creditMultiplier, setCreditMultiplier] = useState(1);
   const [powerUpMessage, setPowerUpMessage] = useState('');
   const questionStartRef = useRef(null);
+  const attemptIdRef = useRef(null);
 
   const registerWrongAnswer = useCallback((elapsed) => {
     if (shieldActive) {
@@ -103,14 +104,17 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
       setCreditMultiplier(2);
       setPowerUpMessage('✨ Créditos desta fase serão dobrados.');
     }
-    if (isOnline) shopApi.consumePowerUp(itemId).catch(() => {});
+    if (isOnline && itemId !== 'item_double') shopApi.consumePowerUp(itemId).catch(() => {});
   };
 
   const handleNext = () => {
     if (currentQ + 1 >= questions.length) {
       // Quiz finalizado
-      const avgTime = score.times.length > 0 ? score.times.reduce((a, b) => a + b, 0) / score.times.length : 0;
-      onComplete(score.correct, questions.length, avgTime, creditMultiplier);
+      // O backend armazena duração em milissegundos inteiros.
+      const avgTime = score.times.length > 0
+        ? Math.round(score.times.reduce((a, b) => a + b, 0) / score.times.length)
+        : 0;
+      onComplete(score.correct, questions.length, avgTime, creditMultiplier, attemptIdRef.current);
       return;
     }
     setCurrentQ(prev => prev + 1);
@@ -124,7 +128,16 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
     reset(timeLimit);
   };
 
-  const startQuiz = () => {
+  const startQuiz = async () => {
+    if (isOnline) {
+      try {
+        const levelId = worldIndex * 5 + levelIndex + 1;
+        const attempt = await progressApi.startLevel(levelId);
+        attemptIdRef.current = attempt.attemptId;
+      } catch (error) {
+        setPowerUpMessage(`Sessão online indisponível: ${error.message}`);
+      }
+    }
     setShowIntro(false);
   };
 

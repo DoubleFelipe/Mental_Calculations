@@ -39,7 +39,7 @@ class AudioService {
       gain.connect(this.ctx.destination);
       osc.start();
       osc.stop(this.ctx.currentTime + duration);
-    } catch (e) { /* silencioso */ }
+    } catch { /* silencioso */ }
   }
 
   /** Efeito de acerto */
@@ -76,7 +76,7 @@ class AudioService {
       gain.connect(this.ctx.destination);
       osc.start();
       osc.stop(this.ctx.currentTime + 0.15);
-    } catch (e) { /* silencioso */ }
+    } catch { /* silencioso */ }
   }
 
   /** Efeito de clique */
@@ -111,7 +111,7 @@ class AudioService {
 
       this.isMusicPlaying = true;
       playNext();
-    } catch (e) { /* silencioso */ }
+    } catch { /* silencioso */ }
   }
 
   stopMusic() {

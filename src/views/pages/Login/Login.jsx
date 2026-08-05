@@ -219,7 +219,10 @@ export default function Login({ onAuthenticated }) {
 
       <style>{`
         .login-page {
-          min-height: 100vh;
+          width: 100%;
+          min-width: 0;
+          min-height: 100svh;
+          height: 100dvh;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -227,18 +230,24 @@ export default function Login({ onAuthenticated }) {
             radial-gradient(circle at 18% 12%, rgba(76, 175, 80, 0.18), transparent 28%),
             radial-gradient(circle at 82% 78%, rgba(66, 165, 245, 0.16), transparent 30%),
             #101810;
-          padding: 20px;
+          box-sizing: border-box;
+          padding: clamp(12px, 4vw, 32px);
           overflow-y: auto;
+          overflow-x: hidden;
+          overscroll-behavior: contain;
         }
         .login-card {
           max-width: 440px;
           width: 100%;
-          padding: 32px;
+          min-width: 0;
+          box-sizing: border-box;
+          margin: auto;
+          padding: clamp(20px, 5vw, 32px);
           border-radius: 8px;
           text-align: center;
           display: flex;
           flex-direction: column;
-          gap: 18px;
+          gap: clamp(14px, 2.5vh, 18px);
           box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
         .login-logo {
@@ -262,6 +271,7 @@ export default function Login({ onAuthenticated }) {
         .login-title {
           font-size: 1.8rem;
           margin: 0;
+          overflow-wrap: anywhere;
         }
         .login-subtitle {
           font-size: 0.95rem;
@@ -271,6 +281,7 @@ export default function Login({ onAuthenticated }) {
         .login-tabs {
           display: grid;
           grid-template-columns: 1fr 1fr;
+          min-width: 0;
           gap: 4px;
           padding: 4px;
           border: 1px solid rgba(255,255,255,0.18);
@@ -294,6 +305,7 @@ export default function Login({ onAuthenticated }) {
           display: flex;
           flex-direction: column;
           gap: 12px;
+          min-width: 0;
         }
         .login-field {
           display: flex;
@@ -306,6 +318,8 @@ export default function Login({ onAuthenticated }) {
         }
         .login-field input {
           width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
           min-height: 44px;
           border: 1px solid rgba(255,255,255,0.18);
           border-radius: 8px;
@@ -337,6 +351,8 @@ export default function Login({ onAuthenticated }) {
           justify-content: center;
           gap: 12px;
           width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
           min-height: 44px;
           padding: 10px 18px;
           background: #fff;
@@ -383,6 +399,7 @@ export default function Login({ onAuthenticated }) {
           color: #ffb3ad;
           font-size: 0.9rem;
           text-align: left;
+          overflow-wrap: anywhere;
         }
         .login-loading {
           display: flex;
@@ -405,13 +422,30 @@ export default function Login({ onAuthenticated }) {
         @media (max-width: 480px) {
           .login-page {
             align-items: flex-start;
-            padding: 12px;
           }
           .login-card {
-            padding: 24px 18px;
+            padding: 22px 16px;
           }
           .login-title {
             font-size: 1.45rem;
+          }
+          .login-subtitle {
+            font-size: 0.88rem;
+          }
+        }
+        @media (max-width: 360px) {
+          .login-card {
+            padding: 18px 14px;
+          }
+          .login-logo-icon {
+            width: 48px;
+            height: 48px;
+          }
+          .login-tab,
+          .login-submit-btn,
+          .login-google-btn,
+          .login-guest-btn {
+            font-size: 0.9rem;
           }
         }
       `}</style>

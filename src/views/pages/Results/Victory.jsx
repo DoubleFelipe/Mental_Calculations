@@ -1,11 +1,19 @@
 /**
  * Mental Calculations — Tela de Vitória
  */
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import useAudio from '../../../hooks/useAudio';
 import './Result.css';
 
-export default function Victory({ stars, score, credits, correct, total, onContinue, onRetry }) {
+const CONFETTI_COLORS = ['#4CAF50', '#42A5F5', '#FFD54F', '#EF5350', '#AB47BC'];
+const CONFETTI_PIECES = Array.from({ length: 30 }, (_, index) => ({
+  left: `${(index * 37 + 11) % 100}%`,
+  animationDelay: `${((index * 17) % 20) / 10}s`,
+  animationDuration: `${2 + ((index * 13) % 30) / 10}s`,
+  backgroundColor: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
+}));
+
+export default function Victory({ stars, score, credits, correct, total, syncWarning, onContinue, onRetry }) {
   const { playVictory } = useAudio();
   useEffect(() => { playVictory(); }, []); // eslint-disable-line
 
@@ -15,13 +23,8 @@ export default function Victory({ stars, score, credits, correct, total, onConti
     <div className="result-page chalkboard chalkboard-frame animate-fadeIn">
       {/* Confetti */}
       <div className="confetti-container">
-        {Array.from({ length: 30 }).map((_, i) => (
-          <div key={i} className="confetti-piece" style={{
-            left: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 2}s`,
-            animationDuration: `${2 + Math.random() * 3}s`,
-            backgroundColor: ['#4CAF50', '#42A5F5', '#FFD54F', '#EF5350', '#AB47BC'][i % 5],
-          }} />
+        {CONFETTI_PIECES.map((style, index) => (
+          <div key={index} className="confetti-piece" style={style} />
         ))}
       </div>
 
@@ -52,6 +55,8 @@ export default function Victory({ stars, score, credits, correct, total, onConti
             <span className="result-stat-label">Créditos</span>
           </div>
         </div>
+
+        {syncWarning && <p className="result-hint chalk-text-dim">{syncWarning}</p>}
 
         <div className="result-buttons">
           <button className="chalk-btn chalk-btn-green" onClick={onContinue}>→ Continuar</button>

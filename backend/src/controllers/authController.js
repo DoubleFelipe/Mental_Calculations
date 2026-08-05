@@ -28,6 +28,12 @@ function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
 
+function getFrontendUrl() {
+  // A primeira URL é a canônica para os redirecionamentos OAuth. As demais,
+  // se existirem, são aceitas apenas pelo CORS (por exemplo, localhost).
+  return (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim();
+}
+
 /**
  * GET /api/auth/google
  * Iniciado pelo Passport (ver routes/auth.js)
@@ -125,10 +131,10 @@ async function googleCallback(req, res) {
     const token = generateToken(user);
 
     // Redirecionar para o frontend com o token na query string
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = getFrontendUrl();
     res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
   } catch (err) {
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = getFrontendUrl();
     res.redirect(`${frontendUrl}/auth/callback?error=auth_failed`);
   }
 }

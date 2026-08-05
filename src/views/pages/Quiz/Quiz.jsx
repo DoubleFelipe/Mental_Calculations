@@ -2,7 +2,7 @@
  * Mental Calculations — Tela de Quiz (View)
  * Mostra questões uma por vez com timer e feedback, consumindo o controlador.
  */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import useQuizController from '../../../controllers/useQuizController';
 import Whiteboard from '../../components/Whiteboard/Whiteboard.jsx';
 import './Quiz.css';

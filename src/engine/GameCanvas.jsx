@@ -212,7 +212,7 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
         style={{ display: 'block', margin: '0 auto', borderRadius: '8px', border: '3px solid #5C2E0A' }}
       />
       {/* Controles mobile */}
-      <div className="mobile-controls" style={{ display: 'none' }}>
+      <div className="mobile-controls" aria-label="Controles do jogo">
         <button className="mobile-btn mobile-left"
           onTouchStart={() => handleTouch('left', true)}
           onTouchEnd={() => handleTouch('left', false)}
