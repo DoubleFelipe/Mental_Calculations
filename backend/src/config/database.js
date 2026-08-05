@@ -6,11 +6,9 @@
 require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME || 'mental_calculations',
-  process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || '',
-  {
+const databaseUrl = process.env.DATABASE_URL || process.env.MYSQL_URL;
+
+const sequelizeOptions = {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT, 10) || 3306,
     dialect: 'mysql',
@@ -29,8 +27,16 @@ const sequelize = new Sequelize(
       acquire: 30000,
       idle: 10000,
     },
-  }
-);
+  };
+
+const sequelize = databaseUrl
+  ? new Sequelize(databaseUrl, sequelizeOptions)
+  : new Sequelize(
+    process.env.DB_NAME || 'mental_calculations',
+    process.env.DB_USER || 'root',
+    process.env.DB_PASSWORD || '',
+    sequelizeOptions
+  );
 
 /**
  * Testa a conexão com o banco de dados

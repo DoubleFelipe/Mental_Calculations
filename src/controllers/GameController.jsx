@@ -181,8 +181,10 @@ export function GameProvider({ children }) {
     const result = processLevelComplete(gameState, worldIndex, levelIndex, correct, total, avgTimeMs, creditMultiplier);
     setGameState(result.newState);
 
-    // Sincronizar com o servidor em background
-    if (isAuthenticated()) {
+    // Sincronizar apenas quando a fase tiver uma sessão online válida.
+    // Sem attemptId, a API não conseguiu iniciar a sessão e o progresso local
+    // não deve ser apresentado ao jogador como uma reprovação.
+    if (isAuthenticated() && attemptId) {
       try {
         const levelId = worldIndex * 5 + levelIndex + 1; // IDs de 1 a 20
         return await progressApi.completeLevel(
@@ -200,7 +202,9 @@ export function GameProvider({ children }) {
       }
     }
 
-    return result;
+    return isAuthenticated()
+      ? { ...result, syncWarning: 'O progresso foi salvo neste dispositivo. A sessão online não foi registrada porque a API estava indisponível.' }
+      : result;
   }, [gameState, setGameState]);
 
   const addCredits = useCallback((amount) => {

@@ -110,7 +110,10 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   const handleNext = () => {
     if (currentQ + 1 >= questions.length) {
       // Quiz finalizado
-      const avgTime = score.times.length > 0 ? score.times.reduce((a, b) => a + b, 0) / score.times.length : 0;
+      // O backend armazena duração em milissegundos inteiros.
+      const avgTime = score.times.length > 0
+        ? Math.round(score.times.reduce((a, b) => a + b, 0) / score.times.length)
+        : 0;
       onComplete(score.correct, questions.length, avgTime, creditMultiplier, attemptIdRef.current);
       return;
     }

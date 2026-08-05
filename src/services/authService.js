@@ -3,11 +3,13 @@
  * Gerencia login Google OAuth, armazenamento do JWT e dados do usuário.
  */
 
+import { API_BASE_URL } from './apiConfig';
+
 const TOKEN_KEY = 'mc_jwt_token';
 const USER_KEY = 'mc_user';
 
 async function requestAuth(endpoint, payload) {
-  const response = await fetch(`/api/auth/${endpoint}`, {
+  const response = await fetch(`${API_BASE_URL}/auth/${endpoint}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -69,7 +71,7 @@ export function isAuthenticated() {
  * Redireciona o browser para o backend que cuida do OAuth
  */
 export function loginWithGoogle() {
-  window.location.href = `${window.location.protocol}//${window.location.hostname}:3001/api/auth/google`;
+  window.location.href = `${API_BASE_URL}/auth/google`;
 }
 
 /**

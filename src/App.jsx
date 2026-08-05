@@ -46,7 +46,7 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
   if (!result || (!resolved && !error)) {
     return <div className="result-page chalkboard chalkboard-frame"><p className="chalk-text">Calculando resultado...</p></div>;
   }
-  if (error) return <Defeat correct={result.correct} total={result.total} onRetry={onRetry} onMenu={onMenu} />;
+  if (error) return <Defeat correct={result.correct} total={result.total} error={error} onRetry={onRetry} onMenu={onMenu} />;
 
   return resolved.passed ? (
     <Victory
@@ -55,6 +55,7 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
       credits={resolved.credits}
       correct={result.correct}
       total={result.total}
+      syncWarning={resolved.syncWarning}
       onContinue={onContinue}
       onRetry={onRetry}
     />

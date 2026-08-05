@@ -13,7 +13,7 @@ const CONFETTI_PIECES = Array.from({ length: 30 }, (_, index) => ({
   backgroundColor: CONFETTI_COLORS[index % CONFETTI_COLORS.length],
 }));
 
-export default function Victory({ stars, score, credits, correct, total, onContinue, onRetry }) {
+export default function Victory({ stars, score, credits, correct, total, syncWarning, onContinue, onRetry }) {
   const { playVictory } = useAudio();
   useEffect(() => { playVictory(); }, []); // eslint-disable-line
 
@@ -55,6 +55,8 @@ export default function Victory({ stars, score, credits, correct, total, onConti
             <span className="result-stat-label">Créditos</span>
           </div>
         </div>
+
+        {syncWarning && <p className="result-hint chalk-text-dim">{syncWarning}</p>}
 
         <div className="result-buttons">
           <button className="chalk-btn chalk-btn-green" onClick={onContinue}>→ Continuar</button>

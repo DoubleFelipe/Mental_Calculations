@@ -3,11 +3,10 @@
  * Cliente HTTP centralizado com Axios. Injeta JWT automaticamente.
  */
 import axios from 'axios';
-
-const BASE_URL = '/api';
+import { API_BASE_URL } from './apiConfig';
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });

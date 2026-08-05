@@ -28,7 +28,10 @@ router.get('/google', authLimiter, passport.authenticate('google', {
 
 // Callback do Google
 router.get('/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: '/auth/callback?error=auth_failed' }),
+  passport.authenticate('google', {
+    session: false,
+    failureRedirect: `${(process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim()}/auth/callback?error=auth_failed`,
+  }),
   googleCallback
 );
 
