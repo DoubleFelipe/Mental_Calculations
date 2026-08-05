@@ -113,7 +113,7 @@ export function drawHouse(ctx, x, y, cameraX, cameraY = 0) {
 }
 
 /** Decoração fixa do mundo: natureza, placas e pequenos marcos de progressão. */
-export function drawWorldScenery(ctx, cameraX, cameraY) {
+export function drawLegacyWorldScenery(ctx, cameraX, cameraY) {
   const scenery = [
     { type: 'tree', x: 250, y: 520, scale: 1.1 },
     { type: 'tree', x: 560, y: 470, scale: 0.75 },
@@ -136,6 +136,40 @@ export function drawWorldScenery(ctx, cameraX, cameraY) {
   scenery.forEach((item) => {
     const x = item.x - cameraX;
     const y = item.y - cameraY;
+    if (x < -180 || x > ctx.canvas.width + 180) return;
+    if (item.type === 'tree') drawTree(ctx, x, y, item.scale);
+    if (item.type === 'bush') drawBushDetail(ctx, x, y, item.scale);
+    if (item.type === 'sign') drawSignpost(ctx, x, y, item.label);
+  });
+}
+
+/** Decorações ancoradas diretamente nas plataformas estáticas do mapa. */
+export function drawWorldScenery(ctx, cameraX, cameraY, platforms = []) {
+  const scenery = [
+    { type: 'tree', platformIndex: 0, offset: 250, scale: 1.1 },
+    { type: 'tree', platformIndex: 1, offset: 170, scale: 0.75 },
+    { type: 'tree', platformIndex: 2, offset: 110, scale: 0.7 },
+    { type: 'bush', platformIndex: 3, offset: 90, scale: 1 },
+    { type: 'tree', platformIndex: 5, offset: 70, scale: 0.6 },
+    { type: 'tree', platformIndex: 6, offset: 50, scale: 0.8 },
+    { type: 'bush', platformIndex: 8, offset: 25, scale: 0.9 },
+    { type: 'tree', platformIndex: 9, offset: 80, scale: 0.65 },
+    { type: 'tree', platformIndex: 10, offset: 70, scale: 0.55 },
+    { type: 'bush', platformIndex: 14, offset: 80, scale: 1 },
+    { type: 'tree', platformIndex: 14, offset: 110, scale: 0.75 },
+    { type: 'tree', platformIndex: 15, offset: 100, scale: 0.9 },
+    { type: 'sign', platformIndex: 0, offset: 300, label: 'INÍCIO' },
+    { type: 'sign', platformIndex: 2, offset: 25, label: 'DESAFIOS' },
+    { type: 'sign', platformIndex: 5, offset: 130, label: 'ATENÇÃO' },
+    { type: 'sign', platformIndex: 14, offset: 30, label: 'FINAL' },
+  ];
+
+  scenery.forEach((item) => {
+    const platform = platforms[item.platformIndex];
+    // Decorações não acompanham nem ficam presas a plataformas móveis.
+    if (!platform || platform.moving) return;
+    const x = platform.x + item.offset - cameraX;
+    const y = platform.y - cameraY;
     if (x < -180 || x > ctx.canvas.width + 180) return;
     if (item.type === 'tree') drawTree(ctx, x, y, item.scale);
     if (item.type === 'bush') drawBushDetail(ctx, x, y, item.scale);

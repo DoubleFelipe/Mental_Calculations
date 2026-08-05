@@ -14,21 +14,21 @@ export function createWorldPlatforms(worldIndex = 0) {
     { x: 1010, y: 440, width: 145, height: 30, area: 2 },
     { x: 1190, y: 380, width: 145, height: 30, area: 2, elevated: true },
     { x: 1370, y: 475, width: 155, height: 30, area: 3 },
-    { x: 1550, y: 415, width: 112, height: 30, area: 3, narrow: true },
+    { x: 1550, y: 415, width: 125, height: 30, area: 3, narrow: true },
     { x: 1705, y: 350, width: 115, height: 30, area: 3, narrow: true },
-    { x: 1860, y: 455, width: 110, height: 30, area: 3, narrow: true },
-    { x: 2010, y: 315, width: 138, height: 30, area: 4, suspended: true },
+    { x: 1860, y: 425, width: 130, height: 30, area: 3, narrow: true },
+    { x: 2010, y: 375, width: 138, height: 30, area: 4, suspended: true },
     { x: 2180, y: 405, width: 116, height: 30, area: 4, moving: true, baseX: 2180, range: 80 },
-    { x: 2315, y: 300, width: 105, height: 30, area: 4, suspended: true },
+    { x: 2315, y: 300, width: 155, height: 30, area: 4, suspended: true },
     { x: 2455, y: 445, width: 125, height: 30, area: 4, moving: true, baseX: 2455, range: 70 },
     { x: 2600, y: 385, width: 150, height: 30, area: 5 },
     { x: 2780, y: 470, width: 165, height: 30, area: 5 },
-    { x: 2980, y: 520, width: 240, height: 34, area: 5 },
+    { x: 2960, y: 520, width: 260, height: 34, area: 5 },
     // Rotas alternativas nas áreas intermediária e avançada.
-    { x: 1480, y: 285, width: 145, height: 24, area: 3, alternate: true },
-    { x: 1775, y: 225, width: 135, height: 24, area: 3, alternate: true },
-    { x: 2090, y: 185, width: 125, height: 24, area: 4, alternate: true, suspended: true },
-    { x: 2350, y: 170, width: 115, height: 24, area: 4, alternate: true, suspended: true },
+    { x: 1520, y: 285, width: 145, height: 24, area: 3, alternate: true },
+    { x: 1725, y: 225, width: 135, height: 24, area: 3, alternate: true },
+    { x: 1935, y: 185, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+    { x: 2150, y: 170, width: 115, height: 24, area: 4, alternate: true, suspended: true },
   ];
 
   if (worldIndex === 0) return equationsWorld;
@@ -113,17 +113,14 @@ export function createWorldCharacters(platforms, worldIndex = 0, levelProgress =
 export function createWorldHazards(worldIndex = 0) {
   if (worldIndex !== 0) return [];
   return [
-    { x: 705, y: 412, width: 48, height: 18, type: 'spikes', area: 2 },
-    { x: 875, y: 482, width: 42, height: 18, type: 'spikes', area: 2 },
-    { x: 1075, y: 422, width: 48, height: 18, type: 'spikes', area: 2 },
-    { x: 1430, y: 457, width: 54, height: 18, type: 'spikes', area: 3 },
-    { x: 1600, y: 397, width: 42, height: 18, type: 'spikes', area: 3 },
-    { x: 1818, y: 437, width: 42, height: 18, type: 'spikes', area: 3 },
-    { x: 2035, y: 297, width: 60, height: 18, type: 'spikes', area: 4 },
-    { x: 2215, y: 387, width: 42, height: 18, type: 'spikes', area: 4 },
-    { x: 2332, y: 282, width: 52, height: 18, type: 'spikes', area: 4 },
-    { x: 2485, y: 427, width: 48, height: 18, type: 'spikes', area: 4 },
-    { x: 2865, y: 452, width: 42, height: 18, type: 'spikes', area: 5 },
+    // Cada grupo fica centralizado na plataforma estática correspondente.
+    { x: 684, y: 412, width: 48, height: 18, type: 'spikes', area: 2 },
+    { x: 882, y: 482, width: 42, height: 18, type: 'spikes', area: 2 },
+    { x: 1059, y: 422, width: 48, height: 18, type: 'spikes', area: 2 },
+    { x: 1421, y: 457, width: 54, height: 18, type: 'spikes', area: 3 },
+    { x: 1585, y: 397, width: 42, height: 18, type: 'spikes', area: 3 },
+    { x: 2049, y: 357, width: 60, height: 18, type: 'spikes', area: 4 },
+    { x: 2842, y: 452, width: 42, height: 18, type: 'spikes', area: 5 },
   ];
 }
 
