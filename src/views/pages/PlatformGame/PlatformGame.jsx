@@ -2,26 +2,44 @@
  * Mental Calculations — Tela da Plataforma 2D
  * Controla o canvas do jogo + HUD + pause
  */
-import React, { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import GameCanvas from '../../../engine/GameCanvas';
 import useGameState from '../../../controllers/GameController';
 import worlds from '../../../data/worlds';
 import './PlatformGame.css';
 
-export default function PlatformGame({ worldIndex, levelIndex, onStartQuiz, onNavigate }) {
-  const { gameState } = useGameState();
+export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
+  const { gameState, settings, loseLife } = useGameState();
   const [isPaused, setIsPaused] = useState(false);
+  const [dialogue, setDialogue] = useState(null);
 
   const world = worlds[worldIndex];
-  const level = world?.levels[levelIndex];
 
-  const handlePortalEnter = useCallback(() => {
-    onStartQuiz(worldIndex, levelIndex);
-  }, [worldIndex, levelIndex, onStartQuiz]);
+  useEffect(() => {
+    if (!dialogue) return undefined;
 
-  const handleNPCInteract = useCallback(() => {
-    onStartQuiz(worldIndex, levelIndex);
-  }, [worldIndex, levelIndex, onStartQuiz]);
+    const timer = window.setTimeout(() => {
+      if (!dialogue.locked) onStartQuiz(worldIndex, dialogue.levelIndex);
+      setDialogue(null);
+    }, dialogue.locked ? 1800 : 1400);
+
+    return () => window.clearTimeout(timer);
+  }, [dialogue, onStartQuiz, worldIndex]);
+
+  const handleNPCInteract = useCallback((character) => {
+    setDialogue(character);
+  }, []);
+
+  const handlePlayerHit = useCallback(() => {
+    loseLife();
+  }, [loseLife]);
+
+  const levelProgress = world?.levels.map((level, index) => ({
+    levelIndex: index,
+    levelName: level.name,
+    stars: gameState.levelStars[worldIndex]?.[index] || 0,
+    unlocked: gameState.unlockedLevels[worldIndex]?.[index] ?? false,
+  })) || [];
 
   return (
     <div className="platform-game">
@@ -35,7 +53,7 @@ export default function PlatformGame({ worldIndex, levelIndex, onStartQuiz, onNa
         </div>
         <div className="hud-center">
           <span className="hud-world">{world?.name}</span>
-          <span className="hud-level">Fase {levelIndex + 1}: {level?.name}</span>
+          <span className="hud-level">Mapa do mundo · 5 personagens</span>
         </div>
         <div className="hud-right">
           <button className="hud-pause-btn" onClick={() => setIsPaused(true)}>⏸️</button>
@@ -46,18 +64,34 @@ export default function PlatformGame({ worldIndex, levelIndex, onStartQuiz, onNa
       <div className="game-canvas-container">
         <GameCanvas
           worldIndex={worldIndex}
-          levelIndex={levelIndex}
-          onPortalEnter={handlePortalEnter}
           onNPCInteract={handleNPCInteract}
-          isPaused={isPaused}
+          onPlayerHit={handlePlayerHit}
+          levelProgress={levelProgress}
+          isPaused={isPaused || Boolean(dialogue)}
           equippedSkin={gameState.equippedSkin}
+          doubleJumpEnabled={Boolean(settings.doubleJump)}
         />
       </div>
 
       {/* Instruções mobile */}
       <div className="game-instructions">
-        <span>🎮 Use A/D ou ← → para mover | Espaço para pular | E para interagir</span>
+        <span>🎮 Use A/D ou ← → para mover | Espaço para pular | E para conversar</span>
       </div>
+
+      {dialogue && (
+        <div className="dialogue-overlay animate-fadeIn" role="dialog" aria-live="polite">
+          <div className="dialogue-card chalkboard animate-scaleIn">
+            <div className="dialogue-character">△</div>
+            <div>
+              <p className="dialogue-name">{dialogue.phaseName || dialogue.levelName}</p>
+              <p className="dialogue-text">
+                {dialogue.message}
+              </p>
+              {!dialogue.locked && <span className="dialogue-loading">A fase começará em instantes...</span>}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tela de Pause */}
       {isPaused && (

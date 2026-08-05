@@ -12,6 +12,7 @@ export function createPlayer(x = 100, y = 300) {
     speed: 4,
     jumpForce: -11,
     isGrounded: false,
+    jumpCount: 0,
     facingRight: true,
     isWalking: false,
     walkFrame: 0,

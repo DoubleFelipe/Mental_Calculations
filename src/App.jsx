@@ -115,7 +115,7 @@ function AppContent() {
 
   const handleSelectWorld = useCallback((worldIndex) => {
     setSelectedWorld(worldIndex);
-    setSelectedLevel(0);
+    setSelectedLevel(null);
     setCurrentPage('platformGame');
   }, []);
 
