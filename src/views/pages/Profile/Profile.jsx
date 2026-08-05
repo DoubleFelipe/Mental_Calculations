@@ -1,11 +1,22 @@
 /**
  * Mental Calculations — Perfil do Jogador
  */
+import { useState } from 'react';
 import useGameState from '../../../controllers/GameController';
 import './Profile.css';
 
+function getAvatarSource(avatar) {
+  if (typeof avatar !== 'string') return null;
+  if (/^https?:\/\//i.test(avatar)) return avatar;
+  if (/^\/\//.test(avatar)) return `https:${avatar}`;
+  return null;
+}
+
 export default function Profile({ onNavigate }) {
   const { gameState, profile, updateProfile } = useGameState();
+  const avatarSource = getAvatarSource(profile.avatar);
+  const [failedAvatarSource, setFailedAvatarSource] = useState(null);
+  const avatarLoadFailed = failedAvatarSource === avatarSource;
 
   const avgTime = gameState.questionsAnswered > 0
     ? ((gameState.totalTime / gameState.questionsAnswered) / 1000).toFixed(1)
@@ -20,7 +31,18 @@ export default function Profile({ onNavigate }) {
       <h2 className="chalk-text-strong profile-title">👤 Perfil</h2>
 
       <div className="profile-card animate-fadeInUp">
-        <div className="profile-avatar">{profile.avatar}</div>
+        <div className="profile-avatar">
+          {avatarSource && !avatarLoadFailed ? (
+            <img
+              className="profile-avatar-image"
+              src={avatarSource}
+              alt="Avatar do perfil"
+              draggable="false"
+              referrerPolicy="no-referrer"
+              onError={() => setFailedAvatarSource(avatarSource)}
+            />
+          ) : avatarSource ? <span className="profile-avatar-fallback" aria-label="Avatar indisponível">👤</span> : profile.avatar}
+        </div>
         <input
           className="chalk-input profile-name-input"
           value={profile.name}

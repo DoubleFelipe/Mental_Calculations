@@ -16,7 +16,29 @@
   gap: var(--space-md);
 }
 
-.profile-avatar { font-size: 4rem; }
+.profile-avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  display: grid;
+  place-items: center;
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.profile-avatar-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-radius: 50%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.profile-avatar-fallback {
+  font-size: 3.25rem;
+}
 
 .profile-name-input {
   text-align: center;
