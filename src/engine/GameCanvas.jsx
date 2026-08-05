@@ -2,31 +2,47 @@
  * Mental Calculations — Game Canvas (main game loop)
  * Renderiza o jogo 2D de plataforma dentro de um canvas React
  */
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useMemo, useState, useCallback } from 'react';
 import { createPlayer, drawPlayer, updatePlayerAnimation } from './Player';
-import { createLevelPlatforms, createPortals, drawPlatform, drawNPC, drawPortal } from './Platform';
-import { drawBackground, drawHouse } from './Background';
+import { createWorldPlatforms, createWorldCharacters, createWorldHazards, drawPlatform, drawHazard, drawNPC } from './Platform';
+import { drawBackground, drawHouse, drawCastle, drawWorldScenery } from './Background';
 import { applyGravity, isOnPlatform, checkCollision, clampToLevel } from './Physics';
 
-const LEVEL_WIDTH = 1600;
-const LEVEL_HEIGHT = 500;
+const LEVEL_WIDTH = 3220;
+const LEVEL_HEIGHT = 620;
+const INTERACTION_PADDING = 24;
 
-export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNPCInteract, isPaused, equippedSkin }) {
+function isNearCharacter(player, character) {
+  return checkCollision(player, {
+    x: character.x - INTERACTION_PADDING,
+    y: character.y - 12,
+    width: character.width + INTERACTION_PADDING * 2,
+    height: character.height + 24,
+  });
+}
+
+export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, onPlayerHit, isPaused, equippedSkin, doubleJumpEnabled = false }) {
   const canvasRef = useRef(null);
   const frameRef = useRef(0);
   const keysRef = useRef({});
-  const playerRef = useRef(createPlayer(50, 300));
-  const [platforms] = useState(() => createLevelPlatforms(levelIndex));
-  const [portals] = useState(() => createPortals(platforms));
-  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 450 });
+  const playerRef = useRef(createPlayer(80, 440));
+  const platforms = useMemo(() => createWorldPlatforms(worldIndex), [worldIndex]);
+  const hazards = useMemo(() => createWorldHazards(worldIndex), [worldIndex]);
+  const characters = useMemo(
+    () => createWorldCharacters(platforms, worldIndex, levelProgress),
+    [platforms, worldIndex, levelProgress],
+  );
+  const [canvasSize, setCanvasSize] = useState({ width: 1000, height: 500 });
   const touchRef = useRef({ left: false, right: false, jump: false });
   const interactCooldownRef = useRef(0);
+  const hazardCooldownRef = useRef(0);
+  const jumpLatchRef = useRef(false);
 
   // Redimensionar canvas
   useEffect(() => {
     function resize() {
       const w = Math.min(window.innerWidth, 1200);
-      const h = Math.min(window.innerHeight * 0.65, 500);
+      const h = Math.min(window.innerHeight * 0.7, 540);
       setCanvasSize({ width: w, height: h });
     }
     resize();
@@ -69,16 +85,29 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
       const moveLeft = keys['a'] || keys['arrowleft'] || touch.left;
       const moveRight = keys['d'] || keys['arrowright'] || touch.right;
       const jump = keys[' '] || keys['w'] || keys['arrowup'] || touch.jump;
+      const jumpPressed = jump && !jumpLatchRef.current;
+      jumpLatchRef.current = jump;
 
       player.isWalking = false;
       if (moveLeft) { player.vx = -player.speed; player.facingRight = false; player.isWalking = true; }
       if (moveRight) { player.vx = player.speed; player.facingRight = true; player.isWalking = true; }
-      if (jump && player.isGrounded) { player.vy = player.jumpForce; player.isGrounded = false; }
+      if (jumpPressed && (player.isGrounded || (doubleJumpEnabled && player.jumpCount === 1))) {
+        const jumpingFromGround = player.isGrounded;
+        player.vy = player.jumpForce;
+        player.isGrounded = false;
+        player.jumpCount = jumpingFromGround ? 1 : 2;
+      }
       if (touch.jump) touch.jump = false; // Single tap jump
 
       // Física
       applyGravity(player);
       updatePlayerAnimation(player);
+
+      // Atualiza a posição lógica das plataformas móveis para que o desafio
+      // visual e a colisão permaneçam sincronizados.
+      platforms.forEach((plat) => {
+        if (plat.moving) plat.x = plat.baseX + Math.sin((performance.now() / 900) + plat.baseX) * plat.range;
+      });
 
       // Colisão com plataformas
       player.isGrounded = false;
@@ -87,15 +116,29 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
           player.y = plat.y - player.height;
           player.vy = 0;
           player.isGrounded = true;
+          player.jumpCount = 0;
         }
+      }
+
+      // Espinhos funcionais: perdem uma vida e reposicionam o jogador no spawn.
+      if (hazardCooldownRef.current > 0) hazardCooldownRef.current--;
+      if (hazardCooldownRef.current <= 0 && hazards.some((hazard) => checkCollision(player, hazard))) {
+        hazardCooldownRef.current = 45;
+        player.x = 80;
+        player.y = 440;
+        player.vx = 0;
+        player.vy = 0;
+        player.jumpCount = 0;
+        onPlayerHit?.();
       }
 
       // Limites do nível
       clampToLevel(player, LEVEL_WIDTH, LEVEL_HEIGHT);
       if (player.y > LEVEL_HEIGHT - 50) {
-        player.y = 300;
-        player.x = 50;
+        player.y = 440;
+        player.x = 80;
         player.vy = 0;
+        player.jumpCount = 0;
       }
 
       // Camera
@@ -106,12 +149,11 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
       if (interactCooldownRef.current > 0) interactCooldownRef.current--;
       const interact = keys['e'] || keys['enter'];
       if (interact && interactCooldownRef.current <= 0) {
-        for (const p of portals) {
-          if (!p.activated && checkCollision(player, p)) {
+        for (const p of characters) {
+          if (!p.activated && isNearCharacter(player, p)) {
             interactCooldownRef.current = 30;
-            p.activated = true;
-            if (p.type === 'portal') { onPortalEnter?.(); }
-            else { onNPCInteract?.(p); }
+            if (!p.locked) p.activated = true;
+            onNPCInteract?.(p);
             break;
           }
         }
@@ -120,26 +162,27 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
       // === Renderização ===
       ctx.clearRect(0, 0, canvasSize.width, canvasSize.height);
       drawBackground(ctx, canvasSize.width, canvasSize.height, cameraX, frame);
+      drawWorldScenery(ctx, cameraX, cameraY, platforms);
 
-      // Casa decorativa
-      drawHouse(ctx, LEVEL_WIDTH - 200, platforms[platforms.length - 1]?.y || 400, cameraX);
+      // Casa de nascimento no início e castelo de conclusão no fim.
+      drawHouse(ctx, 110, 520, cameraX, cameraY);
+      drawCastle(ctx, 3000, 520, cameraX, cameraY, frame);
 
       // Plataformas
       for (const plat of platforms) drawPlatform(ctx, plat, cameraX, cameraY);
 
-      // Portais/NPCs
-      for (const p of portals) {
-        if (p.type === 'portal') drawPortal(ctx, p, cameraX, cameraY, frame);
-        else drawNPC(ctx, p, cameraX, cameraY, frame);
-      }
+      // Perigos: a densidade aumenta a partir da segunda área.
+      for (const hazard of hazards) drawHazard(ctx, hazard, cameraX, cameraY);
+
+      // Cinco personagens que dão acesso às fases do mundo
+      for (const p of characters) drawNPC(ctx, p, cameraX, cameraY, frame);
 
       // Player
-      const skinColor = equippedSkin === 'default' ? '#222' : '#1976D2';
-      drawPlayer(ctx, player, cameraX, cameraY, skinColor);
+      drawPlayer(ctx, player, cameraX, cameraY, equippedSkin);
 
       // Instrução de interação
-      for (const p of portals) {
-        if (!p.activated && checkCollision(player, p)) {
+      for (const p of characters) {
+        if (!p.activated && isNearCharacter(player, p)) {
           const px = p.x + p.width / 2 - cameraX;
           const py = p.y - 20 - cameraY;
           ctx.fillStyle = 'rgba(0,0,0,0.7)';
@@ -149,7 +192,7 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
           ctx.fillStyle = 'white';
           ctx.font = 'bold 11px Inter, sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('Pressione E', px, py + 2);
+          ctx.fillText(p.locked ? 'Bloqueado' : 'Pressione E', px, py + 2);
         }
       }
 
@@ -158,7 +201,7 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isPaused, platforms, portals, canvasSize, onPortalEnter, onNPCInteract, equippedSkin]);
+  }, [isPaused, platforms, hazards, characters, canvasSize, onNPCInteract, onPlayerHit, equippedSkin, doubleJumpEnabled]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -169,7 +212,7 @@ export default function GameCanvas({ worldIndex, levelIndex, onPortalEnter, onNP
         style={{ display: 'block', margin: '0 auto', borderRadius: '8px', border: '3px solid #5C2E0A' }}
       />
       {/* Controles mobile */}
-      <div className="mobile-controls" style={{ display: 'none' }}>
+      <div className="mobile-controls" aria-label="Controles do jogo">
         <button className="mobile-btn mobile-left"
           onTouchStart={() => handleTouch('left', true)}
           onTouchEnd={() => handleTouch('left', false)}

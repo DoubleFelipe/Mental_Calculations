@@ -1,0 +1,103 @@
+/* Settings Styles */
+.settings-page {
+  width: 100vw; height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  box-sizing: border-box;
+}
+
+.settings-title { font-size: var(--fs-3xl); }
+
+.settings-list {
+  display: flex; flex-direction: column;
+  gap: var(--space-xl);
+  max-width: 500px;
+  width: 100%;
+}
+
+.setting-row {
+  display: flex; align-items: center; gap: var(--space-lg);
+  font-family: var(--font-chalk);
+  font-size: var(--fs-xl);
+  opacity: 0;
+}
+
+.setting-row label { min-width: 140px; }
+
+.slider-group {
+  display: flex; align-items: center; gap: var(--space-sm);
+  font-family: var(--font-handwriting);
+}
+
+.setting-value {
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-md);
+  color: var(--text-chalk-dim);
+  min-width: 50px;
+}
+
+.setting-value-text {
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-xl);
+  color: var(--text-chalk);
+}
+
+.setting-toggle-row { align-items: center; }
+
+.switch-control {
+  position: relative;
+  display: inline-flex;
+  width: 58px;
+  height: 30px;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.switch-control input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.switch-slider {
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(255,255,255,0.45);
+  border-radius: 999px;
+  background: rgba(0,0,0,0.35);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.switch-slider::before {
+  content: '';
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: 2px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform var(--transition-fast);
+}
+
+.switch-control input:checked + .switch-slider {
+  border-color: #81C784;
+  background: #2E7D32;
+}
+
+.switch-control input:checked + .switch-slider::before {
+  transform: translateX(26px);
+}
+
+.switch-control input:focus-visible + .switch-slider {
+  outline: 3px solid rgba(255,213,79,0.85);
+  outline-offset: 3px;
+}
+
+.reset-btn { margin-top: var(--space-lg); }
+
+@media (max-width: 600px) {
+  .setting-row { flex-direction: column; align-items: flex-start; gap: var(--space-sm); font-size: var(--fs-lg); }
+}

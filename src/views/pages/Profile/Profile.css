@@ -1,0 +1,101 @@
+/* Profile Styles */
+.profile-page {
+  width: 100vw; height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.profile-title { font-size: var(--fs-3xl); }
+
+.profile-card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--space-md);
+}
+
+.profile-avatar {
+  width: 4.5rem;
+  height: 4.5rem;
+  display: grid;
+  place-items: center;
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.profile-avatar-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-radius: 50%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.profile-avatar-fallback {
+  font-size: 3.25rem;
+}
+
+.profile-name-input {
+  text-align: center;
+  font-size: var(--fs-xl) !important;
+  width: 250px;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  max-width: 500px;
+  width: 100%;
+}
+
+.stat-card {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-md);
+  text-align: center;
+  display: flex; flex-direction: column;
+  gap: var(--space-xs);
+  opacity: 0;
+}
+
+.stat-icon { font-size: var(--fs-2xl); }
+.stat-value { font-family: var(--font-chalk); font-size: var(--fs-xl); }
+.stat-label { font-family: var(--font-handwriting); font-size: var(--fs-sm); color: var(--text-chalk-dim); }
+
+.profile-progress-bar {
+  width: 100%; max-width: 500px;
+  height: 30px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--chalk-green), var(--chalk-blue));
+  border-radius: 15px;
+  transition: width 1s ease;
+  animation: progressFill 1s ease;
+}
+
+.progress-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-sm);
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+@media (max-width: 600px) {
+  .profile-stats { grid-template-columns: repeat(2, 1fr); }
+}
