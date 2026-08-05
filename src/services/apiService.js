@@ -55,14 +55,11 @@ export const progressApi = {
   getProgress: () => api.get('/progress'),
 
   /** Registra sessão de fase e atualiza progresso no banco */
-  completeLevel: (levelId, correct, total, avgTimeMs) =>
-    api.post('/progress/level', { levelId, correct, total, avgTimeMs }),
+  startLevel: (levelId) => api.post('/progress/level/start', { levelId }),
+  completeLevel: (levelId, correct, total, avgTimeMs, attemptId, useDoubleCredits = false) =>
+    api.post('/progress/level', { levelId, correct, total, avgTimeMs, attemptId, useDoubleCredits }),
 
   /** Atualiza estado global (créditos, vidas, skin equipada) */
-  updateState: (updates) => api.put('/progress/state', updates),
-
-  unlockLevel: (levelId) => api.post('/progress/unlock-level', { levelId }),
-  unlockWorld: (worldId) => api.post('/progress/unlock-world', { worldId }),
 };
 
 // --- Loja ---

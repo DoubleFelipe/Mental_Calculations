@@ -1,7 +1,6 @@
 /**
  * Mental Calculations — Perfil do Jogador
  */
-import React from 'react';
 import useGameState from '../../../controllers/GameController';
 import './Profile.css';
 

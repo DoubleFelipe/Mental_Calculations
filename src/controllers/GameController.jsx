@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback, useEffect, useRef } from 'react';
+import { createContext, useContext, useCallback, useEffect, useRef } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import {
   DEFAULT_GAME_STATE,
@@ -12,7 +12,7 @@ import {
   resetLives as resetLivesModel,
 } from '../models/GameModel';
 import { DEFAULT_SETTINGS, isValidVolume } from '../models/SettingsModel';
-import { DEFAULT_PROFILE, createProfile } from '../models/ProfileModel';
+import { createProfile } from '../models/ProfileModel';
 import { progressApi, shopApi, authApi } from '../services/apiService';
 import { isAuthenticated, clearAuth, getStoredUser } from '../services/authService';
 
@@ -75,10 +75,10 @@ export function GameProvider({ children }) {
           ...prev,
           credits: serverState.credits ?? prev.credits,
           lives: serverState.lives ?? prev.lives,
-          totalScore: Number(serverState.total_score) ?? prev.totalScore,
+          totalScore: serverState.total_score == null ? prev.totalScore : Number(serverState.total_score),
           totalCorrect: serverState.total_correct ?? prev.totalCorrect,
           totalWrong: serverState.total_wrong ?? prev.totalWrong,
-          totalTime: Number(serverState.total_time_ms) ?? prev.totalTime,
+          totalTime: serverState.total_time_ms == null ? prev.totalTime : Number(serverState.total_time_ms),
           questionsAnswered: serverState.questions_answered ?? prev.questionsAnswered,
           equippedSkin: serverState.equipped_skin ?? prev.equippedSkin,
           // Mapear arrays de progresso do servidor para formato local
@@ -176,7 +176,7 @@ export function GameProvider({ children }) {
   /**
    * Completa uma fase: atualiza localmente e sincroniza com o servidor
    */
-  const completeLevelAction = useCallback(async (worldIndex, levelIndex, correct, total, avgTimeMs, creditMultiplier = 1) => {
+  const completeLevelAction = useCallback(async (worldIndex, levelIndex, correct, total, avgTimeMs, creditMultiplier = 1, attemptId = null) => {
     // Processar localmente (imediato, para a UI não travar)
     const result = processLevelComplete(gameState, worldIndex, levelIndex, correct, total, avgTimeMs, creditMultiplier);
     setGameState(result.newState);
@@ -185,8 +185,17 @@ export function GameProvider({ children }) {
     if (isAuthenticated()) {
       try {
         const levelId = worldIndex * 5 + levelIndex + 1; // IDs de 1 a 20
-        await progressApi.completeLevel(levelId, correct, total, avgTimeMs);
+        return await progressApi.completeLevel(
+          levelId,
+          correct,
+          total,
+          avgTimeMs,
+          attemptId,
+          creditMultiplier === 2,
+        );
       } catch (err) {
+        setGameState(gameState);
+        if (err instanceof Error) throw err;
         console.warn('Falha ao salvar sessão no servidor:', err.message);
       }
     }

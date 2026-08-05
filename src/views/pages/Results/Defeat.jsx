@@ -1,7 +1,7 @@
 /**
  * Mental Calculations — Tela de Derrota
  */
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import useAudio from '../../../hooks/useAudio';
 import './Result.css';
 

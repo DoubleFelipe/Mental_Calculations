@@ -113,8 +113,8 @@ async function startServer() {
     console.log(`  GET  /api/auth/me`);
     console.log(`  POST /api/auth/logout`);
     console.log(`  GET  /api/progress`);
+    console.log(`  POST /api/progress/level/start`);
     console.log(`  POST /api/progress/level`);
-    console.log(`  PUT  /api/progress/state`);
     console.log(`  GET  /api/shop`);
     console.log(`  POST /api/shop/buy`);
     console.log(`  POST /api/shop/equip`);

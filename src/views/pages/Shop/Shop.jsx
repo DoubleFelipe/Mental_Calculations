@@ -1,7 +1,6 @@
 /**
  * Mental Calculations — Loja (View)
  */
-import React from 'react';
 import useShopController from '../../../controllers/useShopController';
 import './Shop.css';
 

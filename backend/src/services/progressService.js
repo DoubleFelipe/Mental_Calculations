@@ -9,8 +9,11 @@ const {
   UserWorldProgress,
   UserLevelProgress,
   LevelSession,
+  LevelAttempt,
   World,
   Level,
+  ShopItem,
+  UserPurchasedItem,
 } = require('../models/index');
 
 // =========================================================
@@ -116,12 +119,41 @@ async function getFullProgress(userId) {
 // =========================================================
 // Registrar sessão de fase e atualizar progresso
 // =========================================================
-async function completeLevelSession(userId, levelId, { correct, total, avgTimeMs }) {
+async function startLevelAttempt(userId, levelId) {
+  const level = await Level.findByPk(levelId);
+  if (!level) throw Object.assign(new Error('Fase não encontrada.'), { status: 404 });
+
+  const [worldProgress, levelProgress] = await Promise.all([
+    UserWorldProgress.findOne({ where: { user_id: userId, world_id: level.world_id, is_unlocked: 1 } }),
+    UserLevelProgress.findOne({ where: { user_id: userId, level_id: levelId, is_unlocked: 1 } }),
+  ]);
+  if (!worldProgress || !levelProgress) {
+    throw Object.assign(new Error('Esta fase ainda não está desbloqueada.'), { status: 403 });
+  }
+  return LevelAttempt.create({ user_id: userId, level_id: levelId });
+}
+
+async function completeLevelSession(userId, levelId, attemptId, { correct, total, avgTimeMs, useDoubleCredits }) {
   const t = await sequelize.transaction();
   try {
     // Buscar o level para obter worldIndex e levelIndex
-    const level = await Level.findByPk(levelId);
+    const level = await Level.findByPk(levelId, { transaction: t, lock: t.LOCK.UPDATE });
+    if (level && total !== level.questions_count) {
+      throw Object.assign(new Error('O total de questões não corresponde à fase.'), { status: 400 });
+    }
     if (!level) throw new Error(`Level ${levelId} não encontrado.`);
+
+    const [worldProgress, levelProgress, attempt] = await Promise.all([
+      UserWorldProgress.findOne({ where: { user_id: userId, world_id: level.world_id, is_unlocked: 1 }, transaction: t, lock: t.LOCK.UPDATE }),
+      UserLevelProgress.findOne({ where: { user_id: userId, level_id: levelId, is_unlocked: 1 }, transaction: t, lock: t.LOCK.UPDATE }),
+      LevelAttempt.findOne({ where: { id: attemptId, user_id: userId, level_id: levelId, completed_at: null }, transaction: t, lock: t.LOCK.UPDATE }),
+    ]);
+    if (!worldProgress || !levelProgress) {
+      throw Object.assign(new Error('Esta fase ainda não está desbloqueada.'), { status: 403 });
+    }
+    if (!attempt || Date.now() - new Date(attempt.started_at).getTime() > 30 * 60 * 1000) {
+      throw Object.assign(new Error('Tentativa inválida ou expirada. Inicie a fase novamente.'), { status: 409 });
+    }
 
     const worldIndex = level.world_id - 1;
     const levelIndex = level.sort_order;
@@ -129,7 +161,16 @@ async function completeLevelSession(userId, levelId, { correct, total, avgTimeMs
     const difficulty = getLevelDifficulty(worldIndex, levelIndex);
     const stars = calculateStars(correct, total);
     const passed = didPassLevel(correct, total);
-    const credits = calculateCredits(stars, difficulty);
+    let credits = calculateCredits(stars, difficulty);
+    if (useDoubleCredits) {
+      const doubleItem = await ShopItem.findOne({ where: { item_key: 'item_double', type: 'powerup' }, transaction: t, lock: t.LOCK.UPDATE });
+      const purchased = doubleItem && await UserPurchasedItem.findOne({ where: { user_id: userId, shop_item_id: doubleItem.id }, transaction: t, lock: t.LOCK.UPDATE });
+      if (!purchased || purchased.uses_remaining < 1) {
+        throw Object.assign(new Error('Crédito duplo não está disponível.'), { status: 400 });
+      }
+      await purchased.update({ uses_remaining: purchased.uses_remaining - 1 }, { transaction: t });
+      credits *= 2;
+    }
     const score = calculateScore(correct, total, avgTimeMs, difficulty);
 
     // Registrar sessão
@@ -146,6 +187,8 @@ async function completeLevelSession(userId, levelId, { correct, total, avgTimeMs
     }, { transaction: t });
 
     // Atualizar level progress
+    await attempt.update({ completed_at: new Date() }, { transaction: t });
+
     const [lp] = await UserLevelProgress.findOrCreate({
       where: { user_id: userId, level_id: levelId },
       defaults: { is_unlocked: 1 },
@@ -237,6 +280,7 @@ async function updateGlobalStats(userId, stats) {
 module.exports = {
   initializeUserProgress,
   getFullProgress,
+  startLevelAttempt,
   completeLevelSession,
   updateGlobalStats,
   calculateStars,
