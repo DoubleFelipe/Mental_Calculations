@@ -1,15 +1,15 @@
 /* Profile Styles */
 .profile-page {
-  width: 100vw; height: 100vh;
+  width: 100%; min-height: 100svh; height: 100dvh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: var(--space-lg);
-  padding: var(--space-xl);
+  padding: var(--space-xl) var(--space-xl) 6.5rem;
   box-sizing: border-box;
   overflow-y: auto;
 }
 
-.profile-title { font-size: var(--fs-3xl); }
+.profile-title { font-size: var(--fs-3xl); margin-top: auto; }
 
 .profile-card {
   display: flex; flex-direction: column; align-items: center;
@@ -43,7 +43,7 @@
 .profile-name-input {
   text-align: center;
   font-size: var(--fs-xl) !important;
-  width: 250px;
+  width: min(250px, 100%);
 }
 
 .profile-stats {
@@ -76,6 +76,7 @@
   border-radius: 15px;
   overflow: hidden;
   position: relative;
+  margin-bottom: auto;
 }
 
 .progress-fill {
@@ -97,5 +98,11 @@
 }
 
 @media (max-width: 600px) {
-  .profile-stats { grid-template-columns: repeat(2, 1fr); }
+  .profile-page { justify-content: flex-start; gap: var(--space-md); padding: 4.5rem 0.75rem 1.25rem; }
+  .profile-title { margin-top: 0; font-size: var(--fs-2xl); }
+  .profile-card { width: 100%; }
+  .profile-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-sm); }
+  .stat-card { min-width: 0; padding: 0.75rem 0.5rem; }
+  .stat-value { font-size: var(--fs-lg); overflow-wrap: anywhere; }
+  .profile-progress-bar { margin-bottom: 0; }
 }

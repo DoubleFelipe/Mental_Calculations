@@ -1,14 +1,16 @@
 /* Settings Styles */
 .settings-page {
-  width: 100vw; height: 100vh;
+  width: 100%; min-height: 100svh; height: 100dvh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: var(--space-xl);
   padding: var(--space-xl);
   box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.settings-title { font-size: var(--fs-3xl); }
+.settings-title { font-size: var(--fs-3xl); margin-top: auto; text-align: center; }
 
 .settings-list {
   display: flex; flex-direction: column;
@@ -29,6 +31,7 @@
 .slider-group {
   display: flex; align-items: center; gap: var(--space-sm);
   font-family: var(--font-handwriting);
+  min-width: 0;
 }
 
 .setting-value {
@@ -50,9 +53,10 @@
   position: relative;
   display: inline-flex;
   width: 58px;
-  height: 30px;
+  height: 44px;
   flex: 0 0 auto;
   cursor: pointer;
+  align-items: center;
 }
 
 .switch-control input {
@@ -64,7 +68,7 @@
 
 .switch-slider {
   width: 100%;
-  height: 100%;
+  height: 30px;
   border: 2px solid rgba(255,255,255,0.45);
   border-radius: 999px;
   background: rgba(0,0,0,0.35);
@@ -96,8 +100,18 @@
   outline-offset: 3px;
 }
 
-.reset-btn { margin-top: var(--space-lg); }
+.reset-btn { margin-top: var(--space-lg); margin-bottom: auto; }
 
 @media (max-width: 600px) {
-  .setting-row { flex-direction: column; align-items: flex-start; gap: var(--space-sm); font-size: var(--fs-lg); }
+  .settings-page { justify-content: flex-start; gap: var(--space-lg); padding: 4.5rem 1rem 1.25rem; }
+  .settings-title { margin-top: 0; font-size: var(--fs-2xl); }
+  .settings-list { gap: var(--space-lg); }
+  .setting-row { width: 100%; flex-direction: column; align-items: stretch; gap: var(--space-xs); font-size: var(--fs-lg); }
+  .setting-row label { min-width: 0; }
+  .slider-group { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; width: 100%; }
+  .chalk-slider { width: 100%; }
+  .setting-value { align-self: flex-end; }
+  .setting-toggle-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .setting-toggle-row .setting-value-text { grid-column: 1 / -1; }
+  .reset-btn { width: 100%; margin-bottom: 0; }
 }
