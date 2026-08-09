@@ -123,7 +123,7 @@ function AppContent() {
     case 'profile': return <Profile onNavigate={navigate} />;
     case 'settings': return <Settings onNavigate={navigate} />;
     case 'shop': return <Shop onNavigate={navigate} />;
-    case 'exit': return <div className="chalkboard chalkboard-frame" style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '20px' }}><h2 className="chalk-text-strong" style={{ fontSize: '2rem' }}>Até logo!</h2><p className="chalk-text" style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.2rem' }}>Obrigado por jogar Mental Calculations!</p><button className="chalk-btn chalk-btn-green" onClick={() => navigate('mainMenu')}>Voltar ao Menu</button></div>;
+    case 'exit': return <div className="exit-page chalkboard chalkboard-frame"><h2 className="chalk-text-strong" style={{ fontSize: '2rem' }}>Até logo!</h2><p className="chalk-text" style={{ fontFamily: 'var(--font-handwriting)', fontSize: '1.2rem' }}>Obrigado por jogar Mental Calculations!</p><button className="chalk-btn chalk-btn-green" onClick={() => navigate('mainMenu')}>Voltar ao Menu</button></div>;
     default: return <MainMenu onNavigate={navigate} />;
   }
 }

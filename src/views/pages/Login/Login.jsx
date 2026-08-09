@@ -289,7 +289,7 @@ export default function Login({ onAuthenticated }) {
           background: rgba(0,0,0,0.22);
         }
         .login-tab {
-          min-height: 40px;
+          min-height: 44px;
           border: 0;
           border-radius: 6px;
           background: transparent;

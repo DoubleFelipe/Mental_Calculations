@@ -31,7 +31,7 @@ export default function WorldSelect({ onNavigate, onSelectWorld }) {
       <div className="world-carousel">
         <button className="chalk-arrow-btn" onClick={goLeft}>◀</button>
 
-        <div className={`world-card animate-scaleIn ${!isUnlocked ? 'locked' : ''}`} onClick={handleSelectWorld}>
+        <div className={`world-card animate-scaleIn ${!isUnlocked ? 'locked' : ''}`}>
           <div className="world-icon">{isUnlocked ? world.icon : '🔒'}</div>
           <div className="world-stars">
             <span aria-hidden="true">★</span> {totalStars}/{maxStars}
@@ -50,7 +50,14 @@ export default function WorldSelect({ onNavigate, onSelectWorld }) {
 
       <div className="world-dots">
         {worlds.map((_, i) => (
-          <span key={i} className={`dot ${i === currentIndex ? 'active' : ''}`} onClick={() => setCurrentIndex(i)} />
+          <button
+            key={i}
+            type="button"
+            className={`dot ${i === currentIndex ? 'active' : ''}`}
+            onClick={() => setCurrentIndex(i)}
+            aria-label={`Mostrar mundo ${i + 1}`}
+            aria-current={i === currentIndex ? 'true' : undefined}
+          />
         ))}
       </div>
 

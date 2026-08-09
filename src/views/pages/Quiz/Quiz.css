@@ -1,9 +1,10 @@
 /* Quiz Styles */
 .quiz-page {
-  width: 100vw; height: 100vh;
+  width: 100%; min-height: 100svh; height: 100dvh;
   display: flex; flex-direction: column;
   align-items: center;
-  padding: var(--space-lg) var(--space-xl);
+  padding: var(--space-lg) var(--space-xl) max(var(--space-xl), env(safe-area-inset-bottom));
+  overflow-x: hidden;
   overflow-y: auto;
   box-sizing: border-box;
 }
@@ -87,7 +88,7 @@
   width: 100%;
 }
 .quiz-powerups { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-sm); margin: 0 0 var(--space-md); }
-.quiz-powerup { min-width: auto !important; font-size: var(--fs-sm) !important; padding: var(--space-xs) var(--space-sm) !important; }
+.quiz-powerup { min-width: auto !important; min-height: 44px; font-size: var(--fs-sm) !important; padding: var(--space-xs) var(--space-sm) !important; }
 .quiz-powerup:disabled { opacity: .45; cursor: not-allowed; }
 .powerup-message { min-height: 1.5em; margin-bottom: var(--space-sm); color: var(--chalk-yellow); font-family: var(--font-handwriting); text-align: center; }
 .powerup-hidden { visibility: hidden; pointer-events: none; }
@@ -138,6 +139,7 @@
   padding: var(--space-xs) var(--space-md);
   border-radius: var(--border-radius-md);
   cursor: pointer;
+  min-height: 44px;
 }
 
 .explanation-box {
@@ -176,12 +178,14 @@
   padding: var(--space-lg) var(--space-2xl);
   border-radius: var(--border-radius-lg);
   border: 2px solid var(--chalk-green);
+  max-width: 100%;
 }
 
 .formula-text {
   font-family: var(--font-chalk);
   font-size: var(--fs-xl);
   color: var(--chalk-green-light);
+  overflow-wrap: anywhere;
 }
 
 .intro-info {
@@ -192,10 +196,24 @@
 }
 
 @media (max-width: 600px) {
+  .quiz-page { padding: 1rem 0.75rem max(1.25rem, env(safe-area-inset-bottom)); }
+  .quiz-header { gap: var(--space-sm); }
+  .quiz-counter { font-size: var(--fs-lg); }
+  .quiz-timer { font-size: var(--fs-md); }
+  .timer-bar { width: clamp(72px, 28vw, 120px); }
+  .quiz-diff { font-size: var(--fs-sm); }
+  .quiz-progress-dots { max-width: 100%; flex-wrap: wrap; justify-content: center; margin-bottom: var(--space-md); }
+  .quiz-question { margin-bottom: var(--space-md); width: 100%; }
   .quiz-alternatives { grid-template-columns: 1fr; }
   .question-text { font-size: var(--fs-lg); }
   .quiz-alt { font-size: var(--fs-md) !important; }
   .intro-info { flex-direction: column; gap: var(--space-sm); }
+  .quiz-intro { width: 100%; margin: auto 0; gap: var(--space-md); }
+  .quiz-intro h2 { font-size: var(--fs-2xl); }
+  .formula-display { width: 100%; padding: var(--space-md); }
+  .formula-text { font-size: clamp(1rem, 5vw, 1.25rem); }
+  .quiz-feedback { margin-top: var(--space-md); padding: var(--space-md); }
+  .next-btn { width: 100%; }
 }
 
 

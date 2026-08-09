@@ -23,6 +23,7 @@ function isNearCharacter(player, character) {
 
 export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, onPlayerHit, isPaused, equippedSkin, doubleJumpEnabled = false }) {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const frameRef = useRef(0);
   const keysRef = useRef({});
   const playerRef = useRef(createPlayer(80, 440));
@@ -41,13 +42,20 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
   // Redimensionar canvas
   useEffect(() => {
     function resize() {
-      const w = Math.min(window.innerWidth, 1200);
-      const h = Math.min(window.innerHeight * 0.7, 540);
+      const availableWidth = containerRef.current?.clientWidth || window.innerWidth;
+      const mobileHeightRatio = window.innerWidth <= 768 ? 0.62 : 0.7;
+      const w = Math.max(1, Math.floor(Math.min(availableWidth - 6, 1200)));
+      const h = Math.max(180, Math.floor(Math.min(window.innerHeight * mobileHeightRatio, 540)));
       setCanvasSize({ width: w, height: h });
     }
     resize();
+    const resizeObserver = new ResizeObserver(resize);
+    if (containerRef.current) resizeObserver.observe(containerRef.current);
     window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', resize);
+    };
   }, []);
 
   // Keyboard handlers
@@ -204,12 +212,12 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
   }, [isPaused, platforms, hazards, characters, canvasSize, onNPCInteract, onPlayerHit, equippedSkin, doubleJumpEnabled]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div ref={containerRef} className="game-canvas-root">
       <canvas
         ref={canvasRef}
         width={canvasSize.width}
         height={canvasSize.height}
-        style={{ display: 'block', margin: '0 auto', borderRadius: '8px', border: '3px solid #5C2E0A' }}
+        className="game-canvas"
       />
       {/* Controles mobile */}
       <div className="mobile-controls" aria-label="Controles do jogo">
