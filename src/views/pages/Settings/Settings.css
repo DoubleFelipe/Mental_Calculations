@@ -26,7 +26,7 @@
   opacity: 0;
 }
 
-.setting-row label { min-width: 140px; }
+.setting-row > label:first-child { min-width: 140px; }
 
 .slider-group {
   display: flex; align-items: center; gap: var(--space-sm);
@@ -47,12 +47,79 @@
   color: var(--text-chalk);
 }
 
-.setting-toggle-row { align-items: center; }
+.setting-toggle-row {
+  align-items: center;
+  column-gap: var(--space-md);
+}
+
+.difficulty-setting {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.difficulty-setting legend {
+  float: left;
+  min-width: 140px;
+}
+
+.difficulty-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  flex: 1;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.difficulty-option {
+  position: relative;
+  display: flex;
+  min-width: 0 !important;
+  padding: var(--space-sm);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.difficulty-option:last-child { border-right: 0; }
+
+.difficulty-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.difficulty-option span { font-size: var(--fs-md); }
+
+.difficulty-option small {
+  color: var(--text-chalk-dim);
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-sm);
+}
+
+.difficulty-option:has(input:checked) {
+  background: rgba(255, 213, 79, 0.22);
+  color: #FFD54F;
+}
+
+.difficulty-option:has(input:checked) small { color: #FFF2B2; }
+
+.difficulty-option:has(input:focus-visible) {
+  outline: 3px solid rgba(255, 213, 79, 0.85);
+  outline-offset: -3px;
+}
 
 .switch-control {
   position: relative;
   display: inline-flex;
-  width: 58px;
+  width: 48px;
+  min-width: 48px;
   height: 44px;
   flex: 0 0 auto;
   cursor: pointer;
@@ -68,7 +135,7 @@
 
 .switch-slider {
   width: 100%;
-  height: 30px;
+  height: 26px;
   border: 2px solid rgba(255,255,255,0.45);
   border-radius: 999px;
   background: rgba(0,0,0,0.35);
@@ -78,8 +145,8 @@
 .switch-slider::before {
   content: '';
   display: block;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   margin: 2px;
   border-radius: 50%;
   background: #fff;
@@ -92,7 +159,7 @@
 }
 
 .switch-control input:checked + .switch-slider::before {
-  transform: translateX(26px);
+  transform: translateX(20px);
 }
 
 .switch-control input:focus-visible + .switch-slider {
@@ -100,18 +167,45 @@
   outline-offset: 3px;
 }
 
-.reset-btn { margin-top: var(--space-lg); margin-bottom: auto; }
+.settings-actions {
+  display: flex;
+  width: min(100%, 500px);
+  margin-top: clamp(0.25rem, 1.5vh, var(--space-md));
+  margin-bottom: auto;
+  justify-content: center;
+}
+
+.reset-btn {
+  width: min(100%, 280px);
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 0.7rem clamp(1rem, 4vw, var(--space-xl));
+  font-size: clamp(var(--fs-md), 2.2vw, var(--fs-lg));
+  line-height: 1.2;
+}
 
 @media (max-width: 600px) {
   .settings-page { justify-content: flex-start; gap: var(--space-lg); padding: 4.5rem 1rem 1.25rem; }
   .settings-title { margin-top: 0; font-size: var(--fs-2xl); }
   .settings-list { gap: var(--space-lg); }
   .setting-row { width: 100%; flex-direction: column; align-items: stretch; gap: var(--space-xs); font-size: var(--fs-lg); }
-  .setting-row label { min-width: 0; }
+  .setting-row > label:first-child { min-width: 0; }
   .slider-group { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; width: 100%; }
   .chalk-slider { width: 100%; }
   .setting-value { align-self: flex-end; }
-  .setting-toggle-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .setting-toggle-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--space-sm); }
+  .setting-toggle-row .switch-control { min-width: 48px; justify-self: end; }
   .setting-toggle-row .setting-value-text { grid-column: 1 / -1; }
-  .reset-btn { width: 100%; margin-bottom: 0; }
+  .difficulty-setting { display: flex; }
+  .difficulty-setting legend { float: none; min-width: 0; }
+  .difficulty-options { width: 100%; flex: none; }
+  .settings-actions { margin-top: var(--space-sm); margin-bottom: 0; }
+  .reset-btn { width: min(100%, 260px); }
+}
+
+@media (max-height: 720px) and (min-width: 601px) {
+  .settings-page { gap: var(--space-md); padding-block: var(--space-lg); }
+  .settings-list { gap: var(--space-md); }
+  .settings-title { font-size: var(--fs-2xl); }
 }

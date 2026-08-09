@@ -87,14 +87,17 @@ export function createWorldCharacters(platforms, worldIndex = 0, levelProgress =
 
   return definitions.map((definition) => {
     const levelIndex = definition.phase - 1;
-    const platformIndex = definition.platformIndex;
-    const platform = platforms[platformIndex] || platforms[platforms.length - 1];
+    const platformIndex = platforms[definition.platformIndex]
+      ? definition.platformIndex
+      : platforms.length - 1;
     const progress = levelProgress[levelIndex] || {};
-    return {
-      x: platform.x + platform.width / 2 - 15,
-      y: platform.y - 55,
+    const character = {
+      x: 0,
+      y: 0,
       width: 30,
       height: 50,
+      platformIndex,
+      isGrounded: true,
       type: 'npc',
       levelIndex,
       phaseName: `Fase ${definition.phase}`,
@@ -106,7 +109,27 @@ export function createWorldCharacters(platforms, worldIndex = 0, levelProgress =
       color: ['#4CAF50', '#42A5F5', '#FFD54F', '#EF5350'][worldIndex % 4],
       activated: false,
     };
+    alignCharacterToPlatform(character, platforms);
+    return character;
   });
+}
+
+/**
+ * Mantém a hitbox do NPC apoiada na superfície da plataforma que o ancora.
+ * A mesma regra atende o posicionamento inicial e eventuais plataformas móveis.
+ */
+export function alignCharacterToPlatform(character, platforms) {
+  const platform = platforms[character.platformIndex];
+  if (!platform) return character;
+
+  character.x = platform.x + (platform.width - character.width) / 2;
+  character.y = platform.y - character.height;
+  character.isGrounded = true;
+  return character;
+}
+
+export function alignCharactersToPlatforms(characters, platforms) {
+  characters.forEach((character) => alignCharacterToPlatform(character, platforms));
 }
 
 /** Obstáculos do percurso do Mundo das Equações. */
@@ -244,8 +267,8 @@ export function drawNPC(ctx, npc, cameraX, cameraY, frame) {
   ctx.moveTo(x, y + 15); ctx.lineTo(x, y + 34);
   ctx.moveTo(x, y + 22); ctx.lineTo(x - 11, y + 28);
   ctx.moveTo(x, y + 22); ctx.lineTo(x + 11, y + 28);
-  ctx.moveTo(x, y + 34); ctx.lineTo(x - 7, y + 48);
-  ctx.moveTo(x, y + 34); ctx.lineTo(x + 7, y + 48);
+  ctx.moveTo(x, y + 34); ctx.lineTo(x - 7, y + npc.height);
+  ctx.moveTo(x, y + 34); ctx.lineTo(x + 7, y + npc.height);
   ctx.stroke();
 
   // Balão sempre visível no mapa, com quebra de linha para manter a leitura.
