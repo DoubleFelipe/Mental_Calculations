@@ -11,7 +11,7 @@ import {
   loseLife as loseLifeModel,
   resetLives as resetLivesModel,
 } from '../models/GameModel';
-import { DEFAULT_SETTINGS, isValidVolume } from '../models/SettingsModel';
+import { DEFAULT_SETTINGS, isValidDifficulty, isValidVolume } from '../models/SettingsModel';
 import { createProfile } from '../models/ProfileModel';
 import { progressApi, shopApi, authApi } from '../services/apiService';
 import { isAuthenticated, clearAuth, getStoredUser } from '../services/authService';
@@ -58,6 +58,16 @@ export function GameProvider({ children }) {
     const merged = { ...DEFAULT_GAME_STATE, ...gameState };
     if (JSON.stringify(merged) !== JSON.stringify(gameState)) {
       setGameState(merged);
+    }
+  }, []); // eslint-disable-line
+
+  useEffect(() => {
+    const merged = { ...DEFAULT_SETTINGS, ...settings };
+    if (!isValidDifficulty(merged.difficulty)) {
+      merged.difficulty = DEFAULT_SETTINGS.difficulty;
+    }
+    if (JSON.stringify(merged) !== JSON.stringify(settings)) {
+      setSettings(merged);
     }
   }, []); // eslint-disable-line
 
@@ -163,6 +173,7 @@ export function GameProvider({ children }) {
     if (key === 'musicVolume' || key === 'sfxVolume') {
       if (!isValidVolume(value)) return;
     }
+    if (key === 'difficulty' && !isValidDifficulty(value)) return;
     setSettings((prev) => ({ ...prev, [key]: value }));
   }, [setSettings]);
 

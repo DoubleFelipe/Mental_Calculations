@@ -4,7 +4,15 @@
  */
 import { useRef, useEffect, useMemo, useState, useCallback } from 'react';
 import { createPlayer, drawPlayer, updatePlayerAnimation } from './Player';
-import { createWorldPlatforms, createWorldCharacters, createWorldHazards, drawPlatform, drawHazard, drawNPC } from './Platform';
+import {
+  alignCharactersToPlatforms,
+  createWorldPlatforms,
+  createWorldCharacters,
+  createWorldHazards,
+  drawPlatform,
+  drawHazard,
+  drawNPC,
+} from './Platform';
 import { drawBackground, drawHouse, drawCastle, drawWorldScenery } from './Background';
 import { applyGravity, isOnPlatform, checkCollision, clampToLevel } from './Physics';
 
@@ -116,6 +124,7 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
       platforms.forEach((plat) => {
         if (plat.moving) plat.x = plat.baseX + Math.sin((performance.now() / 900) + plat.baseX) * plat.range;
       });
+      alignCharactersToPlatforms(characters, platforms);
 
       // Colisão com plataformas
       player.isGrounded = false;

@@ -145,8 +145,4 @@ export function generateQuestionSet(count = 5, difficulty = 'easy') {
   return Array.from({ length: count }, () => generateQuestion(difficulty));
 }
 
-export function getTimeLimit(difficulty) {
-  return difficulty === 'easy' ? 45 : difficulty === 'medium' ? 35 : 25;
-}
-
 export { formatEquation, formatNumber };
