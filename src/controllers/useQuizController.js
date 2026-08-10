@@ -3,8 +3,9 @@
  * Controla a lógica da partida de quiz, cronômetro, áudios e pontuação.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { generateQuestionSet, getTimeLimit } from '../services/mathGenerator';
+import { generateQuestionSet } from '../services/mathGenerator';
 import { getLevelDifficulty } from '../models/GameModel';
+import { getDifficultyLabel, getQuestionTimeLimit } from '../models/SettingsModel';
 import useGameState from './GameController';
 import useTimer from '../hooks/useTimer';
 import useAudio from '../hooks/useAudio';
@@ -19,7 +20,9 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   const world = worlds[worldIndex];
   const level = world?.levels[levelIndex];
   const questionsCount = level?.questionsCount || 5;
-  const timeLimit = getTimeLimit(difficulty);
+  const selectedDifficulty = settings.difficulty;
+  const selectedDifficultyLabel = getDifficultyLabel(selectedDifficulty);
+  const timeLimit = getQuestionTimeLimit(selectedDifficulty);
 
   const [questions] = useState(() => generateQuestionSet(questionsCount, difficulty));
   const [currentQ, setCurrentQ] = useState(0);
@@ -144,6 +147,8 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   return {
     level,
     difficulty,
+    selectedDifficulty,
+    selectedDifficultyLabel,
     questionsCount,
     timeLimit,
     questions,

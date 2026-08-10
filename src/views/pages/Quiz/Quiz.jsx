@@ -11,6 +11,7 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
   const {
     level,
     difficulty,
+    selectedDifficultyLabel,
     questionsCount,
     timeLimit,
     questions,
@@ -50,8 +51,8 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
           <p className="chalk-text">Onde Δ = b² - 4ac é o discriminante.</p>
           <div className="intro-info">
             <span>📝 {questionsCount} questões</span>
-            <span>⏱️ {timeLimit}s por questão</span>
-            <span>📊 Dificuldade: {difficulty === 'easy' ? 'Fácil' : difficulty === 'medium' ? 'Médio' : 'Difícil'}</span>
+            <span>⏱️ {timeLimit}s por questão ({selectedDifficultyLabel})</span>
+            <span>📊 Nível da fase: {difficulty === 'easy' ? 'Fácil' : difficulty === 'medium' ? 'Médio' : 'Difícil'}</span>
           </div>
           <button className="chalk-btn chalk-btn-green" onClick={startQuiz}>
             Começar! →

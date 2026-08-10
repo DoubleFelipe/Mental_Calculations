@@ -3,6 +3,7 @@
  */
 import useGameState from '../../../controllers/GameController';
 import useAudio from '../../../hooks/useAudio';
+import { DEFAULT_SETTINGS, DIFFICULTY_OPTIONS } from '../../../models/SettingsModel';
 import './Settings.css';
 
 export default function Settings({ onNavigate }) {
@@ -44,7 +45,7 @@ export default function Settings({ onNavigate }) {
         </div>
 
         <div className="setting-row setting-toggle-row animate-fadeInLeft stagger-3">
-          <label className="chalk-text" htmlFor="double-jump-toggle">Pulo duplo:</label>
+          <label className="chalk-text" htmlFor="double-jump-toggle">Ativar pulo duplo:</label>
           <label className="switch-control">
             <input
               id="double-jump-toggle"
@@ -57,22 +58,43 @@ export default function Settings({ onNavigate }) {
           <span className="setting-value-text">{settings.doubleJump ? 'Ativado' : 'Desativado'}</span>
         </div>
 
-        <div className="setting-row animate-fadeInLeft stagger-4">
+        <fieldset className="setting-row difficulty-setting animate-fadeInLeft stagger-4">
+          <legend className="chalk-text">Dificuldade:</legend>
+          <div className="difficulty-options">
+            {DIFFICULTY_OPTIONS.map((option) => (
+              <label className="difficulty-option" key={option.value}>
+                <input
+                  type="radio"
+                  name="difficulty"
+                  value={option.value}
+                  checked={(settings.difficulty ?? DEFAULT_SETTINGS.difficulty) === option.value}
+                  onChange={(event) => updateSettings('difficulty', event.target.value)}
+                />
+                <span>{option.label}</span>
+                <small>{option.timeLimit}s</small>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <div className="setting-row animate-fadeInLeft stagger-5">
           <label className="chalk-text">🌐 Linguagem:</label>
           <span className="setting-value-text">pt-br</span>
         </div>
 
-        <div className="setting-row animate-fadeInLeft stagger-5">
+        <div className="setting-row animate-fadeInLeft stagger-6">
           <label className="chalk-text">📐 Resolução:</label>
           <span className="setting-value-text">{window.innerWidth}x{window.innerHeight}</span>
         </div>
       </div>
 
-      <button className="chalk-btn chalk-btn-red reset-btn" onClick={() => {
-        if (window.confirm('Tem certeza? Isso vai apagar todo o progresso!')) resetAll();
-      }}>
-        🗑️ Resetar Progresso
-      </button>
+      <div className="settings-actions">
+        <button className="chalk-btn chalk-btn-red reset-btn" onClick={() => {
+          if (window.confirm('Tem certeza? Isso vai apagar todo o progresso!')) resetAll();
+        }}>
+          🗑️ Resetar Progresso
+        </button>
+      </div>
 
       <button className="chalk-arrow-btn back-btn" onClick={() => onNavigate('mainMenu')}>← Voltar</button>
     </div>
