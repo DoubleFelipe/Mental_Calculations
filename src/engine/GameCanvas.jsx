@@ -179,7 +179,7 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
       // === Renderização ===
       ctx.clearRect(0, 0, canvasSize.width, canvasSize.height);
       drawBackground(ctx, canvasSize.width, canvasSize.height, cameraX, frame);
-      drawWorldScenery(ctx, cameraX, cameraY, platforms);
+      drawWorldScenery(ctx, cameraX, cameraY, platforms, worldIndex);
 
       // Casa de nascimento no início e castelo de conclusão no fim.
       drawHouse(ctx, 110, 520, cameraX, cameraY);
@@ -218,7 +218,7 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isPaused, platforms, hazards, characters, canvasSize, onNPCInteract, onPlayerHit, equippedSkin, doubleJumpEnabled]);
+  }, [isPaused, platforms, hazards, characters, canvasSize, onNPCInteract, onPlayerHit, equippedSkin, doubleJumpEnabled, worldIndex]);
 
   return (
     <div ref={containerRef} className="game-canvas-root">

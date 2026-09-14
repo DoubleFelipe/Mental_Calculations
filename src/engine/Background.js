@@ -112,26 +112,100 @@ export function drawHouse(ctx, x, y, cameraX, cameraY = 0) {
   ctx.restore();
 }
 
+// =============================================================================
+// CENÁRIO E DECORAÇÕES DE CADA MUNDO (Edite cada lista individualmente)
+// =============================================================================
+
+/** Mundo 0: Mundo das Equações */
+export const WORLD_0_SCENERY = [
+  { type: 'tree', platformIndex: 0, offset: 250, scale: 1.1 },
+  { type: 'tree', platformIndex: 1, offset: 170, scale: 0.75 },
+  { type: 'tree', platformIndex: 2, offset: 110, scale: 0.7 },
+  { type: 'bush', platformIndex: 3, offset: 90, scale: 1 },
+  { type: 'tree', platformIndex: 5, offset: 20, scale: 0.6 },
+  { type: 'tree', platformIndex: 6, offset: 50, scale: 0.8 },
+  { type: 'bush', platformIndex: 8, offset: 25, scale: 0.9 },
+  { type: 'tree', platformIndex: 9, offset: 80, scale: 0.65 },
+  { type: 'tree', platformIndex: 10, offset: 70, scale: 0.55 },
+  { type: 'bush', platformIndex: 14, offset: 80, scale: 1 },
+  { type: 'tree', platformIndex: 14, offset: 110, scale: 0.75 },
+  { type: 'tree', platformIndex: 15, offset: 100, scale: 0.9 },
+  { type: 'sign', platformIndex: 0, offset: 300, label: 'INÍCIO' },
+  { type: 'sign', platformIndex: 2, offset: 25, label: 'DESAFIOS' },
+  { type: 'sign', platformIndex: 5, offset: 130, label: 'ATENÇÃO' },
+  { type: 'sign', platformIndex: 14, offset: 30, label: 'FINAL' },
+];
+
+/** Mundo 1: Mundo dos Coeficientes */
+export const WORLD_1_SCENERY = [
+  { type: 'tree', platformIndex: 0, offset: 250, scale: 1.1 },
+  { type: 'tree', platformIndex: 1, offset: 170, scale: 0.75 },
+  { type: 'tree', platformIndex: 2, offset: 110, scale: 0.7 },
+  { type: 'bush', platformIndex: 3, offset: 90, scale: 1 },
+  { type: 'tree', platformIndex: 5, offset: 20, scale: 0.6 },
+  { type: 'tree', platformIndex: 6, offset: 50, scale: 0.8 },
+  { type: 'bush', platformIndex: 8, offset: 25, scale: 0.9 },
+  { type: 'tree', platformIndex: 9, offset: 80, scale: 0.65 },
+  { type: 'tree', platformIndex: 10, offset: 70, scale: 0.55 },
+  { type: 'bush', platformIndex: 14, offset: 80, scale: 1 },
+  { type: 'tree', platformIndex: 14, offset: 110, scale: 0.75 },
+  { type: 'tree', platformIndex: 15, offset: 100, scale: 0.9 },
+  { type: 'sign', platformIndex: 0, offset: 300, label: 'INÍCIO' },
+  { type: 'sign', platformIndex: 2, offset: 25, label: 'DESAFIOS' },
+  { type: 'sign', platformIndex: 5, offset: 130, label: 'ATENÇÃO' },
+  { type: 'sign', platformIndex: 14, offset: 30, label: 'FINAL' },
+];
+
+/** Mundo 2: Mundo do Delta */
+export const WORLD_2_SCENERY = [
+  { type: 'tree', platformIndex: 0, offset: 250, scale: 1.1 },
+  { type: 'tree', platformIndex: 1, offset: 170, scale: 0.75 },
+  { type: 'tree', platformIndex: 2, offset: 110, scale: 0.7 },
+  { type: 'bush', platformIndex: 3, offset: 90, scale: 1 },
+  { type: 'tree', platformIndex: 5, offset: 20, scale: 0.6 },
+  { type: 'tree', platformIndex: 6, offset: 50, scale: 0.8 },
+  { type: 'bush', platformIndex: 8, offset: 25, scale: 0.9 },
+  { type: 'tree', platformIndex: 9, offset: 80, scale: 0.65 },
+  { type: 'tree', platformIndex: 10, offset: 70, scale: 0.55 },
+  { type: 'bush', platformIndex: 14, offset: 80, scale: 1 },
+  { type: 'tree', platformIndex: 14, offset: 110, scale: 0.75 },
+  { type: 'tree', platformIndex: 15, offset: 100, scale: 0.9 },
+  { type: 'sign', platformIndex: 0, offset: 300, label: 'INÍCIO' },
+  { type: 'sign', platformIndex: 2, offset: 25, label: 'DESAFIOS' },
+  { type: 'sign', platformIndex: 5, offset: 130, label: 'ATENÇÃO' },
+  { type: 'sign', platformIndex: 14, offset: 30, label: 'FINAL' },
+];
+
+/** Mundo 3: Mundo dos Mestres */
+export const WORLD_3_SCENERY = [
+  { type: 'tree', platformIndex: 0, offset: 250, scale: 1.1 },
+  { type: 'tree', platformIndex: 1, offset: 170, scale: 0.75 },
+  { type: 'tree', platformIndex: 2, offset: 110, scale: 0.7 },
+  { type: 'bush', platformIndex: 3, offset: 90, scale: 1 },
+  { type: 'tree', platformIndex: 5, offset: 20, scale: 0.6 },
+  { type: 'tree', platformIndex: 6, offset: 50, scale: 0.8 },
+  { type: 'bush', platformIndex: 8, offset: 25, scale: 0.9 },
+  { type: 'tree', platformIndex: 9, offset: 80, scale: 0.65 },
+  { type: 'tree', platformIndex: 10, offset: 70, scale: 0.55 },
+  { type: 'bush', platformIndex: 14, offset: 80, scale: 1 },
+  { type: 'tree', platformIndex: 14, offset: 110, scale: 0.75 },
+  { type: 'tree', platformIndex: 15, offset: 100, scale: 0.9 },
+  { type: 'sign', platformIndex: 0, offset: 300, label: 'INÍCIO' },
+  { type: 'sign', platformIndex: 2, offset: 25, label: 'DESAFIOS' },
+  { type: 'sign', platformIndex: 5, offset: 130, label: 'ATENÇÃO' },
+  { type: 'sign', platformIndex: 14, offset: 30, label: 'FINAL' },
+];
+
+export const WORLD_SCENERY_MAP = {
+  0: WORLD_0_SCENERY,
+  1: WORLD_1_SCENERY,
+  2: WORLD_2_SCENERY,
+  3: WORLD_3_SCENERY,
+};
+
 /** Decorações ancoradas diretamente nas plataformas estáticas do mapa. */
-export function drawWorldScenery(ctx, cameraX, cameraY, platforms = []) {
-  const scenery = [
-    { type: 'tree', platformIndex: 0, offset: 250, scale: 1.1 },
-    { type: 'tree', platformIndex: 1, offset: 170, scale: 0.75 },
-    { type: 'tree', platformIndex: 2, offset: 110, scale: 0.7 },
-    { type: 'bush', platformIndex: 3, offset: 90, scale: 1 },
-    { type: 'tree', platformIndex: 5, offset: 70, scale: 0.6 },
-    { type: 'tree', platformIndex: 6, offset: 50, scale: 0.8 },
-    { type: 'bush', platformIndex: 8, offset: 25, scale: 0.9 },
-    { type: 'tree', platformIndex: 9, offset: 80, scale: 0.65 },
-    { type: 'tree', platformIndex: 10, offset: 70, scale: 0.55 },
-    { type: 'bush', platformIndex: 14, offset: 80, scale: 1 },
-    { type: 'tree', platformIndex: 14, offset: 110, scale: 0.75 },
-    { type: 'tree', platformIndex: 15, offset: 100, scale: 0.9 },
-    { type: 'sign', platformIndex: 0, offset: 300, label: 'INÍCIO' },
-    { type: 'sign', platformIndex: 2, offset: 25, label: 'DESAFIOS' },
-    { type: 'sign', platformIndex: 5, offset: 130, label: 'ATENÇÃO' },
-    { type: 'sign', platformIndex: 14, offset: 30, label: 'FINAL' },
-  ];
+export function drawWorldScenery(ctx, cameraX, cameraY, platforms = [], worldIndex = 0) {
+  const scenery = WORLD_SCENERY_MAP[worldIndex] || WORLD_0_SCENERY;
 
   scenery.forEach((item) => {
     const platform = platforms[item.platformIndex];

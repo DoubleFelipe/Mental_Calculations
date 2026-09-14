@@ -3,87 +3,173 @@
  * Plataformas com visual de terra/grama e portais interativos
  */
 
+// =============================================================================
+// PLATAFORMAS DE CADA MUNDO (Edite cada lista individualmente)
+// =============================================================================
+
+/** Mundo 0: Mundo das Equações */
+export const WORLD_0_PLATFORMS = [
+  { x: 0, y: 520, width: 340, height: 34, area: 1 },
+  { x: 390, y: 470, width: 190, height: 30, area: 1 },
+  { x: 625, y: 430, width: 165, height: 30, area: 1 },
+  { x: 830, y: 500, width: 145, height: 30, area: 2 },
+  { x: 1010, y: 440, width: 145, height: 30, area: 2 },
+  { x: 1190, y: 380, width: 145, height: 30, area: 2, elevated: true },
+  { x: 1370, y: 475, width: 155, height: 30, area: 3 },
+  { x: 1550, y: 415, width: 125, height: 30, area: 3, narrow: true },
+  { x: 1705, y: 350, width: 115, height: 30, area: 3, narrow: true },
+  { x: 1860, y: 425, width: 130, height: 30, area: 3, narrow: true },
+  { x: 2010, y: 375, width: 138, height: 30, area: 4, suspended: true },
+  { x: 2180, y: 405, width: 116, height: 30, area: 4, moving: true, baseX: 2180, range: 80 },
+  { x: 2315, y: 320, width: 155, height: 30, area: 4, suspended: true },
+  { x: 2455, y: 445, width: 125, height: 30, area: 4, moving: true, baseX: 2455, range: 70 },
+  { x: 2600, y: 385, width: 150, height: 30, area: 5 },
+  { x: 2780, y: 470, width: 165, height: 30, area: 5 },
+  { x: 2960, y: 520, width: 260, height: 34, area: 5 },
+  // Rotas alternativas
+  { x: 1520, y: 345, width: 145, height: 24, area: 3, alternate: true },
+  { x: 1725, y: 285, width: 135, height: 24, area: 3, alternate: true },
+  { x: 1935, y: 230, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+  { x: 2150, y: 180, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+];
+
+/** Mundo 1: Mundo dos Coeficientes */
+export const WORLD_1_PLATFORMS = [
+  { x: 0, y: 520, width: 340, height: 34, area: 1 },
+  { x: 390, y: 470, width: 190, height: 30, area: 1 },
+  { x: 625, y: 430, width: 165, height: 30, area: 1 },
+  { x: 830, y: 500, width: 145, height: 30, area: 2 },
+  { x: 1010, y: 440, width: 145, height: 30, area: 2 },
+  { x: 1190, y: 380, width: 145, height: 30, area: 2, elevated: true },
+  { x: 1370, y: 475, width: 155, height: 30, area: 3 },
+  { x: 1550, y: 415, width: 125, height: 30, area: 3, narrow: true },
+  { x: 1705, y: 350, width: 115, height: 30, area: 3, narrow: true },
+  { x: 1860, y: 425, width: 130, height: 30, area: 3, narrow: true },
+  { x: 2010, y: 375, width: 138, height: 30, area: 4, suspended: true },
+  { x: 2180, y: 405, width: 116, height: 30, area: 4, moving: true, baseX: 2180, range: 80 },
+  { x: 2315, y: 320, width: 155, height: 30, area: 4, suspended: true },
+  { x: 2455, y: 445, width: 125, height: 30, area: 4, moving: true, baseX: 2455, range: 70 },
+  { x: 2600, y: 385, width: 150, height: 30, area: 5 },
+  { x: 2780, y: 470, width: 165, height: 30, area: 5 },
+  { x: 2960, y: 520, width: 260, height: 34, area: 5 },
+  // Rotas alternativas
+  { x: 1520, y: 345, width: 145, height: 24, area: 3, alternate: true },
+  { x: 1725, y: 285, width: 135, height: 24, area: 3, alternate: true },
+  { x: 1935, y: 230, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+  { x: 2150, y: 180, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+];
+
+/** Mundo 2: Mundo do Delta */
+export const WORLD_2_PLATFORMS = [
+  { x: 0, y: 520, width: 340, height: 34, area: 1 },
+  { x: 390, y: 470, width: 190, height: 30, area: 1 },
+  { x: 625, y: 430, width: 165, height: 30, area: 1 },
+  { x: 830, y: 500, width: 145, height: 30, area: 2 },
+  { x: 1010, y: 440, width: 145, height: 30, area: 2 },
+  { x: 1190, y: 380, width: 145, height: 30, area: 2, elevated: true },
+  { x: 1370, y: 475, width: 155, height: 30, area: 3 },
+  { x: 1550, y: 415, width: 125, height: 30, area: 3, narrow: true },
+  { x: 1705, y: 350, width: 115, height: 30, area: 3, narrow: true },
+  { x: 1860, y: 425, width: 130, height: 30, area: 3, narrow: true },
+  { x: 2010, y: 375, width: 138, height: 30, area: 4, suspended: true },
+  { x: 2180, y: 405, width: 116, height: 30, area: 4, moving: true, baseX: 2180, range: 80 },
+  { x: 2315, y: 320, width: 155, height: 30, area: 4, suspended: true },
+  { x: 2455, y: 445, width: 125, height: 30, area: 4, moving: true, baseX: 2455, range: 70 },
+  { x: 2600, y: 385, width: 150, height: 30, area: 5 },
+  { x: 2780, y: 470, width: 165, height: 30, area: 5 },
+  { x: 2960, y: 520, width: 260, height: 34, area: 5 },
+  // Rotas alternativas
+  { x: 1520, y: 345, width: 145, height: 24, area: 3, alternate: true },
+  { x: 1725, y: 285, width: 135, height: 24, area: 3, alternate: true },
+  { x: 1935, y: 230, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+  { x: 2150, y: 180, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+];
+
+/** Mundo 3: Mundo dos Mestres */
+export const WORLD_3_PLATFORMS = [
+  { x: 0, y: 520, width: 340, height: 34, area: 1 },
+  { x: 390, y: 470, width: 190, height: 30, area: 1 },
+  { x: 625, y: 430, width: 165, height: 30, area: 1 },
+  { x: 830, y: 500, width: 145, height: 30, area: 2 },
+  { x: 1010, y: 440, width: 145, height: 30, area: 2 },
+  { x: 1190, y: 380, width: 145, height: 30, area: 2, elevated: true },
+  { x: 1370, y: 475, width: 155, height: 30, area: 3 },
+  { x: 1550, y: 415, width: 125, height: 30, area: 3, narrow: true },
+  { x: 1705, y: 350, width: 115, height: 30, area: 3, narrow: true },
+  { x: 1860, y: 425, width: 130, height: 30, area: 3, narrow: true },
+  { x: 2010, y: 375, width: 138, height: 30, area: 4, suspended: true },
+  { x: 2180, y: 405, width: 116, height: 30, area: 4, moving: true, baseX: 2180, range: 80 },
+  { x: 2315, y: 320, width: 155, height: 30, area: 4, suspended: true },
+  { x: 2455, y: 445, width: 125, height: 30, area: 4, moving: true, baseX: 2455, range: 70 },
+  { x: 2600, y: 385, width: 150, height: 30, area: 5 },
+  { x: 2780, y: 470, width: 165, height: 30, area: 5 },
+  { x: 2960, y: 520, width: 260, height: 34, area: 5 },
+  // Rotas alternativas
+  { x: 1520, y: 345, width: 145, height: 24, area: 3, alternate: true },
+  { x: 1725, y: 285, width: 135, height: 24, area: 3, alternate: true },
+  { x: 1935, y: 230, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+  { x: 2150, y: 180, width: 125, height: 24, area: 4, alternate: true, suspended: true },
+];
+
+export const WORLD_PLATFORMS_MAP = {
+  0: WORLD_0_PLATFORMS,
+  1: WORLD_1_PLATFORMS,
+  2: WORLD_2_PLATFORMS,
+  3: WORLD_3_PLATFORMS,
+};
+
 /** Cria definições de plataformas para o mapa de um mundo. */
 export function createWorldPlatforms(worldIndex = 0) {
-  // Mundo das Equações: uma única fase panorâmica com cinco áreas conectadas.
-  const equationsWorld = [
-    { x: 0, y: 520, width: 340, height: 34, area: 1 },
-    { x: 390, y: 470, width: 190, height: 30, area: 1 },
-    { x: 625, y: 430, width: 165, height: 30, area: 1 },
-    { x: 830, y: 500, width: 145, height: 30, area: 2 },
-    { x: 1010, y: 440, width: 145, height: 30, area: 2 },
-    { x: 1190, y: 380, width: 145, height: 30, area: 2, elevated: true },
-    { x: 1370, y: 475, width: 155, height: 30, area: 3 },
-    { x: 1550, y: 415, width: 125, height: 30, area: 3, narrow: true },
-    { x: 1705, y: 350, width: 115, height: 30, area: 3, narrow: true },
-    { x: 1860, y: 425, width: 130, height: 30, area: 3, narrow: true },
-    { x: 2010, y: 375, width: 138, height: 30, area: 4, suspended: true },
-    { x: 2180, y: 405, width: 116, height: 30, area: 4, moving: true, baseX: 2180, range: 80 },
-    { x: 2315, y: 300, width: 155, height: 30, area: 4, suspended: true },
-    { x: 2455, y: 445, width: 125, height: 30, area: 4, moving: true, baseX: 2455, range: 70 },
-    { x: 2600, y: 385, width: 150, height: 30, area: 5 },
-    { x: 2780, y: 470, width: 165, height: 30, area: 5 },
-    { x: 2960, y: 520, width: 260, height: 34, area: 5 },
-    // Rotas alternativas nas áreas intermediária e avançada.
-    { x: 1520, y: 285, width: 145, height: 24, area: 3, alternate: true },
-    { x: 1725, y: 225, width: 135, height: 24, area: 3, alternate: true },
-    { x: 1935, y: 185, width: 125, height: 24, area: 4, alternate: true, suspended: true },
-    { x: 2150, y: 170, width: 115, height: 24, area: 4, alternate: true, suspended: true },
-  ];
-
-  if (worldIndex === 0) return equationsWorld;
-
-  const layouts = [
-    [
-      { x: 0, y: 400, width: 300, height: 30 },
-      { x: 330, y: 350, width: 220, height: 30 },
-      { x: 590, y: 300, width: 220, height: 30 },
-      { x: 850, y: 360, width: 220, height: 30 },
-      { x: 1110, y: 320, width: 220, height: 30 },
-      { x: 1370, y: 400, width: 230, height: 30 },
-    ],
-    [
-      { x: 0, y: 420, width: 260, height: 30 },
-      { x: 290, y: 370, width: 200, height: 30 },
-      { x: 520, y: 320, width: 200, height: 30 },
-      { x: 750, y: 270, width: 200, height: 30 },
-      { x: 980, y: 340, width: 220, height: 30 },
-      { x: 1230, y: 390, width: 370, height: 30 },
-    ],
-    [
-      { x: 0, y: 400, width: 240, height: 30 },
-      { x: 300, y: 360, width: 180, height: 30 },
-      { x: 540, y: 330, width: 180, height: 30 },
-      { x: 780, y: 370, width: 180, height: 30 },
-      { x: 1020, y: 310, width: 180, height: 30 },
-      { x: 1260, y: 400, width: 340, height: 30 },
-    ],
-    [
-      { x: 0, y: 420, width: 320, height: 30 },
-      { x: 360, y: 340, width: 190, height: 30 },
-      { x: 590, y: 280, width: 190, height: 30 },
-      { x: 820, y: 350, width: 190, height: 30 },
-      { x: 1050, y: 290, width: 190, height: 30 },
-      { x: 1280, y: 400, width: 320, height: 30 },
-    ],
-  ];
-
-  return layouts[worldIndex % layouts.length];
+  const layout = WORLD_PLATFORMS_MAP[worldIndex] || WORLD_0_PLATFORMS;
+  return layout.map((plat) => ({ ...plat }));
 }
+
+// =============================================================================
+// NPCS / FASES DE CADA MUNDO (Edite a ancoragem em platformIndex para cada mundo)
+// =============================================================================
+
+export const WORLD_0_NPCS = [
+  { phase: 1, platformIndex: 1, areaName: 'Introdução', message: 'Bem-vindo! Sua jornada começa aqui.' },
+  { phase: 2, platformIndex: 5, areaName: 'Primeiros desafios', message: 'Os desafios começaram!' },
+  { phase: 3, platformIndex: 8, areaName: 'Dificuldade intermediária', message: 'Está ficando mais difícil!' },
+  { phase: 4, platformIndex: 20, areaName: 'Desafio avançado', message: 'Só os melhores chegam até aqui!' },
+  { phase: 5, platformIndex: 16, areaName: 'Final', message: 'Parabéns! Me vença para concluir este mundo!' },
+];
+
+export const WORLD_1_NPCS = [
+  { phase: 1, platformIndex: 1, areaName: 'Introdução', message: 'Bem-vindo! Sua jornada começa aqui.' },
+  { phase: 2, platformIndex: 5, areaName: 'Primeiros desafios', message: 'Os desafios começaram!' },
+  { phase: 3, platformIndex: 8, areaName: 'Dificuldade intermediária', message: 'Está ficando mais difícil!' },
+  { phase: 4, platformIndex: 20, areaName: 'Desafio avançado', message: 'Só os melhores chegam até aqui!' },
+  { phase: 5, platformIndex: 16, areaName: 'Final', message: 'Parabéns! Me vença para concluir este mundo!' },
+];
+
+export const WORLD_2_NPCS = [
+  { phase: 1, platformIndex: 1, areaName: 'Introdução', message: 'Bem-vindo! Sua jornada começa aqui.' },
+  { phase: 2, platformIndex: 5, areaName: 'Primeiros desafios', message: 'Os desafios começaram!' },
+  { phase: 3, platformIndex: 8, areaName: 'Dificuldade intermediária', message: 'Está ficando mais difícil!' },
+  { phase: 4, platformIndex: 20, areaName: 'Desafio avançado', message: 'Só os melhores chegam até aqui!' },
+  { phase: 5, platformIndex: 16, areaName: 'Final', message: 'Parabéns! Me vença para concluir este mundo!' },
+];
+
+export const WORLD_3_NPCS = [
+  { phase: 1, platformIndex: 1, areaName: 'Introdução', message: 'Bem-vindo! Sua jornada começa aqui.' },
+  { phase: 2, platformIndex: 5, areaName: 'Primeiros desafios', message: 'Os desafios começaram!' },
+  { phase: 3, platformIndex: 8, areaName: 'Dificuldade intermediária', message: 'Está ficando mais difícil!' },
+  { phase: 4, platformIndex: 20, areaName: 'Desafio avançado', message: 'Só os melhores chegam até aqui!' },
+  { phase: 5, platformIndex: 16, areaName: 'Final', message: 'Parabéns! Me vença para concluir este mundo!' },
+];
+
+export const WORLD_NPCS_MAP = {
+  0: WORLD_0_NPCS,
+  1: WORLD_1_NPCS,
+  2: WORLD_2_NPCS,
+  3: WORLD_3_NPCS,
+};
 
 /** Cria os cinco personagens que representam as fases do mundo. */
 export function createWorldCharacters(platforms, worldIndex = 0, levelProgress = []) {
-  // Uma definição por fase evita que a ordem visual dos NPCs troque o desafio iniciado.
-  const worldNpcDefinitions = [
-    { phase: 1, platformIndex: 1, areaName: 'Introdução', message: 'Bem-vindo! Sua jornada começa aqui.' },
-    { phase: 2, platformIndex: 5, areaName: 'Primeiros desafios', message: 'Os desafios começaram!' },
-    { phase: 3, platformIndex: 8, areaName: 'Dificuldade intermediária', message: 'Está ficando mais difícil!' },
-    { phase: 4, platformIndex: 20, areaName: 'Desafio avançado', message: 'Só os melhores chegam até aqui!' },
-    { phase: 5, platformIndex: 16, areaName: 'Final', message: 'Parabéns! Me vença para concluir este mundo!' },
-  ];
-  const definitions = worldIndex === 0
-    ? worldNpcDefinitions
-    : worldNpcDefinitions.map((definition, index) => ({ ...definition, platformIndex: index }));
+  const definitions = WORLD_NPCS_MAP[worldIndex] || WORLD_0_NPCS;
 
   return definitions.map((definition) => {
     const levelIndex = definition.phase - 1;
@@ -132,19 +218,61 @@ export function alignCharactersToPlatforms(characters, platforms) {
   characters.forEach((character) => alignCharacterToPlatform(character, platforms));
 }
 
-/** Obstáculos do percurso do Mundo das Equações. */
+// =============================================================================
+// OBSTÁCULOS / ESPINHOS DE CADA MUNDO (Edite cada mundo individualmente)
+// =============================================================================
+
+export const WORLD_0_HAZARDS = [
+  { x: 684, y: 412, width: 48, height: 18, type: 'spikes', area: 2 },
+  { x: 882, y: 482, width: 42, height: 18, type: 'spikes', area: 2 },
+  { x: 1059, y: 422, width: 48, height: 18, type: 'spikes', area: 2 },
+  { x: 1421, y: 457, width: 54, height: 18, type: 'spikes', area: 3 },
+  { x: 1585, y: 397, width: 42, height: 18, type: 'spikes', area: 3 },
+  { x: 2049, y: 357, width: 60, height: 18, type: 'spikes', area: 4 },
+  { x: 2842, y: 452, width: 42, height: 18, type: 'spikes', area: 5 },
+];
+
+export const WORLD_1_HAZARDS = [
+  { x: 684, y: 412, width: 48, height: 18, type: 'spikes', area: 2 },
+  { x: 882, y: 482, width: 42, height: 18, type: 'spikes', area: 2 },
+  { x: 1059, y: 422, width: 48, height: 18, type: 'spikes', area: 2 },
+  { x: 1421, y: 457, width: 54, height: 18, type: 'spikes', area: 3 },
+  { x: 1585, y: 397, width: 42, height: 18, type: 'spikes', area: 3 },
+  { x: 2049, y: 357, width: 60, height: 18, type: 'spikes', area: 4 },
+  { x: 2842, y: 452, width: 42, height: 18, type: 'spikes', area: 5 },
+];
+
+export const WORLD_2_HAZARDS = [
+  { x: 684, y: 412, width: 48, height: 18, type: 'spikes', area: 2 },
+  { x: 882, y: 482, width: 42, height: 18, type: 'spikes', area: 2 },
+  { x: 1059, y: 422, width: 48, height: 18, type: 'spikes', area: 2 },
+  { x: 1421, y: 457, width: 54, height: 18, type: 'spikes', area: 3 },
+  { x: 1585, y: 397, width: 42, height: 18, type: 'spikes', area: 3 },
+  { x: 2049, y: 357, width: 60, height: 18, type: 'spikes', area: 4 },
+  { x: 2842, y: 452, width: 42, height: 18, type: 'spikes', area: 5 },
+];
+
+export const WORLD_3_HAZARDS = [
+  { x: 684, y: 412, width: 48, height: 18, type: 'spikes', area: 2 },
+  { x: 882, y: 482, width: 42, height: 18, type: 'spikes', area: 2 },
+  { x: 1059, y: 422, width: 48, height: 18, type: 'spikes', area: 2 },
+  { x: 1421, y: 457, width: 54, height: 18, type: 'spikes', area: 3 },
+  { x: 1585, y: 397, width: 42, height: 18, type: 'spikes', area: 3 },
+  { x: 2049, y: 357, width: 60, height: 18, type: 'spikes', area: 4 },
+  { x: 2842, y: 452, width: 42, height: 18, type: 'spikes', area: 5 },
+];
+
+export const WORLD_HAZARDS_MAP = {
+  0: WORLD_0_HAZARDS,
+  1: WORLD_1_HAZARDS,
+  2: WORLD_2_HAZARDS,
+  3: WORLD_3_HAZARDS,
+};
+
+/** Obstáculos do percurso dos mundos. */
 export function createWorldHazards(worldIndex = 0) {
-  if (worldIndex !== 0) return [];
-  return [
-    // Cada grupo fica centralizado na plataforma estática correspondente.
-    { x: 684, y: 412, width: 48, height: 18, type: 'spikes', area: 2 },
-    { x: 882, y: 482, width: 42, height: 18, type: 'spikes', area: 2 },
-    { x: 1059, y: 422, width: 48, height: 18, type: 'spikes', area: 2 },
-    { x: 1421, y: 457, width: 54, height: 18, type: 'spikes', area: 3 },
-    { x: 1585, y: 397, width: 42, height: 18, type: 'spikes', area: 3 },
-    { x: 2049, y: 357, width: 60, height: 18, type: 'spikes', area: 4 },
-    { x: 2842, y: 452, width: 42, height: 18, type: 'spikes', area: 5 },
-  ];
+  const hazards = WORLD_HAZARDS_MAP[worldIndex] || WORLD_0_HAZARDS;
+  return hazards.map((h) => ({ ...h }));
 }
 
 /** Desenha uma plataforma com visual de terra + grama */
