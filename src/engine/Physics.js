@@ -22,10 +22,10 @@ export function isOnPlatform(player, platform) {
   const playerBottom = player.y + player.height;
   const playerRight = player.x + player.width;
   return (
-    playerBottom >= platform.y &&
-    playerBottom <= platform.y + 10 &&
-    playerRight > platform.x + 5 &&
-    player.x < platform.x + platform.width - 5 &&
+    playerBottom >= platform.y - 4 &&
+    playerBottom <= platform.y + 14 &&
+    playerRight > platform.x + 3 &&
+    player.x < platform.x + platform.width - 3 &&
     player.vy >= 0
   );
 }

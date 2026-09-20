@@ -7,6 +7,7 @@ import { createPlayer, drawPlayer, updatePlayerAnimation } from './Player';
 import {
   alignCharactersToPlatforms,
   createWorldPlatforms,
+  updateWorldPlatforms,
   createWorldCharacters,
   createWorldHazards,
   drawPlatform,
@@ -83,6 +84,11 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
     touchRef.current[dir] = pressed;
   }, []);
 
+  // Reiniciar posição do jogador ao trocar de mundo
+  useEffect(() => {
+    playerRef.current = createPlayer(80, 440);
+  }, [worldIndex]);
+
   // Game loop
   useEffect(() => {
     if (isPaused) return;
@@ -97,7 +103,11 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
       const touch = touchRef.current;
       const frame = frameRef.current++;
 
-      // Input
+      // 1. Atualizar plataformas móveis e elevadores
+      updateWorldPlatforms(platforms, performance.now());
+      alignCharactersToPlatforms(characters, platforms);
+
+      // 2. Input
       const moveLeft = keys['a'] || keys['arrowleft'] || touch.left;
       const moveRight = keys['d'] || keys['arrowright'] || touch.right;
       const jump = keys[' '] || keys['w'] || keys['arrowup'] || touch.jump;
@@ -107,7 +117,28 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
       player.isWalking = false;
       if (moveLeft) { player.vx = -player.speed; player.facingRight = false; player.isWalking = true; }
       if (moveRight) { player.vx = player.speed; player.facingRight = true; player.isWalking = true; }
-      if (jumpPressed && (player.isGrounded || (doubleJumpEnabled && player.jumpCount === 1))) {
+
+      // 3. Mecânica do jogador em cima de plataforma ou elevador
+      if (player.standingPlatform) {
+        const sp = player.standingPlatform;
+        if (jumpPressed) {
+          player.vy = player.jumpForce;
+          player.isGrounded = false;
+          player.jumpCount = 1;
+          player.standingPlatform = null;
+        } else {
+          // Conduz o jogador suavemente junto com a plataforma ou elevador
+          player.x += sp.vx;
+          player.y = sp.y - player.height;
+          player.vy = 0;
+          player.isGrounded = true;
+
+          // Se o jogador caminhou para fora da plataforma
+          if (player.x + player.width < sp.x - 3 || player.x > sp.x + sp.width + 3) {
+            player.standingPlatform = null;
+          }
+        }
+      } else if (jumpPressed && (player.isGrounded || (doubleJumpEnabled && player.jumpCount === 1))) {
         const jumpingFromGround = player.isGrounded;
         player.vy = player.jumpForce;
         player.isGrounded = false;
@@ -115,32 +146,39 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
       }
       if (touch.jump) touch.jump = false; // Single tap jump
 
-      // Física
-      applyGravity(player);
+      // 4. Aplicação de gravidade e movimento
+      if (!player.standingPlatform) {
+        applyGravity(player);
+      } else {
+        // Aplica velocidade horizontal do jogador enquanto montado
+        player.x += player.vx;
+        player.vx *= 0.8;
+        if (Math.abs(player.vx) < 0.1) player.vx = 0;
+      }
       updatePlayerAnimation(player);
 
-      // Atualiza a posição lógica das plataformas móveis para que o desafio
-      // visual e a colisão permaneçam sincronizados.
-      platforms.forEach((plat) => {
-        if (plat.moving) plat.x = plat.baseX + Math.sin((performance.now() / 900) + plat.baseX) * plat.range;
-      });
-      alignCharactersToPlatforms(characters, platforms);
-
-      // Colisão com plataformas
-      player.isGrounded = false;
+      // 5. Colisão com plataformas
+      let onAnyPlat = false;
       for (const plat of platforms) {
         if (isOnPlatform(player, plat)) {
+          player.standingPlatform = plat;
           player.y = plat.y - player.height;
           player.vy = 0;
           player.isGrounded = true;
           player.jumpCount = 0;
+          onAnyPlat = true;
+          break;
         }
       }
+      if (!onAnyPlat && !player.standingPlatform) {
+        player.isGrounded = false;
+      }
 
-      // Espinhos funcionais: perdem uma vida e reposicionam o jogador no spawn.
+      // 6. Espinhos funcionais: perdem uma vida e reposicionam o jogador no spawn
       if (hazardCooldownRef.current > 0) hazardCooldownRef.current--;
       if (hazardCooldownRef.current <= 0 && hazards.some((hazard) => checkCollision(player, hazard))) {
         hazardCooldownRef.current = 45;
+        player.standingPlatform = null;
         player.x = 80;
         player.y = 440;
         player.vx = 0;
@@ -149,9 +187,10 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
         onPlayerHit?.();
       }
 
-      // Limites do nível
+      // 7. Limites do nível
       clampToLevel(player, LEVEL_WIDTH, LEVEL_HEIGHT);
       if (player.y > LEVEL_HEIGHT - 50) {
+        player.standingPlatform = null;
         player.y = 440;
         player.x = 80;
         player.vy = 0;
@@ -178,18 +217,18 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
 
       // === Renderização ===
       ctx.clearRect(0, 0, canvasSize.width, canvasSize.height);
-      drawBackground(ctx, canvasSize.width, canvasSize.height, cameraX, frame);
+      drawBackground(ctx, canvasSize.width, canvasSize.height, cameraX, frame, worldIndex);
       drawWorldScenery(ctx, cameraX, cameraY, platforms, worldIndex);
 
       // Casa de nascimento no início e castelo de conclusão no fim.
-      drawHouse(ctx, 110, 520, cameraX, cameraY);
-      drawCastle(ctx, 3000, 520, cameraX, cameraY, frame);
+      drawHouse(ctx, 110, 520, cameraX, cameraY, worldIndex);
+      drawCastle(ctx, 3000, 520, cameraX, cameraY, frame, worldIndex);
 
       // Plataformas
-      for (const plat of platforms) drawPlatform(ctx, plat, cameraX, cameraY);
+      for (const plat of platforms) drawPlatform(ctx, plat, cameraX, cameraY, worldIndex);
 
-      // Perigos: a densidade aumenta a partir da segunda área.
-      for (const hazard of hazards) drawHazard(ctx, hazard, cameraX, cameraY);
+      // Perigos
+      for (const hazard of hazards) drawHazard(ctx, hazard, cameraX, cameraY, worldIndex);
 
       // Cinco personagens que dão acesso às fases do mundo
       for (const p of characters) drawNPC(ctx, p, cameraX, cameraY, frame);
