@@ -37,7 +37,7 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
   const keysRef = useRef({});
   const playerRef = useRef(createPlayer(80, 440));
   const platforms = useMemo(() => createWorldPlatforms(worldIndex), [worldIndex]);
-  const hazards = useMemo(() => createWorldHazards(worldIndex), [worldIndex]);
+  const hazards = useMemo(() => createWorldHazards(worldIndex, platforms), [worldIndex, platforms]);
   const characters = useMemo(
     () => createWorldCharacters(platforms, worldIndex, levelProgress),
     [platforms, worldIndex, levelProgress],

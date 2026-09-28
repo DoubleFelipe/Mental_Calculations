@@ -302,50 +302,68 @@ export function alignCharactersToPlatforms(characters, platforms) {
 }
 
 // =============================================================================
-// OBSTÁCULOS / ESPINHOS DE CADA MUNDO (Específicos para cada terreno)
+// =============================================================================
+// OBSTÁCULOS / ESPINHOS DE CADA MUNDO (Apoiados em plataformas estáticas)
+// Espinhos não são colocados em plataformas especiais (móveis ou elevadores)
+// e ficam firmemente apoiados sobre a superfície, sem flutuar no ar.
 // =============================================================================
 
 export const WORLD_0_HAZARDS = [
-  { x: 550, y: 502, width: 45, height: 18, type: 'spikes', area: 1 },
-  { x: 920, y: 492, width: 36, height: 18, type: 'spikes', area: 2 },
-  { x: 1330, y: 452, width: 50, height: 18, type: 'spikes', area: 2 },
-  { x: 1795, y: 420, width: 40, height: 18, type: 'spikes', area: 3 },
-  { x: 2010, y: 480, width: 45, height: 18, type: 'spikes', area: 4 },
-  { x: 2415, y: 390, width: 40, height: 18, type: 'spikes', area: 4 },
-  { x: 2800, y: 502, width: 35, height: 18, type: 'spikes', area: 5 },
+  // Área 1: Primeiro rochedo (Plataforma estática 2: x=600..750, y=440)
+  { platformIndex: 2, offsetX: 55, x: 655, y: 422, width: 40, height: 18, type: 'spikes', area: 1 },
+  // Área 2: Rota Alta - Copa das Árvores (Plataforma estática 4: x=970..1140, y=260)
+  { platformIndex: 4, offsetX: 65, x: 1035, y: 242, width: 40, height: 18, type: 'spikes', area: 2 },
+  // Área 2: Rota Baixa alternativa (Plataforma estática 6: x=960..1130, y=510)
+  { platformIndex: 6, offsetX: 65, x: 1025, y: 492, width: 40, height: 18, type: 'spikes', area: 2 },
+  // Área 2: Rota Baixa continuidade (Plataforma estática 7: x=1170..1320, y=470)
+  { platformIndex: 7, offsetX: 55, x: 1225, y: 452, width: 40, height: 18, type: 'spikes', area: 2 },
+  // Área 3: Reencontro das rotas (Plataforma estática 8: x=1410..1580, y=390)
+  { platformIndex: 8, offsetX: 65, x: 1475, y: 372, width: 40, height: 18, type: 'spikes', area: 3 },
+  // Área 4: Plataforma suspensa do penhasco (Plataforma estática 12: x=2260..2410, y=350)
+  { platformIndex: 12, offsetX: 55, x: 2315, y: 332, width: 40, height: 18, type: 'spikes', area: 4 },
+  // Área 5: Entrada do castelo (Plataforma estática 15: x=2840..2990, y=490)
+  { platformIndex: 15, offsetX: 55, x: 2895, y: 472, width: 40, height: 18, type: 'spikes', area: 5 },
 ];
 
 export const WORLD_1_HAZARDS = [
-  { x: 525, y: 472, width: 32, height: 18, type: 'spikes', area: 1 },
-  { x: 705, y: 462, width: 32, height: 18, type: 'spikes', area: 1 },
-  { x: 1065, y: 472, width: 32, height: 18, type: 'spikes', area: 2 },
-  { x: 1625, y: 232, width: 32, height: 18, type: 'spikes', area: 2 },
-  { x: 2025, y: 362, width: 32, height: 18, type: 'spikes', area: 3 },
-  { x: 2375, y: 332, width: 40, height: 18, type: 'spikes', area: 4 },
-  { x: 2765, y: 432, width: 32, height: 18, type: 'spikes', area: 5 },
+  // Área 1: Rochedo de coral marinho (Plataforma estática 2: x=560..700, y=450)
+  { platformIndex: 2, offsetX: 52, x: 612, y: 432, width: 36, height: 18, type: 'spikes', area: 1 },
+  // Área 2: Ilhota de conchas (Plataforma estática 4: x=920..1060, y=460)
+  { platformIndex: 4, offsetX: 52, x: 972, y: 442, width: 36, height: 18, type: 'spikes', area: 2 },
+  // Área 2: Passarela aérea de nuvens (Plataforma estática 7: x=1490..1620, y=220)
+  { platformIndex: 7, offsetX: 48, x: 1538, y: 202, width: 34, height: 18, type: 'spikes', area: 2 },
+  // Área 2: Cais inferior alternativo (Plataforma estática 9: x=1280..1430, y=500)
+  { platformIndex: 9, offsetX: 58, x: 1338, y: 482, width: 34, height: 18, type: 'spikes', area: 2 },
+  // Área 5: Ponte suspensa de cordas e corais (Plataforma estática 16: x=2800..2940, y=420)
+  { platformIndex: 16, offsetX: 52, x: 2852, y: 402, width: 36, height: 18, type: 'spikes', area: 5 },
 ];
 
 export const WORLD_2_HAZARDS = [
-  { x: 535, y: 442, width: 32, height: 18, type: 'spikes', area: 1 },
-  { x: 705, y: 402, width: 32, height: 18, type: 'spikes', area: 1 },
-  { x: 1255, y: 222, width: 32, height: 18, type: 'spikes', area: 2 },
-  { x: 1435, y: 252, width: 32, height: 18, type: 'spikes', area: 2 },
-  { x: 1815, y: 452, width: 32, height: 18, type: 'spikes', area: 3 },
-  { x: 2135, y: 352, width: 32, height: 18, type: 'spikes', area: 4 },
-  { x: 2280, y: 322, width: 32, height: 18, type: 'spikes', area: 4 },
-  { x: 2800, y: 432, width: 28, height: 18, type: 'spikes', area: 5 },
+  // Área 1: Pilar de arenito do canyon (Plataforma estática 2: x=570..700, y=420)
+  { platformIndex: 2, offsetX: 48, x: 618, y: 402, width: 34, height: 18, type: 'spikes', area: 1 },
+  // Área 2: Passagem da Tempestade Elétrica (Plataforma estática 6: x=1290..1430, y=240)
+  { platformIndex: 6, offsetX: 52, x: 1342, y: 222, width: 36, height: 18, type: 'spikes', area: 2 },
+  // Área 3: Pilar de salto estreito A (Plataforma estática 9: x=1850..1955, y=430)
+  { platformIndex: 9, offsetX: 38, x: 1888, y: 412, width: 28, height: 18, type: 'spikes', area: 3 },
+  // Área 4: Pilar de salto estreito B (Plataforma estática 11: x=2170..2275, y=330)
+  { platformIndex: 11, offsetX: 38, x: 2208, y: 312, width: 28, height: 18, type: 'spikes', area: 4 },
+  // Área 5: Trilha de descida de arenito (Plataforma estática 14: x=2680..2800, y=270)
+  { platformIndex: 14, offsetX: 44, x: 2724, y: 252, width: 32, height: 18, type: 'spikes', area: 5 },
+  // Área 5: Pilar de ancoragem do vale (Plataforma estática 15: x=2830..2950, y=410)
+  { platformIndex: 15, offsetX: 44, x: 2874, y: 392, width: 32, height: 18, type: 'spikes', area: 5 },
 ];
 
 export const WORLD_3_HAZARDS = [
-  { x: 535, y: 462, width: 32, height: 18, type: 'spikes', area: 1 },
-  { x: 705, y: 422, width: 32, height: 18, type: 'spikes', area: 1 },
-  { x: 1075, y: 402, width: 32, height: 18, type: 'spikes', area: 2 },
-  { x: 1465, y: 152, width: 32, height: 18, type: 'spikes', area: 2 },
-  { x: 1785, y: 412, width: 32, height: 18, type: 'spikes', area: 3 },
-  { x: 2175, y: 372, width: 32, height: 18, type: 'spikes', area: 4 },
-  { x: 2365, y: 332, width: 32, height: 18, type: 'spikes', area: 4 },
-  { x: 2735, y: 302, width: 24, height: 18, type: 'spikes', area: 5 },
-  { x: 2855, y: 442, width: 24, height: 18, type: 'spikes', area: 5 },
+  // Área 1: Pilar de basalto vulcânico (Plataforma estática 2: x=570..700, y=440)
+  { platformIndex: 2, offsetX: 48, x: 618, y: 422, width: 34, height: 18, type: 'spikes', area: 1 },
+  // Área 2: Ilha de rocha vulcânica (Plataforma estática 4: x=920..1070, y=420)
+  { platformIndex: 4, offsetX: 55, x: 975, y: 402, width: 40, height: 18, type: 'spikes', area: 2 },
+  // Área 2: Rocha de cinzas suspensa (Plataforma estática 7: x=1500..1620, y=170)
+  { platformIndex: 7, offsetX: 44, x: 1544, y: 152, width: 32, height: 18, type: 'spikes', area: 2 },
+  // Área 5: Passarela de descida estreita (Plataforma estática 14: x=2760..2870, y=280)
+  { platformIndex: 14, offsetX: 40, x: 2800, y: 262, width: 30, height: 18, type: 'spikes', area: 5 },
+  // Área 5: Degrau final de cinzas (Plataforma estática 15: x=2880..2960, y=420)
+  { platformIndex: 15, offsetX: 28, x: 2908, y: 402, width: 24, height: 18, type: 'spikes', area: 5 },
 ];
 
 export const WORLD_HAZARDS_MAP = {
@@ -355,10 +373,32 @@ export const WORLD_HAZARDS_MAP = {
   3: WORLD_3_HAZARDS,
 };
 
-/** Obstáculos do percurso dos mundos. */
-export function createWorldHazards(worldIndex = 0) {
+/** Obstáculos do percurso dos mundos devidamente alinhados a plataformas não especiais. */
+export function createWorldHazards(worldIndex = 0, platforms = null) {
+  const platList = platforms || WORLD_PLATFORMS_MAP[worldIndex] || WORLD_0_PLATFORMS;
   const hazards = WORLD_HAZARDS_MAP[worldIndex] || WORLD_0_HAZARDS;
-  return hazards.map((h) => ({ ...h }));
+
+  return hazards
+    .filter((h) => {
+      if (h.platformIndex !== undefined && platList[h.platformIndex]) {
+        const plat = platList[h.platformIndex];
+        // Nunca permitir espinhos em plataformas especiais (móveis ou elevadores)
+        if (plat.elevator || plat.moving) return false;
+      }
+      return true;
+    })
+    .map((h) => {
+      const hazard = { ...h };
+      if (hazard.platformIndex !== undefined && platList[hazard.platformIndex]) {
+        const plat = platList[hazard.platformIndex];
+        // Garante apoio milimétrico sobre a superfície da plataforma
+        hazard.y = plat.y - (hazard.height || 18);
+        if (hazard.offsetX !== undefined) {
+          hazard.x = plat.x + hazard.offsetX;
+        }
+      }
+      return hazard;
+    });
 }
 
 // =============================================================================
