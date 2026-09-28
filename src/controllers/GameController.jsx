@@ -10,6 +10,8 @@ import {
   equipSkin as equipSkinModel,
   loseLife as loseLifeModel,
   resetLives as resetLivesModel,
+  setPlayerWorldPosition,
+  clearPlayerWorldPosition,
 } from '../models/GameModel';
 import { DEFAULT_SETTINGS, isValidDifficulty, isValidVolume } from '../models/SettingsModel';
 import { createProfile } from '../models/ProfileModel';
@@ -268,6 +270,15 @@ export function GameProvider({ children }) {
     setGameState((prev) => resetLivesModel(prev));
   }, [setGameState]);
 
+  const saveWorldPosition = useCallback((worldIndex, pos) => {
+    if (!pos) return;
+    setGameState((prev) => setPlayerWorldPosition(prev, worldIndex, pos));
+  }, [setGameState]);
+
+  const clearWorldPosition = useCallback((worldIndex) => {
+    setGameState((prev) => clearPlayerWorldPosition(prev, worldIndex));
+  }, [setGameState]);
+
   const resetAll = useCallback(() => {
     setGameState({ ...DEFAULT_GAME_STATE });
     setSettings({ ...DEFAULT_SETTINGS });
@@ -322,6 +333,8 @@ export function GameProvider({ children }) {
     equipSkin,
     loseLife,
     resetLives,
+    saveWorldPosition,
+    clearWorldPosition,
     resetAll,
   };
 

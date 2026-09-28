@@ -30,12 +30,23 @@ function isNearCharacter(player, character) {
   });
 }
 
-export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, onPlayerHit, isPaused, equippedSkin, doubleJumpEnabled = false }) {
+export default function GameCanvas({
+  worldIndex,
+  levelProgress,
+  onNPCInteract,
+  onPlayerHit,
+  isPaused,
+  equippedSkin,
+  doubleJumpEnabled = false,
+  initialPosition = null,
+}) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const frameRef = useRef(0);
   const keysRef = useRef({});
-  const playerRef = useRef(createPlayer(80, 440));
+  const spawnX = typeof initialPosition?.x === 'number' ? initialPosition.x : 80;
+  const spawnY = typeof initialPosition?.y === 'number' ? initialPosition.y : 440;
+  const playerRef = useRef(createPlayer(spawnX, spawnY));
   const platforms = useMemo(() => createWorldPlatforms(worldIndex), [worldIndex]);
   const hazards = useMemo(() => createWorldHazards(worldIndex, platforms), [worldIndex, platforms]);
   const characters = useMemo(
@@ -44,8 +55,8 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
   );
   const [canvasSize, setCanvasSize] = useState({ width: 1000, height: 500 });
   const touchRef = useRef({ left: false, right: false, jump: false });
-  const interactCooldownRef = useRef(0);
-  const hazardCooldownRef = useRef(0);
+  const interactCooldownRef = useRef(45);
+  const hazardCooldownRef = useRef(30);
   const jumpLatchRef = useRef(false);
 
   // Redimensionar canvas
@@ -84,10 +95,10 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
     touchRef.current[dir] = pressed;
   }, []);
 
-  // Reiniciar posição do jogador ao trocar de mundo
+  // Reiniciar posição do jogador ao trocar de mundo ou atualizar checkpoint
   useEffect(() => {
-    playerRef.current = createPlayer(80, 440);
-  }, [worldIndex]);
+    playerRef.current = createPlayer(spawnX, spawnY);
+  }, [worldIndex, spawnX, spawnY]);
 
   // Game loop
   useEffect(() => {
@@ -174,13 +185,13 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
         player.isGrounded = false;
       }
 
-      // 6. Espinhos funcionais: perdem uma vida e reposicionam o jogador no spawn
+      // 6. Espinhos funcionais: perdem uma vida e reposicionam o jogador no checkpoint/spawn
       if (hazardCooldownRef.current > 0) hazardCooldownRef.current--;
       if (hazardCooldownRef.current <= 0 && hazards.some((hazard) => checkCollision(player, hazard))) {
         hazardCooldownRef.current = 45;
         player.standingPlatform = null;
-        player.x = 80;
-        player.y = 440;
+        player.x = spawnX;
+        player.y = spawnY;
         player.vx = 0;
         player.vy = 0;
         player.jumpCount = 0;
@@ -191,8 +202,8 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
       clampToLevel(player, LEVEL_WIDTH, LEVEL_HEIGHT);
       if (player.y > LEVEL_HEIGHT - 50) {
         player.standingPlatform = null;
-        player.y = 440;
-        player.x = 80;
+        player.x = spawnX;
+        player.y = spawnY;
         player.vy = 0;
         player.jumpCount = 0;
       }
@@ -209,7 +220,7 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
           if (!p.activated && isNearCharacter(player, p)) {
             interactCooldownRef.current = 30;
             if (!p.locked) p.activated = true;
-            onNPCInteract?.(p);
+            onNPCInteract?.(p, { x: player.x, y: player.y });
             break;
           }
         }
@@ -257,7 +268,7 @@ export default function GameCanvas({ worldIndex, levelProgress, onNPCInteract, o
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isPaused, platforms, hazards, characters, canvasSize, onNPCInteract, onPlayerHit, equippedSkin, doubleJumpEnabled, worldIndex]);
+  }, [isPaused, platforms, hazards, characters, canvasSize, onNPCInteract, onPlayerHit, equippedSkin, doubleJumpEnabled, worldIndex, spawnX, spawnY]);
 
   return (
     <div ref={containerRef} className="game-canvas-root">

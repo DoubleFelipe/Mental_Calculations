@@ -27,6 +27,7 @@ export const DEFAULT_GAME_STATE = {
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
   ],
+  worldPositions: {},
   credits: 100,
   lives: 3,
   totalScore: 0,
@@ -219,3 +220,32 @@ export function resetLives(gameState) {
     lives: 3
   };
 }
+
+/**
+ * Salva a última posição conhecida do jogador em um mundo
+ */
+export function setPlayerWorldPosition(gameState, worldIndex, position) {
+  if (!position || typeof position.x !== 'number' || typeof position.y !== 'number') {
+    return gameState;
+  }
+  return {
+    ...gameState,
+    worldPositions: {
+      ...(gameState.worldPositions || {}),
+      [worldIndex]: { x: Math.round(position.x), y: Math.round(position.y) },
+    },
+  };
+}
+
+/**
+ * Limpa a posição salva de um mundo (ex: ao reiniciar mapa após Game Over)
+ */
+export function clearPlayerWorldPosition(gameState, worldIndex) {
+  const updated = { ...(gameState.worldPositions || {}) };
+  delete updated[worldIndex];
+  return {
+    ...gameState,
+    worldPositions: updated,
+  };
+}
+

@@ -13,7 +13,7 @@ import Victory from './views/pages/Results/Victory';
 import Defeat from './views/pages/Results/Defeat';
 import { getStoredUser, isAuthenticated } from './services/authService';
 
-function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onMenu }) {
+function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onMenu, onMap }) {
   const { completeLevelAction } = useGameState();
   const [resolved, setResolved] = useState(null);
   const [error, setError] = useState(null);
@@ -46,7 +46,7 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
   if (!result || (!resolved && !error)) {
     return <div className="result-page chalkboard chalkboard-frame"><p className="chalk-text">Calculando resultado...</p></div>;
   }
-  if (error) return <Defeat correct={result.correct} total={result.total} error={error} onRetry={onRetry} onMenu={onMenu} />;
+  if (error) return <Defeat correct={result.correct} total={result.total} error={error} onRetry={onRetry} onMenu={onMenu} onMap={onMap} />;
 
   return resolved.passed ? (
     <Victory
@@ -60,7 +60,7 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
       onRetry={onRetry}
     />
   ) : (
-    <Defeat correct={result.correct} total={result.total} onRetry={onRetry} onMenu={onMenu} />
+    <Defeat correct={result.correct} total={result.total} onRetry={onRetry} onMenu={onMenu} onMap={onMap} />
   );
 }
 
@@ -119,7 +119,7 @@ function AppContent() {
     case 'worldSelect': return <WorldSelect onNavigate={navigate} onSelectWorld={handleSelectWorld} />;
     case 'platformGame': return <PlatformGame worldIndex={selectedWorld} levelIndex={selectedLevel} onStartQuiz={handleStartQuiz} onNavigate={navigate} />;
     case 'quiz': return <Quiz key={quizKey} worldIndex={selectedWorld} levelIndex={selectedLevel} onComplete={handleQuizComplete} />;
-    case 'result': return <ResultScreen key={quizKey} worldIndex={selectedWorld} levelIndex={selectedLevel} result={quizResult} onContinue={() => navigate('worldSelect')} onRetry={handleRetry} onMenu={() => navigate('mainMenu')} />;
+    case 'result': return <ResultScreen key={quizKey} worldIndex={selectedWorld} levelIndex={selectedLevel} result={quizResult} onContinue={() => navigate('platformGame')} onRetry={handleRetry} onMenu={() => navigate('mainMenu')} onMap={() => navigate('platformGame')} />;
     case 'profile': return <Profile onNavigate={navigate} />;
     case 'settings': return <Settings onNavigate={navigate} />;
     case 'shop': return <Shop onNavigate={navigate} />;
