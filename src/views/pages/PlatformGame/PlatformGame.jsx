@@ -8,8 +8,10 @@ import useGameState from '../../../controllers/GameController';
 import worlds from '../../../data/worlds';
 import './PlatformGame.css';
 
+const EMPTY_COLLECTED_MONEY_BAGS = [];
+
 export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
-  const { gameState, settings, loseLife, resetLives, saveWorldPosition, clearWorldPosition } = useGameState();
+  const { gameState, settings, loseLife, resetLives, saveWorldPosition, clearWorldPosition, collectMoneyBag } = useGameState();
   const [isPaused, setIsPaused] = useState(false);
   const [dialogue, setDialogue] = useState(null);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -82,6 +84,8 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
           initialPosition={savedPosition}
           onNPCInteract={handleNPCInteract}
           onPlayerHit={handlePlayerHit}
+          onMoneyBagCollect={collectMoneyBag}
+          collectedMoneyBags={gameState.collectedMoneyBags || EMPTY_COLLECTED_MONEY_BAGS}
           levelProgress={levelProgress}
           isPaused={isPaused || Boolean(dialogue) || isGameOver}
           equippedSkin={gameState.equippedSkin}

@@ -4,6 +4,7 @@ import {
   DEFAULT_GAME_STATE,
   processLevelComplete,
   addCredits as addCreditsModel,
+  collectMoneyBag as collectMoneyBagModel,
   spendCredits as spendCreditsModel,
   purchaseItem as purchaseItemModel,
   consumePowerUp as consumePowerUpModel,
@@ -224,6 +225,10 @@ export function GameProvider({ children }) {
     setGameState((prev) => addCreditsModel(prev, amount));
   }, [setGameState]);
 
+  const collectMoneyBag = useCallback((bagId, value) => {
+    setGameState((prev) => collectMoneyBagModel(prev, bagId, value));
+  }, [setGameState]);
+
   const spendCredits = useCallback((amount) => {
     let success = false;
     setGameState((prev) => {
@@ -327,6 +332,7 @@ export function GameProvider({ children }) {
     updateProfile,
     completeLevelAction,
     addCredits,
+    collectMoneyBag,
     spendCredits,
     purchaseItem,
     consumePowerUp,

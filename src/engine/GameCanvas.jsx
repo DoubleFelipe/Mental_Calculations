@@ -16,6 +16,7 @@ import {
 } from './Platform';
 import { drawBackground, drawHouse, drawCastle, drawWorldScenery } from './Background';
 import { applyGravity, isOnPlatform, checkCollision, clampToLevel } from './Physics';
+import { createWorldMoneyBags } from './MoneyBag';
 
 const LEVEL_WIDTH = 3220;
 const LEVEL_HEIGHT = 620;
@@ -35,6 +36,8 @@ export default function GameCanvas({
   levelProgress,
   onNPCInteract,
   onPlayerHit,
+  onMoneyBagCollect,
+  collectedMoneyBags = [],
   isPaused,
   equippedSkin,
   doubleJumpEnabled = false,
@@ -49,6 +52,10 @@ export default function GameCanvas({
   const playerRef = useRef(createPlayer(spawnX, spawnY));
   const platforms = useMemo(() => createWorldPlatforms(worldIndex), [worldIndex]);
   const hazards = useMemo(() => createWorldHazards(worldIndex, platforms), [worldIndex, platforms]);
+  const moneyBags = useMemo(
+    () => createWorldMoneyBags(worldIndex, collectedMoneyBags),
+    [worldIndex, collectedMoneyBags],
+  );
   const characters = useMemo(
     () => createWorldCharacters(platforms, worldIndex, levelProgress),
     [platforms, worldIndex, levelProgress],
@@ -208,6 +215,19 @@ export default function GameCanvas({
         player.jumpCount = 0;
       }
 
+      // 8. Coleta de sacos: marca imediatamente no motor e credita uma única vez.
+      for (const bag of moneyBags) {
+        if (!bag.collected && checkCollision(player, {
+          x: bag.x + bag.floatX,
+          y: bag.y + bag.floatY,
+          width: bag.width,
+          height: bag.height,
+        })) {
+          bag.collected = true;
+          onMoneyBagCollect?.(bag.id, bag.value);
+        }
+      }
+
       // Camera
       const cameraX = Math.max(0, Math.min(player.x - canvasSize.width / 2 + player.width / 2, LEVEL_WIDTH - canvasSize.width));
       const cameraY = Math.max(0, Math.min(player.y - canvasSize.height / 2, LEVEL_HEIGHT - canvasSize.height));
@@ -241,6 +261,9 @@ export default function GameCanvas({
       // Perigos
       for (const hazard of hazards) drawHazard(ctx, hazard, cameraX, cameraY, worldIndex);
 
+      // Coletáveis aparecem à frente do cenário e acompanham a câmera.
+      for (const bag of moneyBags) bag.draw(ctx, cameraX, cameraY, performance.now());
+
       // Cinco personagens que dão acesso às fases do mundo
       for (const p of characters) drawNPC(ctx, p, cameraX, cameraY, frame);
 
@@ -268,7 +291,7 @@ export default function GameCanvas({
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isPaused, platforms, hazards, characters, canvasSize, onNPCInteract, onPlayerHit, equippedSkin, doubleJumpEnabled, worldIndex, spawnX, spawnY]);
+  }, [isPaused, platforms, hazards, characters, moneyBags, canvasSize, onNPCInteract, onPlayerHit, onMoneyBagCollect, equippedSkin, doubleJumpEnabled, worldIndex, spawnX, spawnY]);
 
   return (
     <div ref={containerRef} className="game-canvas-root">

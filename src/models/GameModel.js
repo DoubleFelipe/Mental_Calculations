@@ -28,6 +28,7 @@ export const DEFAULT_GAME_STATE = {
     [0, 0, 0, 0, 0],
   ],
   worldPositions: {},
+  collectedMoneyBags: [],
   credits: 100,
   lives: 3,
   totalScore: 0,
@@ -158,6 +159,17 @@ export function addCredits(gameState, amount) {
   return {
     ...gameState,
     credits: gameState.credits + amount
+  };
+}
+
+/** Registra uma coleta uma única vez e adiciona seu valor ao saldo. */
+export function collectMoneyBag(gameState, bagId, value = 10) {
+  const collectedMoneyBags = gameState.collectedMoneyBags || [];
+  if (collectedMoneyBags.includes(bagId)) return gameState;
+  return {
+    ...gameState,
+    credits: gameState.credits + value,
+    collectedMoneyBags: [...collectedMoneyBags, bagId],
   };
 }
 
