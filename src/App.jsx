@@ -118,7 +118,7 @@ function AppContent() {
     case 'mainMenu': return <MainMenu onNavigate={navigate} onLogout={handleLogoutDone} />;
     case 'worldSelect': return <WorldSelect onNavigate={navigate} onSelectWorld={handleSelectWorld} />;
     case 'platformGame': return <PlatformGame worldIndex={selectedWorld} levelIndex={selectedLevel} onStartQuiz={handleStartQuiz} onNavigate={navigate} />;
-    case 'quiz': return <Quiz key={quizKey} worldIndex={selectedWorld} levelIndex={selectedLevel} onComplete={handleQuizComplete} />;
+    case 'quiz': return <Quiz key={quizKey} worldIndex={selectedWorld} levelIndex={selectedLevel} onComplete={handleQuizComplete} onExit={() => navigate('platformGame')} />;
     case 'result': return <ResultScreen key={quizKey} worldIndex={selectedWorld} levelIndex={selectedLevel} result={quizResult} onContinue={() => navigate('platformGame')} onRetry={handleRetry} onMenu={() => navigate('mainMenu')} onMap={() => navigate('platformGame')} />;
     case 'profile': return <Profile onNavigate={navigate} />;
     case 'settings': return <Settings onNavigate={navigate} />;

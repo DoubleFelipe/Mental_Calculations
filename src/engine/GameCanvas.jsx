@@ -94,6 +94,7 @@ export default function GameCanvas({
   isPaused,
   equippedSkin,
   doubleJumpEnabled = false,
+  difficulty = 'medium',
   initialPosition = null,
 }) {
   const canvasRef = useRef(null);
@@ -103,12 +104,12 @@ export default function GameCanvas({
   const spawnX = typeof initialPosition?.x === 'number' ? initialPosition.x : 80;
   const spawnY = typeof initialPosition?.y === 'number' ? initialPosition.y : 440;
   const playerRef = useRef(createPlayer(spawnX, spawnY));
-  const platforms = useMemo(() => createWorldPlatforms(worldIndex), [worldIndex]);
+  const platforms = useMemo(() => createWorldPlatforms(worldIndex, difficulty), [worldIndex, difficulty]);
   const levelWidth = useMemo(
     () => Math.max(...platforms.map((platform) => platform.x + platform.width)) + 100,
     [platforms],
   );
-  const hazards = useMemo(() => createWorldHazards(worldIndex, platforms), [worldIndex, platforms]);
+  const hazards = useMemo(() => createWorldHazards(worldIndex, platforms, difficulty), [worldIndex, platforms, difficulty]);
   const moneyBags = useMemo(
     () => createWorldMoneyBags(worldIndex, collectedMoneyBags),
     [worldIndex, collectedMoneyBags],

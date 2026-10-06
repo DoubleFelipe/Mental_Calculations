@@ -90,6 +90,7 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
           isPaused={isPaused || Boolean(dialogue) || isGameOver}
           equippedSkin={gameState.equippedSkin}
           doubleJumpEnabled={Boolean(settings.doubleJump)}
+          difficulty={settings.difficulty}
         />
       </div>
 

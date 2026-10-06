@@ -3,6 +3,7 @@
  * Plataformas, elevadores, perigos e NPCs para cada mundo
  */
 import { WORLD_SECRET_AREAS } from './SecretAreas';
+import { getGameplayDifficulty } from '../models/SettingsModel';
 
 // =============================================================================
 // PLATAFORMAS DE CADA MUNDO (Layouts exclusivos e variados)
@@ -202,8 +203,9 @@ export const WORLD_PLATFORMS_MAP = {
 };
 
 /** Cria definições de plataformas para o mapa de um mundo com clones desacoplados. */
-export function createWorldPlatforms(worldIndex = 0) {
+export function createWorldPlatforms(worldIndex = 0, difficulty = 'medium') {
   const layout = WORLD_PLATFORMS_MAP[worldIndex] || WORLD_0_PLATFORMS;
+  const { platformSpeedMultiplier } = getGameplayDifficulty(difficulty);
   // Copiamos as plataformas já existentes sem alterar sua geometria e só então
   // acrescentamos a ramificação opcional definida para o mundo atual.
   const secretArea = WORLD_SECRET_AREAS[worldIndex];
@@ -213,6 +215,9 @@ export function createWorldPlatforms(worldIndex = 0) {
     ...(secretArea?.routePlatforms || []),
   ].map((plat) => ({
     ...plat,
+    ...(plat.moving || plat.elevator
+      ? { speed: (plat.speed || (plat.elevator ? 0.0018 : 0.002)) * platformSpeedMultiplier }
+      : {}),
     baseX: plat.baseX ?? plat.x,
     baseY: plat.baseY ?? plat.y,
     prevX: plat.x,
@@ -442,11 +447,18 @@ export const WORLD_HAZARDS_MAP = {
 };
 
 /** Obstáculos do percurso dos mundos devidamente alinhados a plataformas não especiais. */
-export function createWorldHazards(worldIndex = 0, platforms = null) {
+export function createWorldHazards(worldIndex = 0, platforms = null, difficulty = 'medium') {
   const platList = platforms || WORLD_PLATFORMS_MAP[worldIndex] || WORLD_0_PLATFORMS;
   const hazards = WORLD_HAZARDS_MAP[worldIndex] || WORLD_0_HAZARDS;
+  const { hazardRatio } = getGameplayDifficulty(difficulty);
+  const activeHazardCount = Math.ceil(hazards.length * hazardRatio);
+  // Mantém os perigos espalhados pelo percurso, evitando concentrá-los no início.
+  const activeHazards = hazardRatio >= 1 || activeHazardCount >= hazards.length
+    ? hazards
+    : hazards.filter((_, index) => Math.floor(index * activeHazardCount / hazards.length)
+      !== Math.floor((index - 1) * activeHazardCount / hazards.length));
 
-  return hazards
+  return activeHazards
     .filter((h) => {
       if (h.platformIndex !== undefined && platList[h.platformIndex]) {
         const plat = platList[h.platformIndex];
