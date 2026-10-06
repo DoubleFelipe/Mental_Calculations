@@ -2,6 +2,7 @@
  * Mental Calculations — Platforms & Portals
  * Plataformas, elevadores, perigos e NPCs para cada mundo
  */
+import { WORLD_SECRET_AREAS } from './SecretAreas';
 
 // =============================================================================
 // PLATAFORMAS DE CADA MUNDO (Layouts exclusivos e variados)
@@ -42,7 +43,15 @@ export const WORLD_0_PLATFORMS = [
   // 15: Entrada do castelo
   { x: 2840, y: 490, width: 150, height: 30, area: 5 },
   // 16: Pátio do Castelo (NPC 5 / Final)
-  { x: 2980, y: 520, width: 250, height: 34, area: 5 },
+  { x: 4300, y: 520, width: 250, height: 34, area: 5 },
+  // Extensão final: travessia pelas copas e clareira do castelo
+  { x: 3020, y: 470, width: 140, height: 30, area: 5, suspended: true },
+  { x: 3175, y: 390, width: 125, height: 30, area: 5, alternate: true },
+  { x: 3335, y: 440, width: 130, height: 30, area: 5, moving: true, baseX: 3370, range: 35, speed: 0.0018 },
+  { x: 3510, y: 350, width: 145, height: 30, area: 5, suspended: true },
+  { x: 3710, y: 405, width: 120, height: 30, area: 5, moving: true, baseX: 3745, range: 35, speed: 0.002 },
+  { x: 3890, y: 375, width: 135, height: 26, area: 5, elevator: true, baseY: 375, rangeY: 35, speed: 0.0018, guideTop: 325, guideBottom: 430 },
+  { x: 4100, y: 435, width: 155, height: 30, area: 5 },
 ];
 
 /** Mundo 1: Mundo dos Coeficientes (Costa Marítima & Ilhas Flutuantes) */
@@ -82,7 +91,15 @@ export const WORLD_1_PLATFORMS = [
   // 16: Ponte suspensa de cordas e corais
   { x: 2800, y: 420, width: 140, height: 28, area: 5 },
   // 17: Palácio Submerso de Atlântida (NPC 5 / Final)
-  { x: 2980, y: 520, width: 240, height: 34, area: 5 },
+  { x: 4300, y: 520, width: 240, height: 34, area: 5 },
+  // Extensão final: ilhas e jangadas rumo a Atlântida
+  { x: 3000, y: 500, width: 145, height: 28, area: 5, alternate: true },
+  { x: 3185, y: 445, width: 125, height: 28, area: 5 },
+  { x: 3350, y: 470, width: 130, height: 28, area: 5, moving: true, baseX: 3385, range: 35, speed: 0.0019 },
+  { x: 3550, y: 390, width: 140, height: 28, area: 5, suspended: true },
+  { x: 3750, y: 330, width: 120, height: 28, area: 5, moving: true, baseX: 3785, range: 35, speed: 0.002 },
+  { x: 3930, y: 300, width: 135, height: 26, area: 5, elevator: true, baseY: 300, rangeY: 25, speed: 0.0018, guideTop: 255, guideBottom: 355 },
+  { x: 4110, y: 420, width: 150, height: 28, area: 5 },
 ];
 
 /** Mundo 2: Mundo do Delta (Canyons Elétricos & Pirâmides Douradas) */
@@ -120,7 +137,15 @@ export const WORLD_2_PLATFORMS = [
   // 15: Pilar de ancoragem do vale
   { x: 2830, y: 410, width: 120, height: 28, area: 5 },
   // 16: Portal das Pirâmides Douradas (NPC 5 / Final)
-  { x: 2980, y: 520, width: 240, height: 34, area: 5 },
+  { x: 4300, y: 520, width: 240, height: 34, area: 5 },
+  // Extensão final: degraus de arenito e plataformas energizadas
+  { x: 3020, y: 455, width: 145, height: 28, area: 5 },
+  { x: 3180, y: 420, width: 125, height: 28, area: 5, narrow: true },
+  { x: 3350, y: 370, width: 130, height: 28, area: 5, moving: true, baseX: 3385, range: 35, speed: 0.002 },
+  { x: 3530, y: 320, width: 145, height: 28, area: 5, suspended: true },
+  { x: 3700, y: 360, width: 125, height: 28, area: 5, narrow: true },
+  { x: 3870, y: 340, width: 135, height: 26, area: 5, elevator: true, baseY: 340, rangeY: 40, speed: 0.0019, guideTop: 285, guideBottom: 395 },
+  { x: 4050, y: 410, width: 150, height: 28, area: 5 },
 ];
 
 /** Mundo 3: Mundo dos Mestres (Fortaleza Vulcânica & Forja de Lava) */
@@ -158,7 +183,15 @@ export const WORLD_3_PLATFORMS = [
   // 15: Degrau final de cinzas
   { x: 2880, y: 420, width: 80, height: 28, area: 5, narrow: true },
   // 16: Trono do Castelo dos Mestres (NPC 5 / Final)
-  { x: 2980, y: 520, width: 240, height: 34, area: 5 },
+  { x: 4300, y: 520, width: 240, height: 34, area: 5 },
+  // Extensão final: travessia ascendente pela forja e descida ao trono
+  { x: 3020, y: 390, width: 145, height: 28, area: 5, narrow: true },
+  { x: 3180, y: 320, width: 125, height: 28, area: 5 },
+  { x: 3370, y: 430, width: 130, height: 28, area: 5, moving: true, baseX: 3405, range: 35, speed: 0.002 },
+  { x: 3540, y: 360, width: 145, height: 28, area: 5, suspended: true },
+  { x: 3710, y: 445, width: 125, height: 28, area: 5, narrow: true },
+  { x: 3900, y: 355, width: 135, height: 26, area: 5, elevator: true, baseY: 385, rangeY: 30, speed: 0.0019, guideTop: 315, guideBottom: 430 },
+  { x: 4090, y: 440, width: 150, height: 28, area: 5 },
 ];
 
 export const WORLD_PLATFORMS_MAP = {
@@ -171,7 +204,14 @@ export const WORLD_PLATFORMS_MAP = {
 /** Cria definições de plataformas para o mapa de um mundo com clones desacoplados. */
 export function createWorldPlatforms(worldIndex = 0) {
   const layout = WORLD_PLATFORMS_MAP[worldIndex] || WORLD_0_PLATFORMS;
-  return layout.map((plat) => ({
+  // Copiamos as plataformas já existentes sem alterar sua geometria e só então
+  // acrescentamos a ramificação opcional definida para o mundo atual.
+  const secretArea = WORLD_SECRET_AREAS[worldIndex];
+  const platforms = [
+    ...layout,
+    ...(secretArea?.accessPlatform ? [secretArea.accessPlatform] : []),
+    ...(secretArea?.routePlatforms || []),
+  ].map((plat) => ({
     ...plat,
     baseX: plat.baseX ?? plat.x,
     baseY: plat.baseY ?? plat.y,
@@ -180,6 +220,22 @@ export function createWorldPlatforms(worldIndex = 0) {
     vx: 0,
     vy: 0,
   }));
+  // Cada mundo ganha um piso oculto dentro da câmara secreta; o GameCanvas
+  // habilita sua colisão apenas depois que o gatilho da parede ilusória ativa.
+  const secretFloor = secretArea?.floor;
+  if (secretFloor) {
+    platforms.push({
+      ...secretFloor,
+      secret: true,
+      baseX: secretFloor.x,
+      baseY: secretFloor.y,
+      prevX: secretFloor.x,
+      prevY: secretFloor.y,
+      vx: 0,
+      vy: 0,
+    });
+  }
+  return platforms;
 }
 
 /**
@@ -323,6 +379,9 @@ export const WORLD_0_HAZARDS = [
   { platformIndex: 12, offsetX: 55, x: 2315, y: 332, width: 40, height: 18, type: 'spikes', area: 4 },
   // Área 5: Entrada do castelo (Plataforma estática 15: x=2840..2990, y=490)
   { platformIndex: 15, offsetX: 55, x: 2895, y: 472, width: 40, height: 18, type: 'spikes', area: 5 },
+  // Extensão final: espinhos nas ilhas fixas entre plataformas móveis
+  { platformIndex: 18, offsetX: 78, x: 3253, y: 372, width: 28, height: 18, type: 'spikes', area: 5 },
+  { platformIndex: 20, offsetX: 92, x: 3602, y: 332, width: 28, height: 18, type: 'spikes', area: 5 },
 ];
 
 export const WORLD_1_HAZARDS = [
@@ -336,6 +395,9 @@ export const WORLD_1_HAZARDS = [
   { platformIndex: 9, offsetX: 58, x: 1338, y: 482, width: 34, height: 18, type: 'spikes', area: 2 },
   // Área 5: Ponte suspensa de cordas e corais (Plataforma estática 16: x=2800..2940, y=420)
   { platformIndex: 16, offsetX: 52, x: 2852, y: 402, width: 36, height: 18, type: 'spikes', area: 5 },
+  // Extensão final: ouriços nas ilhas seguras entre jangadas
+  { platformIndex: 19, offsetX: 72, x: 3257, y: 312, width: 28, height: 18, type: 'spikes', area: 5 },
+  { platformIndex: 21, offsetX: 86, x: 3636, y: 302, width: 28, height: 18, type: 'spikes', area: 5 },
 ];
 
 export const WORLD_2_HAZARDS = [
@@ -351,6 +413,9 @@ export const WORLD_2_HAZARDS = [
   { platformIndex: 14, offsetX: 44, x: 2724, y: 252, width: 32, height: 18, type: 'spikes', area: 5 },
   // Área 5: Pilar de ancoragem do vale (Plataforma estática 15: x=2830..2950, y=410)
   { platformIndex: 15, offsetX: 44, x: 2874, y: 392, width: 32, height: 18, type: 'spikes', area: 5 },
+  // Extensão final: espinhos nos pilares estreitos
+  { platformIndex: 18, offsetX: 72, x: 3272, y: 347, width: 28, height: 18, type: 'spikes', area: 5 },
+  { platformIndex: 21, offsetX: 92, x: 3657, y: 317, width: 28, height: 18, type: 'spikes', area: 5 },
 ];
 
 export const WORLD_3_HAZARDS = [
@@ -364,6 +429,9 @@ export const WORLD_3_HAZARDS = [
   { platformIndex: 14, offsetX: 40, x: 2800, y: 262, width: 30, height: 18, type: 'spikes', area: 5 },
   // Área 5: Degrau final de cinzas (Plataforma estática 15: x=2880..2960, y=420)
   { platformIndex: 15, offsetX: 28, x: 2908, y: 402, width: 24, height: 18, type: 'spikes', area: 5 },
+  // Extensão final: focos de magma em degraus fixos
+  { platformIndex: 17, offsetX: 88, x: 3108, y: 372, width: 28, height: 18, type: 'spikes', area: 5 },
+  { platformIndex: 20, offsetX: 92, x: 3652, y: 317, width: 28, height: 18, type: 'spikes', area: 5 },
 ];
 
 export const WORLD_HAZARDS_MAP = {

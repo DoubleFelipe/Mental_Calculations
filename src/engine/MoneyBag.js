@@ -2,6 +2,7 @@
  * Saco de dinheiro colecionável do mapa de plataforma.
  * Mantém a animação e o desenho junto do restante do motor 2D.
  */
+import { WORLD_SECRET_AREAS } from './SecretAreas';
 export class MoneyBag {
   constructor({ id, x, y, phase = 0, collected = false, value = 10 }) {
     this.id = id;
@@ -64,16 +65,16 @@ export class MoneyBag {
 
 // Posições distribuídas pelos trechos de plataforma de cada mundo.
 const WORLD_MONEY_BAGS = [
-  [[285, 472], [720, 390], [1100, 210], [1700, 300], [2520, 260]],
-  [[265, 470], [660, 400], [1370, 145], [1880, 310], [2650, 235]],
-  [[280, 460], [670, 370], [1240, 190], [1900, 350], [2550, 115]],
-  [[280, 470], [670, 390], [1440, 120], [2100, 320], [2640, 110]],
+  [[285, 472], [720, 390], [1100, 210], [1700, 300], [2520, 260], [3540, 310], [440, 440], [1260, 180], [1545, 340], [4140, 395]],
+  [[265, 470], [660, 400], [1370, 145], [1880, 310], [2650, 235], [3060, 450], [430, 460], [1040, 420], [2010, 300], [4140, 380]],
+  [[280, 460], [670, 370], [1240, 190], [1900, 350], [2550, 115], [3590, 300], [450, 420], [950, 140], [1750, 440], [4080, 360]],
+  [[280, 470], [670, 390], [1440, 120], [2100, 320], [2640, 110], [3590, 300], [430, 430], [950, 350], [1870, 380], [4130, 390]],
 ];
 
 /** Cria os sacos do mundo, preservando as coletas já salvas no perfil. */
 export function createWorldMoneyBags(worldIndex, collectedIds = []) {
   const placements = WORLD_MONEY_BAGS[worldIndex] || WORLD_MONEY_BAGS[0];
-  return placements.map(([x, y], index) => {
+  const bags = placements.map(([x, y], index) => {
     const id = `world-${worldIndex}-bag-${index}`;
     return new MoneyBag({
       id,
@@ -83,4 +84,22 @@ export function createWorldMoneyBags(worldIndex, collectedIds = []) {
       collected: collectedIds.includes(id),
     });
   });
+  // Cada sala define um pacote de sacos com IDs persistentes por mundo.
+  // O primeiro mantém o ID antigo para preservar coletas já salvas nos perfis.
+  const secretRewards = WORLD_SECRET_AREAS[worldIndex]?.rewards || [];
+  secretRewards.forEach((reward, index) => {
+    const id = index === 0
+      ? `world-${worldIndex}-secret-bag`
+      : `world-${worldIndex}-secret-bag-${index + 1}`;
+    const bag = new MoneyBag({
+      id,
+      ...reward,
+      phase: 1.1 + worldIndex * 0.7 + index * 0.85,
+      value: reward.value || 100,
+      collected: collectedIds.includes(id),
+    });
+    bag.secret = true;
+    bags.push(bag);
+  });
+  return bags;
 }
