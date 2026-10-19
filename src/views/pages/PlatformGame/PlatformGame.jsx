@@ -8,13 +8,16 @@ import useGameState from '../../../controllers/GameController';
 import worlds from '../../../data/worlds';
 import './PlatformGame.css';
 
+const EMPTY_COLLECTED_MONEY_BAGS = [];
+
 export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
-  const { gameState, settings, loseLife, resetLives } = useGameState();
+  const { gameState, settings, loseLife, resetLives, saveWorldPosition, clearWorldPosition, collectMoneyBag } = useGameState();
   const [isPaused, setIsPaused] = useState(false);
   const [dialogue, setDialogue] = useState(null);
   const [isGameOver, setIsGameOver] = useState(false);
 
   const world = worlds[worldIndex];
+  const savedPosition = gameState.worldPositions?.[worldIndex] || null;
 
   useEffect(() => {
     if (!dialogue) return undefined;
@@ -27,9 +30,13 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
     return () => window.clearTimeout(timer);
   }, [dialogue, onStartQuiz, worldIndex]);
 
-  const handleNPCInteract = useCallback((character) => {
+  const handleNPCInteract = useCallback((character, playerPos) => {
+    const pos = playerPos || { x: character.x, y: character.y };
+    if (saveWorldPosition) {
+      saveWorldPosition(worldIndex, pos);
+    }
     setDialogue(character);
-  }, []);
+  }, [worldIndex, saveWorldPosition]);
 
   const handlePlayerHit = useCallback(() => {
     if (gameState.lives <= 1) setIsGameOver(true);
@@ -38,8 +45,11 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
 
   const restartAfterGameOver = useCallback(() => {
     resetLives();
+    if (clearWorldPosition) {
+      clearWorldPosition(worldIndex);
+    }
     setIsGameOver(false);
-  }, [resetLives]);
+  }, [resetLives, clearWorldPosition, worldIndex]);
 
   const levelProgress = world?.levels.map((level, index) => ({
     levelIndex: index,
@@ -71,12 +81,16 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
       <div className="game-canvas-container">
         <GameCanvas
           worldIndex={worldIndex}
+          initialPosition={savedPosition}
           onNPCInteract={handleNPCInteract}
           onPlayerHit={handlePlayerHit}
+          onMoneyBagCollect={collectMoneyBag}
+          collectedMoneyBags={gameState.collectedMoneyBags || EMPTY_COLLECTED_MONEY_BAGS}
           levelProgress={levelProgress}
           isPaused={isPaused || Boolean(dialogue) || isGameOver}
           equippedSkin={gameState.equippedSkin}
           doubleJumpEnabled={Boolean(settings.doubleJump)}
+          difficulty={settings.difficulty}
         />
       </div>
 

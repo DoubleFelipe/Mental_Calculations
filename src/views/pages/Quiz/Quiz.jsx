@@ -7,7 +7,7 @@ import useQuizController from '../../../controllers/useQuizController';
 import Whiteboard from '../../components/Whiteboard/Whiteboard.jsx';
 import './Quiz.css';
 
-export default function Quiz({ worldIndex, levelIndex, onComplete }) {
+export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
   const {
     level,
     difficulty,
@@ -37,6 +37,10 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
 
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const btnColors = ['chalk-btn-green', 'chalk-btn-blue', 'chalk-btn-red', 'chalk-btn-yellow'];
+  const handleExit = () => {
+    if (!showIntro && !window.confirm('Sair desta fase? O resultado desta tentativa não será salvo.')) return;
+    onExit?.();
+  };
 
   // Tela de introdução/explicação
   if (showIntro) {
@@ -56,6 +60,9 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
           </div>
           <button className="chalk-btn chalk-btn-green" onClick={startQuiz}>
             Começar! →
+          </button>
+          <button className="chalk-btn chalk-btn-red quiz-exit-btn" onClick={handleExit} aria-label="Sair da fase e voltar ao mapa">
+            ← Sair da fase
           </button>
         </div>
       </div>
@@ -77,6 +84,7 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
         </div>
         <span className="quiz-diff">{question.difficulty}</span>
       </div>
+
 
       {/* Progresso */}
       <div className="quiz-progress-dots">
@@ -160,6 +168,9 @@ export default function Quiz({ worldIndex, levelIndex, onComplete }) {
           </button>
         </div>
       )}
+      <button className="chalk-btn chalk-btn-red quiz-exit-btn" onClick={handleExit} aria-label="Sair da fase e voltar ao mapa">
+        ← Sair da fase
+      </button>
     </div>
   );
 }
