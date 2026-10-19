@@ -3,7 +3,7 @@
  * Controla a lógica da partida de quiz, cronômetro, áudios e pontuação.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { generateQuestionSet } from '../services/mathGenerator';
+import { generateQuestion, generateQuestionSet } from '../services/mathGenerator';
 import { getLevelDifficulty } from '../models/GameModel';
 import { getDifficultyLabel, getQuestionTimeLimit } from '../models/SettingsModel';
 import useGameState from './GameController';
@@ -24,7 +24,7 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   const selectedDifficultyLabel = getDifficultyLabel(selectedDifficulty);
   const timeLimit = getQuestionTimeLimit(selectedDifficulty);
 
-  const [questions] = useState(() => generateQuestionSet(questionsCount, difficulty));
+  const [questions, setQuestions] = useState(() => generateQuestionSet(questionsCount, difficulty));
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -120,6 +120,12 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
       onComplete(score.correct, questions.length, avgTime, creditMultiplier, attemptIdRef.current);
       return;
     }
+    const difficultyOrder = ['easy', 'medium', 'hard'];
+    const currentDifficulty = difficultyOrder.indexOf(
+      questions[currentQ].difficulty === 'fácil' ? 'easy' : questions[currentQ].difficulty === 'médio' ? 'medium' : 'hard',
+    );
+    const adjustedDifficulty = difficultyOrder[Math.max(0, Math.min(difficultyOrder.length - 1, currentDifficulty + (isCorrect ? 1 : -1)))];
+    setQuestions(previous => previous.map((question, index) => index === currentQ + 1 ? generateQuestion(adjustedDifficulty) : question));
     setCurrentQ(prev => prev + 1);
     setSelected(null);
     setShowFeedback(false);

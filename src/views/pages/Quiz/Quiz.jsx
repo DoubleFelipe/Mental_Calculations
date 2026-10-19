@@ -20,8 +20,6 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
     showFeedback,
     isCorrect,
     score,
-    showExplanation,
-    setShowExplanation,
     showIntro,
     startQuiz,
     timeLeft,
@@ -36,6 +34,7 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
   } = useQuizController({ worldIndex, levelIndex, onComplete });
 
   const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [visibleSteps, setVisibleSteps] = useState(0);
   const btnColors = ['chalk-btn-green', 'chalk-btn-blue', 'chalk-btn-red', 'chalk-btn-yellow'];
   const handleExit = () => {
     if (!showIntro && !window.confirm('Sair desta fase? O resultado desta tentativa não será salvo.')) return;
@@ -48,7 +47,9 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
       <div className="quiz-page chalkboard chalkboard-frame animate-fadeIn">
         <div className="quiz-intro">
           <h2 className="chalk-text-strong">📐 {level?.name}</h2>
-          <p className="chalk-text">Para resolver equações do 2º grau, use a fórmula de Bhaskara:</p>
+          <p className="chalk-text">Uma nova missão apareceu! Vença os desafios e ganhe XP enquanto domina as equações do 2º grau.</p>
+          <div className="mission-reward">🏆 Recompensa da missão: até {questionsCount * 20} XP + uma habilidade matemática</div>
+          <p className="chalk-text">Seu kit de ferramentas para esta fase:</p>
           <div className="formula-display">
             <span className="formula-text">x = (-b ± √(b² - 4ac)) / 2a</span>
           </div>
@@ -75,14 +76,14 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
     <div className="quiz-page chalkboard chalkboard-frame">
       {/* Header */}
       <div className="quiz-header">
-        <span className="quiz-counter">{currentQ + 1} / {questions.length}</span>
+        <span className="quiz-counter">🗺️ Desafio {currentQ + 1} / {questions.length}</span>
         <div className={`quiz-timer ${percentage < 30 ? 'danger' : percentage < 60 ? 'warning' : ''}`}>
           ⏱️ {timeLeft}s
           <div className="timer-bar">
             <div className="timer-fill" style={{ width: `${percentage}%` }} />
           </div>
         </div>
-        <span className="quiz-diff">{question.difficulty}</span>
+        <span className="quiz-diff">{question.difficulty} · ✨ {score.correct * 20} XP</span>
       </div>
 
 
@@ -95,7 +96,9 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
 
       {/* Questão */}
       <div className="quiz-question animate-fadeInUp">
+        <div className="mission-label">MISSÃO {currentQ + 1} · HABILIDADE: {question.skill}</div>
         <p className="question-text chalk-text-strong">{question.text}</p>
+        <p className="quick-hint">🎯 Pense na primeira jogada. Escolha sua resposta e depois abra o mapa da solução.</p>
         <div className="quiz-wb-toggle" style={{ marginTop: 12 }}>
           <button className={`chalk-btn`} onClick={() => setShowWhiteboard(s => !s)}>
             {showWhiteboard ? 'Fechar Quadro' : 'Abrir Quadro Branco'}
@@ -145,27 +148,37 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
           {isCorrect ? (
             <div className="feedback-content">
               <span className="feedback-icon">✅</span>
-              <span className="feedback-text">Correto! Muito bem!</span>
+              <span className="feedback-text">Chefão vencido! +20 XP</span>
             </div>
           ) : (
             <div className="feedback-content">
               <span className="feedback-icon">❌</span>
               <span className="feedback-text">
-                {powerUpMessage || (timeLeft === 0 ? 'Tempo esgotado!' : 'Resposta incorreta!')}
+                {powerUpMessage || (timeLeft === 0 ? 'O tempo acabou! Vamos transformar esse tropeço em experiência.' : 'Quase! Cada tentativa revela uma pista nova.')}
               </span>
-              <button className="show-explanation-btn" onClick={() => setShowExplanation(!showExplanation)}>
-                {showExplanation ? 'Ocultar' : 'Ver'} explicação
+            </div>
+          )}
+          <div className="explanation-box animate-fadeInDown">
+            <div className="solution-heading">🧭 Mapa da solução <span>{Math.min(visibleSteps, question.steps.length)}/{question.steps.length}</span></div>
+            <p className="solution-prompt">💡 Pergunta-chave: {visibleSteps === 0 ? 'qual regra ou fórmula destrava este desafio?' : 'por que este passo funciona?'}</p>
+            <ol className="solution-steps">
+              {question.steps.slice(0, visibleSteps).map((step, index) => (
+                <li key={index}><span className="step-number">{index + 1}</span><span>{step}</span></li>
+              ))}
+            </ol>
+            {visibleSteps < question.steps.length ? (
+              <button className="chalk-btn chalk-btn-yellow reveal-step-btn" onClick={() => setVisibleSteps(value => Math.min(value + 1, question.steps.length))}>
+                {visibleSteps === 0 ? '🔎 Revelar a primeira pista' : '➡️ Revelar próximo passo'}
               </button>
-            </div>
-          )}
-          {showExplanation && (
-            <div className="explanation-box animate-fadeInDown">
-              <pre className="explanation-text">{question.explanation}</pre>
-            </div>
-          )}
-          <button className="chalk-btn chalk-btn-green next-btn" onClick={handleNext}>
-            {currentQ + 1 >= questions.length ? '📊 Ver Resultado' : '→ Próxima'}
-          </button>
+            ) : (
+              <div className="takeaway"><strong>🔓 Habilidade desbloqueada: {question.skill}</strong><br />{question.takeaway}<br /><span>Você ganhou prática em: {question.payoff}.</span></div>
+            )}
+            {visibleSteps === question.steps.length && (
+              <button className="chalk-btn chalk-btn-green next-btn" onClick={() => { setVisibleSteps(0); handleNext(); }}>
+                {currentQ + 1 >= questions.length ? '🏁 Concluir missão' : '🚀 Próximo desafio'}
+              </button>
+            )}
+          </div>
         </div>
       )}
       <button className="chalk-btn chalk-btn-red quiz-exit-btn" onClick={handleExit} aria-label="Sair da fase e voltar ao mapa">

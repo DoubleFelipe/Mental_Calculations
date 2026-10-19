@@ -91,6 +91,20 @@
   margin-bottom: var(--space-xl);
 }
 
+.mission-label {
+  display: inline-block;
+  margin-bottom: var(--space-sm);
+  padding: 0.35rem 0.7rem;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px;
+  color: var(--chalk-yellow);
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-sm);
+  letter-spacing: .04em;
+}
+.quick-hint { margin: .5rem 0; color: var(--text-chalk-dim); font-family: var(--font-handwriting); }
+.mission-reward { padding: var(--space-sm) var(--space-md); border: 1px solid var(--chalk-yellow); border-radius: var(--border-radius-md); color: var(--chalk-yellow); font-family: var(--font-handwriting); }
+
 .question-text {
   font-size: var(--fs-xl);
   line-height: 1.6;
@@ -165,6 +179,17 @@
   padding: var(--space-md);
   border-radius: var(--border-radius-md);
 }
+
+.solution-heading { display:flex; justify-content:space-between; align-items:center; gap:var(--space-sm); color:var(--chalk-yellow); font-family:var(--font-chalk); font-size:var(--fs-lg); }
+.solution-heading span { font-family:var(--font-handwriting); font-size:var(--fs-sm); }
+.solution-prompt { color:var(--text-chalk-dim); font-family:var(--font-handwriting); margin:var(--space-sm) 0; }
+.solution-steps { display:flex; flex-direction:column; gap:var(--space-sm); padding:0; list-style:none; text-align:left; }
+.solution-steps li { display:flex; align-items:flex-start; gap:var(--space-sm); line-height:1.55; font-family:var(--font-handwriting); }
+.step-number { flex:0 0 1.7rem; height:1.7rem; display:grid; place-items:center; border-radius:50%; background:rgba(255,255,255,.14); color:var(--chalk-yellow); }
+.reveal-step-btn { margin-top:var(--space-sm); }
+.takeaway { margin-top:var(--space-md); padding:var(--space-md); border-left:3px solid var(--chalk-green); background:rgba(76,175,80,.12); text-align:left; line-height:1.6; font-family:var(--font-handwriting); }
+.takeaway strong { color:var(--chalk-green-light); }
+.takeaway span { color:var(--text-chalk-dim); }
 
 .explanation-text {
   font-family: var(--font-handwriting);
