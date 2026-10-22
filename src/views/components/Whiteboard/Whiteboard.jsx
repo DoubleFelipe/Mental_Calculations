@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import CanvasDraft from './CanvasDraft.jsx';
 import './Whiteboard.css';
 
 const INITIAL_FIELDS = {
@@ -161,6 +162,8 @@ export default function Whiteboard() {
           </div>
         </div>
       </div>
+
+      <CanvasDraft />
     </section>
   );
 }
