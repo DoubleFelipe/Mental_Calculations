@@ -6,20 +6,20 @@
 /* === Fundo de Lousa Verde === */
 .chalkboard {
   background: 
-    /* Textura de giz sutil */
+    /* Textura uniforme e discreta */
     repeating-linear-gradient(
       0deg,
       transparent,
       transparent 2px,
-      rgba(255,255,255,0.015) 2px,
-      rgba(255,255,255,0.015) 4px
+      rgba(255,255,255,0.006) 2px,
+      rgba(255,255,255,0.006) 4px
     ),
     repeating-linear-gradient(
       90deg,
       transparent,
       transparent 2px,
-      rgba(255,255,255,0.01) 2px,
-      rgba(255,255,255,0.01) 4px
+      rgba(255,255,255,0.004) 2px,
+      rgba(255,255,255,0.004) 4px
     ),
     /* Gradiente de lousa */
     radial-gradient(
@@ -30,7 +30,7 @@
     );
   background-color: var(--chalk-board);
   color: var(--text-chalk);
-  font-family: var(--font-chalk);
+  font-family: var(--font-ui);
   position: relative;
 }
 
@@ -51,7 +51,7 @@
 
 /* === Texto Estilo Giz === */
 .chalk-text {
-  font-family: var(--font-chalk);
+  font-family: var(--font-ui);
   color: var(--text-chalk);
   text-shadow: 
     0 0 5px rgba(255,255,255,0.1),
@@ -72,8 +72,8 @@
 
 /* === Botão Estilo Giz === */
 .chalk-btn {
-  font-family: var(--font-chalk);
-  font-size: var(--fs-xl);
+  font-family: var(--font-ui);
+  font-size: var(--fs-lg);
   padding: var(--space-md) var(--space-2xl);
   border: none;
   border-radius: var(--border-radius-md);
@@ -117,6 +117,12 @@
 
 .chalk-btn:active {
   transform: scale(0.98);
+}
+
+.chalk-btn:focus-visible,
+.chalk-arrow-btn:focus-visible {
+  outline: 3px solid #fff4aa;
+  outline-offset: 3px;
 }
 
 /* Variantes de cor */

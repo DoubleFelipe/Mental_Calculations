@@ -168,9 +168,9 @@ export default function useCanvasDrawing() {
     drawingRef.current = null;
   };
 
-  const addText = (text) => {
+  const addText = (text, color = '#f1f7e9') => {
     if (!text.trim() || !textPosition) { setTextPosition(null); return; }
-    commit([...items, { id: crypto.randomUUID(), type: 'text', text: text.trim(), x: textPosition.x, y: textPosition.y, layer: textPosition.layer, color: '#1c4b36', width: 2 }]);
+    commit([...items, { id: crypto.randomUUID(), type: 'text', text: text.trim(), x: textPosition.x, y: textPosition.y, layer: textPosition.layer, color, width: 2 }]);
     setTextPosition(null);
   };
 

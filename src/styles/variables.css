@@ -3,7 +3,7 @@
    Tema: Lousa verde (Chalkboard)
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Patrick+Hand&family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Inter:wght@400;600;700&display=swap');
 
 :root {
   /* === Cores do Chalkboard === */
@@ -19,8 +19,8 @@
   --chalk-green-light: #81C784;
   --chalk-blue: #42A5F5;
   --chalk-blue-light: #90CAF9;
-  --chalk-yellow: #FFD54F;
-  --chalk-yellow-light: #FFF176;
+  --chalk-yellow: #FFF09A;
+  --chalk-yellow-light: #FFF5BD;
   --chalk-red: #EF5350;
   --chalk-red-light: #EF9A9A;
 
@@ -31,9 +31,9 @@
   --color-info: #42A5F5;
 
   /* === Cores de Texto === */
-  --text-chalk: #FFFFFFDD;
-  --text-chalk-strong: #FFFFFFEE;
-  --text-chalk-dim: #FFFFFF99;
+  --text-chalk: #F5F8F5;
+  --text-chalk-strong: #FFFFFF;
+  --text-chalk-dim: #E1E9E2;
   --text-dark: #1a1a2e;
 
   /* === Cores do Jogo (cenário) === */
@@ -50,12 +50,13 @@
   --coin-shine: #FFF8DC;
 
   /* === Tipografia === */
-  --font-chalk: 'Fredericka the Great', cursive;
-  --font-handwriting: 'Patrick Hand', cursive;
+  --font-chalk: 'Inter', sans-serif;
+  --font-display: 'Fredericka the Great', cursive;
+  --font-handwriting: 'Inter', sans-serif;
   --font-ui: 'Inter', sans-serif;
 
   /* === Tamanhos de Fonte === */
-  --fs-xs: 0.75rem;
+  --fs-xs: 0.875rem;
   --fs-sm: 0.875rem;
   --fs-md: 1rem;
   --fs-lg: 1.25rem;
@@ -80,7 +81,9 @@
   --border-radius-lg: 12px;
   --border-radius-xl: 16px;
   --border-radius-round: 50%;
-  --wood-border-width: 12px;
+  --wood-border-width: 8px;
+  --radius-control: 8px;
+  --radius-card: 12px;
 
   /* === Sombras === */
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);

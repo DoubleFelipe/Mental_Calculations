@@ -58,7 +58,7 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
     playWrong();
   }, [showFeedback, timeLimit, playWrong, registerWrongAnswer]);
 
-  const { timeLeft, percentage, start, reset, addTime } = useTimer(timeLimit, handleTimeUp);
+  const { timeLeft, percentage, start, pause, reset, addTime } = useTimer(timeLimit, handleTimeUp);
 
   useEffect(() => {
     if (!showIntro) {
@@ -169,6 +169,8 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
     startQuiz,
     timeLeft,
     percentage,
+    startTimer: start,
+    pauseTimer: pause,
     handleAnswer,
     handleNext,
     activatePowerUp,

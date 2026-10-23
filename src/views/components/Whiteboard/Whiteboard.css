@@ -8,7 +8,7 @@
   gap: 1rem;
   background: #f7f4e8;
   color: #1f2a22;
-  border: 3px solid rgba(255, 255, 255, 0.58);
+  border: 2px solid rgba(255, 255, 255, 0.58);
   border-radius: 8px;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
 }
@@ -24,7 +24,7 @@
 
 .whiteboard-header h3 {
   margin: 0;
-  font-family: var(--font-chalk);
+  font-family: var(--font-display);
   font-size: 1.35rem;
   color: #1c4b36;
 }
@@ -32,12 +32,13 @@
 .whiteboard-header p {
   margin: 4px 0 0;
   font-family: var(--font-handwriting);
-  font-size: 0.95rem;
-  color: rgba(31, 42, 34, 0.72);
+  font-size: 1rem;
+  color: #34443a;
 }
 
 .whiteboard-clear {
-  min-width: 96px;
+  min-width: 0 !important;
+  font: 600 0.875rem/1.3 var(--font-ui) !important;
   padding: 8px 12px !important;
   border-radius: 8px !important;
   min-height: 44px;
@@ -64,7 +65,7 @@
   background: rgba(28, 75, 54, 0.08);
   border: 1px solid rgba(28, 75, 54, 0.18);
   border-radius: 8px;
-  font-family: var(--font-chalk);
+  font-family: var(--font-ui);
   font-weight: 700;
 }
 
@@ -86,7 +87,7 @@
   color: #18231c;
   border-radius: 4px 4px 0 0;
   padding: 6px 8px;
-  font-family: var(--font-chalk);
+  font-family: var(--font-ui);
   font-size: 1rem;
   text-align: center;
 }
@@ -121,7 +122,7 @@
 .formula-card h4 {
   margin: 0;
   color: #1c4b36;
-  font-family: var(--font-chalk);
+  font-family: var(--font-display);
   font-size: 1.15rem;
 }
 
@@ -132,10 +133,12 @@
   flex-wrap: wrap;
   gap: 7px;
   color: #18231c;
-  font-family: var(--font-chalk);
+  font-family: var(--font-display);
   font-size: 1.05rem;
   line-height: 1.7;
 }
+.formula-row { flex-wrap: nowrap; gap: 4px; font-size: 1rem; }
+.formula-row .math-input { flex: 0 1 48px; max-width: 48px; padding-inline: 3px; }
 
 .result-row {
   padding-top: 6px;
@@ -151,6 +154,18 @@
 .math-input {
   max-width: 84px;
 }
+
+.math-input::placeholder,
+.coefficient-grid input::placeholder,
+.roots-grid input::placeholder { color: #53645a; opacity: 1; }
+.math-input.is-correct, .field-correct { border-color: #176b35 !important; color: #145a2c !important; }
+.math-input.is-incorrect, .field-incorrect { border-color: #9b2d25 !important; color: #7d211b !important; }
+.calculation-check { display: flex; flex-direction: column; align-items: flex-start; gap: .75rem; }
+.check-calculation { min-width: 0 !important; min-height: 44px; padding: .6rem 1rem !important; font: 700 1rem/1.3 var(--font-ui) !important; }
+.calculation-results { display: grid; gap: .4rem; width: 100%; font: 600 .95rem/1.45 var(--font-ui); }
+.calculation-results p { margin: 0; }
+.field-correct { color: #145a2c; }
+.field-incorrect { color: #7d211b; }
 
 .fraction-formula {
   max-width: 100%;
@@ -195,14 +210,15 @@
 .canvas-draft-heading h4 {
   margin: 0;
   color: #1c4b36;
-  font-family: var(--font-chalk);
+  font-family: var(--font-display);
   font-size: 1.1rem;
 }
 
 .canvas-draft-heading p,
 .canvas-status {
-  color: rgba(31, 42, 34, 0.7);
-  font-size: 0.78rem;
+  color: #34443a;
+  font-size: 0.875rem;
+  line-height: 1.45;
 }
 
 .layer-switch,
@@ -238,23 +254,24 @@
 
 .tool-buttons button { display: inline-flex; align-items: center; gap: 0.35rem; }
 .tool-buttons button > span:first-child { font-size: 1.05rem; }
+.tool-buttons button { min-width: 44px; }
 .canvas-options { flex-wrap: wrap; justify-content: flex-end; }
 .canvas-options button { min-width: 40px; font-size: 1.25rem; }
 .canvas-toolbar button:disabled,
 .canvas-transfer:disabled { opacity: 0.45; cursor: not-allowed; }
 .color-option,
-.size-option { display: inline-flex; align-items: center; gap: 0.35rem; color: #254235; font-size: 0.8rem; font-weight: 700; }
+.size-option { display: inline-flex; align-items: center; gap: 0.35rem; color: #254235; font-size: 0.875rem; font-weight: 700; }
 .color-option input { width: 34px; height: 32px; padding: 2px; border: 1px solid rgba(28, 75, 54, 0.2); border-radius: 5px; background: transparent; }
 .size-option input { width: 74px; }
 
 .drawing-surface {
   position: relative;
   width: 100%;
-  height: clamp(210px, 34vw, 330px);
+  height: clamp(280px, 42vw, 440px);
   overflow: hidden;
-  background-color: rgba(255, 255, 255, 0.72);
-  background-image: repeating-linear-gradient(0deg, transparent 0 30px, rgba(28, 75, 54, 0.1) 31px);
-  border: 1px solid rgba(28, 75, 54, 0.22);
+  background-color: #173b2a;
+  background-image: repeating-linear-gradient(0deg, transparent 0 30px, rgba(255,255,255,.1) 31px);
+  border: 1px solid rgba(28, 75, 54, 0.55);
   border-radius: 8px;
   touch-action: none;
 }
@@ -264,7 +281,7 @@
 .draft-canvas { z-index: 2; }
 .draft-canvas.is-hidden { visibility: hidden; }
 .canvas-text-entry { position: absolute; z-index: 3; width: min(240px, 60%); height: 36px; padding: 0.3rem 0.45rem; border: 1px solid #1c4b36; border-radius: 4px; background: #fffdf5; color: #18231c; }
-.canvas-hint { position: absolute; right: 0.55rem; bottom: 0.4rem; z-index: 3; color: rgba(28, 75, 54, 0.36); font-size: 0.72rem; pointer-events: none; }
+.canvas-hint { position: absolute; right: 0.55rem; bottom: 0.4rem; z-index: 3; color: rgba(255,255,255,.78); font-size: 0.875rem; pointer-events: none; }
 .canvas-footer { flex-wrap: wrap; }
 .draft-actions { justify-content: flex-start; flex-wrap: wrap; }
 .canvas-transfer { color: #fff; background: #1c4b36; }
@@ -276,7 +293,7 @@
   .canvas-toolbar { align-items: stretch; flex-direction: column; }
   .tool-buttons { justify-content: stretch; }
   .tool-buttons button { flex: 1; justify-content: center; padding-inline: 0.35rem; }
-  .tool-label { font-size: 0.78rem; }
+  .tool-label { font-size: 0.875rem; }
   .canvas-options { justify-content: space-between; }
   .canvas-status { width: 100%; }
 }
