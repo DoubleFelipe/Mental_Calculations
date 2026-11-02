@@ -160,7 +160,7 @@ function gen_0_1() {
     explanation,
     difficulty: 'fácil',
     topic: 'Discriminante (Delta)',
-    mentalTip: 'Calcule primeiro b². Depois faça o produto de 4·a·c prestando muita atenção na regra de sinais.',
+    mentalTip: 'Calcule primeiro b². Depois use -4·a·c, prestando muita atenção na regra de sinais.',
   }, distractors);
 }
 
