@@ -237,3 +237,106 @@
 
 /* Whiteboard toggle */
 .quiz-wb-toggle { display:flex; justify-content:center; margin-top:6px; }
+
+/* Controles de Cabeçalho e Modo Aprendiz */
+.quiz-header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.chalk-mode-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  color: var(--text-chalk);
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-sm);
+  padding: 4px 10px;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.chalk-mode-btn.active {
+  background: rgba(76, 175, 80, 0.25);
+  border: 1px solid var(--chalk-green);
+  color: var(--chalk-green-light);
+  font-weight: bold;
+}
+
+.quiz-timer.paused {
+  color: var(--chalk-yellow);
+}
+
+.quiz-timer.apprentice {
+  color: var(--chalk-blue);
+}
+
+/* Banner de Rodada de Fixação */
+.review-banner {
+  max-width: 600px;
+  width: 100%;
+  padding: 8px 14px;
+  background: rgba(255, 213, 79, 0.2);
+  border: 2px solid var(--chalk-yellow);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--space-md);
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-md);
+  color: #fff9c4;
+  text-align: center;
+}
+
+/* Tópico e Dica de Cálculo Mental */
+.quiz-topic-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-sm);
+  color: var(--chalk-yellow);
+  margin-bottom: 8px;
+}
+
+.quiz-mental-tip {
+  max-width: 580px;
+  margin: 10px auto 0;
+  padding: 8px 12px;
+  background: rgba(66, 165, 245, 0.15);
+  border-left: 3px solid var(--chalk-blue);
+  border-radius: 4px;
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-md);
+  color: #e1f5fe;
+  text-align: left;
+}
+
+/* Bloco de Diagnóstico de Erro */
+.diagnostic-box {
+  max-width: 520px;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px 14px;
+  background: rgba(239, 83, 80, 0.2);
+  border-left: 4px solid var(--chalk-red);
+  border-radius: 6px;
+  text-align: left;
+}
+
+.diagnostic-badge-title {
+  display: block;
+  font-family: var(--font-chalk);
+  font-size: var(--fs-sm);
+  color: #ffcdd2;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.diagnostic-explanation {
+  margin: 0;
+  font-family: var(--font-handwriting);
+  font-size: var(--fs-md);
+  color: #ffffff;
+  line-height: 1.4;
+}

@@ -39,6 +39,7 @@ export const DEFAULT_GAME_STATE = {
   purchasedItems: [],
   powerUpUses: {},
   equippedSkin: 'default',
+  errorNotebook: [],
 };
 
 /**
@@ -258,6 +259,36 @@ export function clearPlayerWorldPosition(gameState, worldIndex) {
   return {
     ...gameState,
     worldPositions: updated,
+  };
+}
+
+/**
+ * Registra um erro conceitual no Caderno de Erros do jogador (limite de 30 itens).
+ */
+export function recordConceptualError(gameState, errorEntry) {
+  const existing = gameState.errorNotebook || [];
+  const updated = [
+    {
+      id: Date.now(),
+      timestamp: new Date().toISOString(),
+      ...errorEntry,
+    },
+    ...existing,
+  ].slice(0, 30);
+
+  return {
+    ...gameState,
+    errorNotebook: updated,
+  };
+}
+
+/**
+ * Limpa os erros do Caderno de Erros.
+ */
+export function clearErrorNotebook(gameState) {
+  return {
+    ...gameState,
+    errorNotebook: [],
   };
 }
 

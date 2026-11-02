@@ -13,6 +13,8 @@ import {
   resetLives as resetLivesModel,
   setPlayerWorldPosition,
   clearPlayerWorldPosition,
+  recordConceptualError as recordConceptualErrorModel,
+  clearErrorNotebook as clearErrorNotebookModel,
 } from '../models/GameModel';
 import { DEFAULT_SETTINGS, isValidDifficulty, isValidVolume } from '../models/SettingsModel';
 import { createProfile } from '../models/ProfileModel';
@@ -284,6 +286,14 @@ export function GameProvider({ children }) {
     setGameState((prev) => clearPlayerWorldPosition(prev, worldIndex));
   }, [setGameState]);
 
+  const recordConceptualError = useCallback((errorEntry) => {
+    setGameState((prev) => recordConceptualErrorModel(prev, errorEntry));
+  }, [setGameState]);
+
+  const clearErrorNotebook = useCallback(() => {
+    setGameState((prev) => clearErrorNotebookModel(prev));
+  }, [setGameState]);
+
   const resetAll = useCallback(() => {
     setGameState({ ...DEFAULT_GAME_STATE });
     setSettings({ ...DEFAULT_SETTINGS });
@@ -341,6 +351,8 @@ export function GameProvider({ children }) {
     resetLives,
     saveWorldPosition,
     clearWorldPosition,
+    recordConceptualError,
+    clearErrorNotebook,
     resetAll,
   };
 
