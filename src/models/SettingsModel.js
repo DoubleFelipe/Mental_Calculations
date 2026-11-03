@@ -13,9 +13,22 @@ export const DEFAULT_SETTINGS = {
 
 export const DIFFICULTY_OPTIONS = [
   { value: 'easy', label: 'Fácil', timeLimit: 90 },
-  { value: 'medium', label: 'Médio', timeLimit: 60 },
+  { value: 'medium', label: 'Normal', timeLimit: 60 },
   { value: 'hard', label: 'Difícil', timeLimit: 45 },
 ];
+
+// Ajustes do percurso por dificuldade. Multiplicadores de velocidade são
+// aplicados às plataformas móveis/elevadores; hazardRatio define a fração
+// de perigos ativos (a seleção é distribuída pelo mapa).
+export const GAMEPLAY_DIFFICULTY = {
+  easy: { platformSpeedMultiplier: 0.65, hazardRatio: 0.5 },
+  medium: { platformSpeedMultiplier: 1, hazardRatio: 1 },
+  hard: { platformSpeedMultiplier: 1.2, hazardRatio: 1 },
+};
+
+export function getGameplayDifficulty(difficulty) {
+  return GAMEPLAY_DIFFICULTY[difficulty] ?? GAMEPLAY_DIFFICULTY[DEFAULT_SETTINGS.difficulty];
+}
 
 const QUESTION_TIME_LIMITS = Object.fromEntries(
   DIFFICULTY_OPTIONS.map(({ value, timeLimit }) => [value, timeLimit]),

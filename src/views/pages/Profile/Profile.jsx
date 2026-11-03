@@ -89,6 +89,35 @@ export default function Profile({ onNavigate }) {
         <span className="progress-label">{completedCount}/{totalLevels} fases completas</span>
       </div>
 
+      {/* Caderno de Erros e Diagnósticos (Spaced Review) */}
+      <div className="error-notebook-section animate-fadeInUp">
+        <h3 className="chalk-text-strong section-title">📓 Caderno de Revisão & Erros Conceituais</h3>
+        {(!gameState.errorNotebook || gameState.errorNotebook.length === 0) ? (
+          <p className="chalk-text-dim empty-notebook-text">
+            Nenhum erro registrado recentemente. Seu histórico de cálculo mental está impecável! 🎯
+          </p>
+        ) : (
+          <div className="error-notebook-list">
+            {gameState.errorNotebook.slice(0, 5).map((item) => (
+              <div key={item.id} className="error-notebook-card">
+                <div className="notebook-card-header">
+                  <span className="notebook-topic-tag">📚 {item.topic}</span>
+                  <span className="notebook-date">{new Date(item.timestamp).toLocaleDateString()}</span>
+                </div>
+                <p className="notebook-question">{item.questionText}</p>
+                <div className="notebook-answers">
+                  <span className="wrong-answer">❌ Resposta marcada: {item.wrongAnswer || 'Tempo esgotado'}</span>
+                  <span className="correct-answer">✅ Gabarito: {item.correctAnswer}</span>
+                </div>
+                {item.diagnostic && (
+                  <p className="notebook-diag">💡 <em>{item.diagnostic}</em></p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <button className="chalk-arrow-btn back-btn" onClick={() => onNavigate('mainMenu')}>← Voltar</button>
     </div>
   );

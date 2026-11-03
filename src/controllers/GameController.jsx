@@ -4,12 +4,17 @@ import {
   DEFAULT_GAME_STATE,
   processLevelComplete,
   addCredits as addCreditsModel,
+  collectMoneyBag as collectMoneyBagModel,
   spendCredits as spendCreditsModel,
   purchaseItem as purchaseItemModel,
   consumePowerUp as consumePowerUpModel,
   equipSkin as equipSkinModel,
   loseLife as loseLifeModel,
   resetLives as resetLivesModel,
+  setPlayerWorldPosition,
+  clearPlayerWorldPosition,
+  recordConceptualError as recordConceptualErrorModel,
+  clearErrorNotebook as clearErrorNotebookModel,
 } from '../models/GameModel';
 import { DEFAULT_SETTINGS, isValidDifficulty, isValidVolume } from '../models/SettingsModel';
 import { createProfile } from '../models/ProfileModel';
@@ -222,6 +227,10 @@ export function GameProvider({ children }) {
     setGameState((prev) => addCreditsModel(prev, amount));
   }, [setGameState]);
 
+  const collectMoneyBag = useCallback((bagId, value) => {
+    setGameState((prev) => collectMoneyBagModel(prev, bagId, value));
+  }, [setGameState]);
+
   const spendCredits = useCallback((amount) => {
     let success = false;
     setGameState((prev) => {
@@ -266,6 +275,23 @@ export function GameProvider({ children }) {
 
   const resetLives = useCallback(() => {
     setGameState((prev) => resetLivesModel(prev));
+  }, [setGameState]);
+
+  const saveWorldPosition = useCallback((worldIndex, pos) => {
+    if (!pos) return;
+    setGameState((prev) => setPlayerWorldPosition(prev, worldIndex, pos));
+  }, [setGameState]);
+
+  const clearWorldPosition = useCallback((worldIndex) => {
+    setGameState((prev) => clearPlayerWorldPosition(prev, worldIndex));
+  }, [setGameState]);
+
+  const recordConceptualError = useCallback((errorEntry) => {
+    setGameState((prev) => recordConceptualErrorModel(prev, errorEntry));
+  }, [setGameState]);
+
+  const clearErrorNotebook = useCallback(() => {
+    setGameState((prev) => clearErrorNotebookModel(prev));
   }, [setGameState]);
 
   const resetAll = useCallback(() => {
@@ -316,12 +342,17 @@ export function GameProvider({ children }) {
     updateProfile,
     completeLevelAction,
     addCredits,
+    collectMoneyBag,
     spendCredits,
     purchaseItem,
     consumePowerUp,
     equipSkin,
     loseLife,
     resetLives,
+    saveWorldPosition,
+    clearWorldPosition,
+    recordConceptualError,
+    clearErrorNotebook,
     resetAll,
   };
 

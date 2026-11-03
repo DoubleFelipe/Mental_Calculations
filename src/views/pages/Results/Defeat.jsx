@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import useAudio from '../../../hooks/useAudio';
 import './Result.css';
 
-export default function Defeat({ correct, total, error, onRetry, onMenu }) {
+export default function Defeat({ correct, total, error, onRetry, onMenu, onMap }) {
   const { playDefeat } = useAudio();
   useEffect(() => { playDefeat(); }, []); // eslint-disable-line
 
@@ -31,6 +31,7 @@ export default function Defeat({ correct, total, error, onRetry, onMenu }) {
 
         <div className="result-buttons">
           <button className="chalk-btn chalk-btn-green" onClick={onRetry}>🔄 Tentar Novamente</button>
+          {onMap && <button className="chalk-btn chalk-btn-blue" onClick={onMap}>🗺️ Voltar ao Mapa</button>}
           <button className="chalk-btn chalk-btn-red" onClick={onMenu}>🏠 Menu</button>
         </div>
       </div>
