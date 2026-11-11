@@ -57,12 +57,219 @@
   background: #1b5e20 !important;
 }
 
+.whiteboard-toggle-btn {
+  font-size: 0.9rem !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  min-height: 40px;
+  font-weight: bold;
+}
+
 .whiteboard-clear {
   min-width: 80px;
   padding: 6px 12px !important;
   border-radius: 8px !important;
   min-height: 40px;
   background: #757575 !important;
+}
+
+/* Abas de Navegação */
+.whiteboard-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid rgba(28, 75, 54, 0.15);
+  padding-bottom: 6px;
+}
+
+.whiteboard-tab {
+  background: transparent;
+  border: 1px solid rgba(28, 75, 54, 0.25);
+  border-radius: 8px 8px 0 0;
+  padding: 8px 16px;
+  font-family: var(--font-chalk);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2e523f;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.whiteboard-tab:hover {
+  background: rgba(28, 75, 54, 0.08);
+  color: #1c4b36;
+}
+
+.whiteboard-tab.active {
+  background: #1c4b36;
+  color: #ffffff;
+  border-color: #1c4b36;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.whiteboard-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  width: 100%;
+}
+
+/* ==================== MODO RASCUNHO LIVRE ==================== */
+.whiteboard-freehand-panel {
+  gap: 1.25rem;
+}
+
+.freehand-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  background: rgba(28, 75, 54, 0.06);
+  border: 1px solid rgba(28, 75, 54, 0.15);
+  border-radius: 8px;
+}
+
+.freehand-tool-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.freehand-tool-label {
+  font-family: var(--font-chalk);
+  font-size: 0.88rem;
+  font-weight: bold;
+  color: #1c4b36;
+}
+
+.freehand-color-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  padding: 0;
+}
+
+.freehand-color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.freehand-color-swatch.selected {
+  outline: 3px solid #1c4b36;
+  outline-offset: 1px;
+  transform: scale(1.15);
+}
+
+.freehand-tool-btn {
+  padding: 4px 10px !important;
+  font-size: 0.85rem !important;
+  min-height: 32px;
+  border-radius: 6px !important;
+}
+
+.freehand-width-btn {
+  padding: 4px 10px !important;
+  font-size: 0.82rem !important;
+  min-height: 32px;
+  border-radius: 6px !important;
+}
+
+.freehand-clear-canvas-btn {
+  padding: 4px 10px !important;
+  font-size: 0.82rem !important;
+  min-height: 32px;
+  border-radius: 6px !important;
+  background: #c62828 !important;
+  color: #fff !important;
+}
+
+.freehand-clear-canvas-btn:hover {
+  background: #b71c1c !important;
+}
+
+.freehand-canvas-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.freehand-canvas-hint {
+  font-family: var(--font-handwriting);
+  font-size: 0.88rem;
+  color: rgba(31, 42, 34, 0.7);
+  text-align: center;
+}
+
+.freehand-canvas {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 720 / 320;
+  max-height: 380px;
+  background: #ffffff;
+  border: 2px dashed rgba(28, 75, 54, 0.35);
+  border-radius: 8px;
+  cursor: crosshair;
+  touch-action: none;
+  /* Essencial para permitir desenho suave em touch screens sem scroll da tela */
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.freehand-canvas:focus {
+  outline: 2px solid #42a5f5;
+}
+
+/* Bloco de Notas em Texto Livre */
+.freehand-notes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.freehand-notes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.freehand-clear-text-btn {
+  background: transparent;
+  border: none;
+  font-family: var(--font-chalk);
+  font-size: 0.82rem;
+  color: #b71c1c;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 2px 6px;
+}
+
+.freehand-clear-text-btn:hover {
+  color: #d32f2f;
+}
+
+.freehand-textarea {
+  width: 100%;
+  min-height: 90px;
+  border: 1px solid rgba(28, 75, 54, 0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--font-chalk);
+  font-size: 1rem;
+  line-height: 1.5;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1f2a22;
+  resize: vertical;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.freehand-textarea:focus {
+  outline: 2px solid rgba(66, 165, 245, 0.6);
+  border-color: #1c4b36;
 }
 
 .whiteboard-tip-banner {
@@ -204,9 +411,20 @@
   margin-top: 4px;
 }
 
-.nature-pos { background: #c8e6c9; color: #1b5e20; }
-.nature-zero { background: #fff9c4; color: #f57f17; }
-.nature-neg { background: #ffcdd2; color: #b71c1c; }
+.nature-pos {
+  background: #c8e6c9;
+  color: #1b5e20;
+}
+
+.nature-zero {
+  background: #fff9c4;
+  color: #f57f17;
+}
+
+.nature-neg {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
 
 .result-row {
   padding-top: 6px;
@@ -279,5 +497,20 @@
 
   .math-input {
     max-width: 74px;
+  }
+
+  .freehand-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .freehand-tool-group {
+    justify-content: flex-start;
+  }
+
+  .whiteboard-toggle-btn {
+    width: 100%;
+    text-align: center;
   }
 }
