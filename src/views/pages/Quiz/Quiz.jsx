@@ -5,6 +5,8 @@
 import { useState, useEffect } from 'react';
 import useQuizController from '../../../controllers/useQuizController';
 import Whiteboard from '../../components/Whiteboard/Whiteboard.jsx';
+import { WORLD_STORIES } from '../../../data/story';
+import '../../components/Story/Story.css';
 import './Quiz.css';
 
 export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
@@ -42,6 +44,7 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
 
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const btnColors = ['chalk-btn-green', 'chalk-btn-blue', 'chalk-btn-red', 'chalk-btn-yellow'];
+  const isFinalBattle = worldIndex === 3 && levelIndex === 4;
 
   // Pausar o timer automaticamente ao abrir o Quadro Branco e retomar ao fechar
   useEffect(() => {
@@ -63,6 +66,7 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
       <div className="quiz-page chalkboard chalkboard-frame animate-fadeIn">
         <div className="quiz-intro">
           <h2 className="chalk-text-strong">📐 {level?.name}</h2>
+          <p className="story-objective"><strong>{isFinalBattle ? '∅ Confronto com Zero Absoluto' : '🧭 Missão de Léo'}</strong><br />{WORLD_STORIES[worldIndex].levels[levelIndex]}</p>
           <p className="chalk-text">
             {worldIndex === 0 && levelIndex === 0
               ? 'Pratique fatoração direta e raízes simples sem complicação!'
@@ -130,6 +134,17 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
           <span className="quiz-diff">{question.difficulty}</span>
         </div>
       </div>
+
+      {isFinalBattle && (
+        <div key={`${isReviewPhase}-${currentQ}-${showFeedback}`} className={`story-battle ${showFeedback && isCorrect ? 'story-battle-hit' : ''}`} role="status">
+          <span className="story-battle-symbol" aria-hidden="true">∅</span>
+          <div><strong>Zero Absoluto · Desafio Supremo</strong><p>
+            {showFeedback
+              ? isCorrect ? 'Léo: Mais uma luz no Coração! Sua sombra está perdendo força.' : 'Mestra Álgebra: Respire, observe a resolução e siga aprendendo. Estamos com você!'
+              : isReviewPhase ? 'Mestra Álgebra: Revise suas descobertas para fortalecer o que aprendeu.' : 'Léo reúne os fragmentos. Cada acerto ilumina Numeria!'}
+          </p></div>
+        </div>
+      )}
 
       {/* Banner de Rodada de Fixação / Repescagem */}
       {isReviewPhase && (

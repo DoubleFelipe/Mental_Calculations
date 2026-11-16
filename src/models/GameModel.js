@@ -40,6 +40,7 @@ export const DEFAULT_GAME_STATE = {
   powerUpUses: {},
   equippedSkin: 'default',
   errorNotebook: [],
+  story: { viewedByPlayer: {} },
 };
 
 /**

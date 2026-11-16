@@ -2,18 +2,24 @@
 .profile-page {
   width: 100%; min-height: 100svh; height: 100dvh;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
+  align-items: center; justify-content: flex-start;
   gap: var(--space-lg);
   padding: var(--space-xl) var(--space-xl) 6.5rem;
   box-sizing: border-box;
+  min-width: 0;
   overflow-y: auto;
 }
 
-.profile-title { font-size: var(--fs-3xl); margin-top: auto; }
+/* Let the page scroll instead of compressing the progress bar or clipping the title. */
+.profile-page > * { flex-shrink: 0; }
+.profile-title { font-size: var(--fs-3xl); margin: 0; text-align: center; }
 
 .profile-card {
   display: flex; flex-direction: column; align-items: center;
   gap: var(--space-md);
+  width: 100%;
+  max-width: 600px;
+  min-width: 0;
 }
 
 .profile-avatar {
@@ -48,13 +54,15 @@
 
 .profile-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-md);
-  max-width: 500px;
+  max-width: 600px;
   width: 100%;
 }
 
 .stat-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
   background: rgba(0,0,0,0.25);
   border: 1px solid rgba(255,255,255,0.15);
   border-radius: var(--border-radius-lg);
@@ -70,13 +78,13 @@
 .stat-label { font-family: var(--font-handwriting); font-size: var(--fs-sm); color: var(--text-chalk-dim); }
 
 .profile-progress-bar {
-  width: 100%; max-width: 500px;
+  width: 100%; max-width: 600px;
   height: 30px;
+  min-height: 30px;
   background: rgba(0,0,0,0.3);
   border-radius: 15px;
   overflow: hidden;
   position: relative;
-  margin-bottom: auto;
 }
 
 .progress-fill {
@@ -95,6 +103,7 @@
   font-size: var(--fs-sm);
   color: white;
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  white-space: nowrap;
 }
 
 @media (max-width: 600px) {
@@ -117,6 +126,8 @@
   padding: var(--space-md);
   margin-top: var(--space-md);
   box-sizing: border-box;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .section-title {
@@ -142,6 +153,7 @@
 }
 
 .error-notebook-card {
+  min-width: 0;
   background: rgba(255, 255, 255, 0.05);
   border-left: 3px solid var(--chalk-red);
   border-radius: 6px;
@@ -153,17 +165,22 @@
 
 .notebook-card-header {
   display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
   justify-content: space-between;
   align-items: center;
   font-size: 0.8rem;
 }
 
 .notebook-topic-tag {
+  min-width: 0;
+  flex: 1 1 160px;
   color: var(--chalk-yellow);
   font-family: var(--font-chalk);
 }
 
 .notebook-date {
+  flex-shrink: 0;
   color: var(--text-chalk-dim);
   font-size: 0.75rem;
 }

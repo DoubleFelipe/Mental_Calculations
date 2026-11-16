@@ -45,6 +45,7 @@ export default function Profile({ onNavigate }) {
         </div>
         <input
           className="chalk-input profile-name-input"
+          aria-label="Nome do jogador"
           value={profile.name}
           onChange={(e) => updateProfile('name', e.target.value)}
           placeholder="Seu nome"
