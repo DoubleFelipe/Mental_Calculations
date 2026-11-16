@@ -22,7 +22,7 @@ export default function Profile({ onNavigate }) {
     ? ((gameState.totalTime / gameState.questionsAnswered) / 1000).toFixed(1)
     : '0.0';
 
-  const totalLevels = 20;
+  const totalLevels = 25;
   const completedCount = gameState.completedLevels.flat().filter(Boolean).length;
   const progressPct = Math.round((completedCount / totalLevels) * 100);
 

@@ -1,6 +1,6 @@
 # Mental Calculations
 
-Jogo educacional de plataforma e quiz para praticar equações do segundo grau. Pode ser jogado em modo convidado (progresso local) ou com conta Google (progresso sincronizado com MySQL).
+Aventura educativa de plataforma em Numeria: **A Lenda dos Números Perdidos**. Léo restaura mecanismos matemáticos, enfrenta cinco chefes e recupera o Coração dos Cálculos. O quiz continua disponível como treino livre no diário. Pode ser jogado em modo convidado (progresso local) ou com conta Google (progresso sincronizado com MySQL).
 
 ## Requisitos
 
@@ -77,3 +77,36 @@ npm run build
 O servidor valida a fase desbloqueada, o total de questões, limites numéricos e uma tentativa iniciada pelo usuário antes de registrar o resultado. O crédito duplo é verificado e consumido na mesma transação do resultado.
 
 As perguntas continuam sendo geradas no navegador. Para um ranking competitivo ou pagamentos reais, a próxima evolução deve mover a geração/correção das perguntas para o servidor e associá-las à tentativa registrada.
+
+
+## Campanha de Numeria
+
+A campanha reutiliza os quatro percursos originais, elevadores, física, inventário, skins, áudio e rotas secretas. O quinto reino adapta o percurso de arenito com ambientação geométrica. As cinco fases por mundo continuam com IDs estáveis; o novo mundo usa IDs 21–25. A geração antiga de equações continua em `src/services/mathGenerator.js`; a aventura e seu treino usam `adventureMath.js`.
+
+Cada fase possui selos distribuídos no percurso. Um acerto libera a barreira, ativa pontes de energia e conduz ao próximo selo. Nos chefes, os selos alternam lados da arena; ondas anunciadas exigem saltos. Erros oferecem explicação e nova tentativa, além de entrar no caderno de revisão. A fase é registrada somente quando todos os selos foram restaurados. O treino não concede fragmentos, desbloqueios ou recompensas de campanha.
+
+| Fragmento | Conquista |
+| --- | --- |
+| Seiva da Soma | Floresta, fase 3 |
+| Equilíbrio da Diferença | Goblin da Confusão |
+| Luz dos Produtos | Cavernas, fase 3 |
+| Laço dos Fatores | Aranha dos Fatores |
+| Harmonia das Partes | Escorpião Decimal |
+| Chave da Incógnita | Mestre X |
+| Essência das Formas | Reino Geométrico, fase 4 |
+
+Zero Absoluto exige os sete fragmentos e seis selos: operações básicas, multiplicação, frações, álgebra, geometria e um problema combinado. A conclusão abre o epílogo e o título Guardião dos Números. O diário permite reenfrentar chefes sem apagar as conquistas.
+
+### Salvamento e atualização
+
+Saves antigos são ampliados para cinco mundos antes de renderizar as telas; estrelas, compras, créditos e posições são mantidos. Aprovações anteriores continuam válidas. Fragmentos são derivados das melhores estrelas das conquistas, sem contadores incrementais: repetir uma fase não duplica fragmentos. O término da história depende dos sete fragmentos e da vitória final.
+
+Selos parciais, diálogos vistos, enigmas secretos e checkpoints são salvos localmente. As fases concluídas, estrelas e fragmentos correspondentes usam a sincronização existente da conta. Os selos parciais ainda não são sincronizados entre dispositivos. A API continua validando tentativas e resultados; as questões são geradas e corrigidas no cliente, como antes.
+
+**Antes de usar a campanha online, execute `npm run migrate` em `backend`.** Os seeds atualizam nomes e quantidades de questões e acrescentam o quinto mundo sem apagar registros. A leitura de progresso acrescenta linhas ausentes para contas antigas e libera o novo mundo para quem já venceu a quarta região. Não execute a migração de uma implantação antiga enquanto houver tentativas em andamento.
+
+### Verificação
+
+- `npm test`: migração de saves, reprovação, campanha completa, desbloqueios, sete fragmentos sem duplicação, âncoras dos selos, alternativas e seis conteúdos do chefe final.
+- `npm run lint` e `npm run build`.
+- Verificações manuais e limites desta entrega em `docs/numeria-validation.md`.

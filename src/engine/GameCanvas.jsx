@@ -1,3 +1,4 @@
+import { adventureCharacters, drawAdventureActor, drawMathGate, drawMentor } from './Adventure';
 /**
  * Mental Calculations — Game Canvas (main game loop)
  * Renderiza o jogo 2D de plataforma dentro de um canvas React
@@ -8,11 +9,9 @@ import {
   alignCharactersToPlatforms,
   createWorldPlatforms,
   updateWorldPlatforms,
-  createWorldCharacters,
   createWorldHazards,
   drawPlatform,
   drawHazard,
-  drawNPC,
 } from './Platform';
 import { drawBackground, drawHouse, drawCastle, drawWorldScenery } from './Background';
 import { applyGravity, isOnPlatform, checkCollision, clampToLevel } from './Physics';
@@ -96,6 +95,9 @@ export default function GameCanvas({
   doubleJumpEnabled = false,
   difficulty = 'medium',
   initialPosition = null,
+  onPositionSave,
+  restored = false,
+  secretSolved = false,
 }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -104,7 +106,16 @@ export default function GameCanvas({
   const spawnX = typeof initialPosition?.x === 'number' ? initialPosition.x : 80;
   const spawnY = typeof initialPosition?.y === 'number' ? initialPosition.y : 440;
   const playerRef = useRef(createPlayer(spawnX, spawnY));
-  const platforms = useMemo(() => createWorldPlatforms(worldIndex, difficulty), [worldIndex, difficulty]);
+  const platforms = useMemo(() => {
+    const base = createWorldPlatforms(worldIndex, difficulty);
+    const route = base.filter(p=>!p.secret && !p.secretAccess).slice().sort((a,b)=>a.x-b.x);
+    const bridges = route.slice(0,-1).flatMap((p,i)=>{
+      const next=route[i+1], gap=next.x-p.x-p.width;
+      if(p.moving || p.elevator || next.moving || next.elevator || gap<35 || gap>120 || Math.abs(p.y-next.y)>90)return [];
+      return [{x:p.x+p.width,y:Math.max(p.y,next.y),width:gap,height:16,energyLevel:Math.min(3,Math.floor(p.x/1100)),vx:0,vy:0}];
+    });
+    return [...base,...bridges];
+  }, [worldIndex, difficulty]);
   const levelWidth = useMemo(
     () => Math.max(...platforms.map((platform) => platform.x + platform.width)) + 100,
     [platforms],
@@ -115,15 +126,17 @@ export default function GameCanvas({
     [worldIndex, collectedMoneyBags],
   );
   const characters = useMemo(
-    () => createWorldCharacters(platforms, worldIndex, levelProgress),
+    () => adventureCharacters(platforms, worldIndex, levelProgress),
     [platforms, worldIndex, levelProgress],
   );
+  const gateVisualRef = useRef(new Map());
   const [canvasSize, setCanvasSize] = useState({ width: 1000, height: 500 });
   const touchRef = useRef({ left: false, right: false, jump: false });
   const interactCooldownRef = useRef(45);
   const hazardCooldownRef = useRef(30);
   const jumpLatchRef = useRef(false);
   const secretRevealedRef = useRef(false);
+  const secretPendingRef = useRef(false);
   const secretRevealProgressRef = useRef(0);
 
   // Redimensionar canvas
@@ -132,7 +145,7 @@ export default function GameCanvas({
       const availableWidth = containerRef.current?.clientWidth || window.innerWidth;
       const mobileHeightRatio = window.innerWidth <= 768 ? 0.62 : 0.7;
       const w = Math.max(1, Math.floor(Math.min(availableWidth - 6, 1200)));
-      const h = Math.max(180, Math.floor(Math.min(window.innerHeight * mobileHeightRatio, 540)));
+      const h = Math.max(100, Math.floor(Math.min(window.innerHeight * mobileHeightRatio, window.innerHeight - 190, 540)));
       setCanvasSize({ width: w, height: h });
     }
     resize();
@@ -147,15 +160,19 @@ export default function GameCanvas({
 
   // Keyboard handlers
   useEffect(() => {
-    const onDown = (e) => { keysRef.current[e.key.toLowerCase()] = true; };
+    const onDown = (e) => { if (isPaused) return; if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.preventDefault(); keysRef.current[e.key.toLowerCase()] = true; };
     const onUp = (e) => { keysRef.current[e.key.toLowerCase()] = false; };
+    const clear = () => { keysRef.current = {}; touchRef.current = {left:false,right:false,jump:false}; };
+    window.addEventListener('blur', clear);
+    if (isPaused) clear();
     window.addEventListener('keydown', onDown);
     window.addEventListener('keyup', onUp);
     return () => {
+      window.removeEventListener('blur', clear);
       window.removeEventListener('keydown', onDown);
       window.removeEventListener('keyup', onUp);
     };
-  }, []);
+  }, [isPaused]);
 
   // Controles touch
   const handleTouch = useCallback((dir, pressed) => {
@@ -271,7 +288,12 @@ export default function GameCanvas({
           && checkCollision(player, access.trigger),
         );
       }
-      if (unlockedSecret) secretRevealedRef.current = true;
+      if (!unlockedSecret) secretPendingRef.current = false;
+      if (unlockedSecret && !secretSolved && !secretPendingRef.current) {
+        secretPendingRef.current = true;
+        onNPCInteract?.({type:'secret',levelIndex:2,charge:0,count:1,phaseName:'Passagem secreta'}, {x:player.x,y:player.y});
+      }
+      if (secretSolved) secretRevealedRef.current = true;
       if (secretRevealedRef.current) {
         // Fade suave. A colisão ativa junto do início para evitar que o jogador
         // caia através da rota enquanto as nuvens terminam de aparecer.
@@ -281,6 +303,7 @@ export default function GameCanvas({
       // 5. Colisão com plataformas
       let onAnyPlat = false;
       for (const plat of platforms) {
+        if (plat.energyLevel !== undefined && !(levelProgress[plat.energyLevel]?.charge > 0 || levelProgress[plat.energyLevel]?.stars > 0)) continue;
         if (plat.secret && !secretRevealedRef.current) continue;
         if (isOnPlatform(player, plat)) {
           player.standingPlatform = plat;
@@ -309,6 +332,18 @@ export default function GameCanvas({
         onPlayerHit?.();
       }
 
+      const active = characters.find(c => !c.locked && !c.completed);
+      const gateX = active ? platforms[active.platformIndex].x + platforms[active.platformIndex].width + 10 : null;
+      if (gateX !== null && player.x + player.width > gateX) { player.x = gateX - player.width; player.vx = 0; }
+      // Boss waves telegraph for 1.5 seconds, then sweep the arena. Jump to evade.
+      const boss = characters[4];
+      const wavePhase = frame % 240;
+      const waveX = 4300 + ((wavePhase - 90) / 150) * 450;
+      if (!boss.locked && !boss.completed && player.x > 4260 && wavePhase >= 90 && hazardCooldownRef.current <= 0
+        && checkCollision(player, {x:waveX,y:496,width:22,height:24})) {
+        hazardCooldownRef.current = 90; player.vy = -7; onPlayerHit?.();
+      }
+      if (frame % 180 === 0) onPositionSave?.({x:player.x,y:player.y});
       // 7. Limites do nível
       clampToLevel(player, levelWidth, LEVEL_HEIGHT);
       if (player.y > LEVEL_HEIGHT - 50) {
@@ -342,9 +377,10 @@ export default function GameCanvas({
       const interact = keys['e'] || keys['enter'];
       if (interact && interactCooldownRef.current <= 0) {
         for (const p of characters) {
-          if (!p.activated && isNearCharacter(player, p)) {
+          if (!p.completed && !p.activated && isNearCharacter(player, p)) {
             interactCooldownRef.current = 30;
-            if (!p.locked) p.activated = true;
+            keysRef.current = {};
+            touchRef.current = { left:false, right:false, jump:false };
             onNPCInteract?.(p, { x: player.x, y: player.y });
             break;
           }
@@ -380,10 +416,12 @@ export default function GameCanvas({
 
       // Plataformas
       for (const plat of platforms) {
+        if (plat.energyLevel !== undefined && !(levelProgress[plat.energyLevel]?.charge > 0 || levelProgress[plat.energyLevel]?.stars > 0)) continue;
         if (plat.secret && !secretRevealedRef.current) continue;
         if (plat.secret) ctx.save();
         if (plat.secret) ctx.globalAlpha *= secretRevealProgressRef.current;
-        if (plat.cloud) drawCloudPlatform(ctx, plat, cameraX, cameraY, worldIndex);
+        if (plat.energyLevel !== undefined) { ctx.save();ctx.shadowColor="#8fffd2";ctx.shadowBlur=16;ctx.fillStyle="#8fffd2";ctx.fillRect(plat.x-cameraX,plat.y-cameraY,plat.width,plat.height);ctx.restore(); }
+        else if (plat.cloud) drawCloudPlatform(ctx, plat, cameraX, cameraY, worldIndex);
         else drawPlatform(ctx, plat, cameraX, cameraY, worldIndex);
         if (plat.secret) ctx.restore();
       }
@@ -397,15 +435,28 @@ export default function GameCanvas({
         bag.draw(ctx, cameraX, cameraY, performance.now());
       }
 
+      drawMentor(ctx, cameraX, cameraY, frame);
       // Cinco personagens que dão acesso às fases do mundo
-      for (const p of characters) drawNPC(ctx, p, cameraX, cameraY, frame);
+      for (const p of characters) drawAdventureActor(ctx, p, cameraX, cameraY, frame);
 
+      if (gateX !== null) gateVisualRef.current.set(gateX, 0);
+      for (const [gx, opening] of gateVisualRef.current) {
+        const next = gx === gateX ? 0 : Math.min(1, opening + .035);
+        gateVisualRef.current.set(gx, next);
+        drawMathGate(ctx, gx, cameraX, canvasSize.height, next, active?.color || '#a5d6a7');
+      }
+      if (!boss.locked && !boss.completed && player.x > 4150) {
+        ctx.save();ctx.fillStyle=wavePhase<90?'#ffdb9066':'#ff7099';
+        if(wavePhase<90){ctx.fillRect(4300-cameraX,515-cameraY,450,5);ctx.font='bold 13px sans-serif';ctx.fillText('Uma onda se aproxima. Prepare o salto!',4300-cameraX,450-cameraY);}
+        else {ctx.beginPath();ctx.arc(waveX-cameraX+11,508-cameraY,12,0,Math.PI*2);ctx.fill();}ctx.restore();
+      }
+      if(restored){ctx.save();ctx.fillStyle='rgba(160,255,190,.12)';ctx.fillRect(0,0,canvasSize.width,canvasSize.height);ctx.restore();}
       // Player
       drawPlayer(ctx, player, cameraX, cameraY, equippedSkin);
 
       // Instrução de interação
       for (const p of characters) {
-        if (!p.activated && isNearCharacter(player, p)) {
+        if (!p.completed && !p.activated && isNearCharacter(player, p)) {
           const px = p.x + p.width / 2 - cameraX;
           const py = p.y - 20 - cameraY;
           ctx.fillStyle = 'rgba(0,0,0,0.7)';
@@ -424,7 +475,7 @@ export default function GameCanvas({
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isPaused, platforms, hazards, characters, moneyBags, canvasSize, levelWidth, onNPCInteract, onPlayerHit, onMoneyBagCollect, equippedSkin, doubleJumpEnabled, worldIndex, spawnX, spawnY]);
+  }, [isPaused, platforms, hazards, characters, moneyBags, canvasSize, levelWidth, onNPCInteract, onPlayerHit, onMoneyBagCollect, equippedSkin, doubleJumpEnabled, worldIndex, spawnX, spawnY, onPositionSave, restored, levelProgress, secretSolved]);
 
   return (
     <div ref={containerRef} className="game-canvas-root">
@@ -436,22 +487,11 @@ export default function GameCanvas({
       />
       {/* Controles mobile */}
       <div className="mobile-controls" aria-label="Controles do jogo">
-        <button className="mobile-btn mobile-left"
-          onTouchStart={() => handleTouch('left', true)}
-          onTouchEnd={() => handleTouch('left', false)}
-          onMouseDown={() => handleTouch('left', true)}
-          onMouseUp={() => handleTouch('left', false)}>◀</button>
-        <button className="mobile-btn mobile-right"
-          onTouchStart={() => handleTouch('right', true)}
-          onTouchEnd={() => handleTouch('right', false)}
-          onMouseDown={() => handleTouch('right', true)}
-          onMouseUp={() => handleTouch('right', false)}>▶</button>
-        <button className="mobile-btn mobile-jump"
-          onTouchStart={() => handleTouch('jump', true)}
-          onMouseDown={() => handleTouch('jump', true)}>▲</button>
-        <button className="mobile-btn mobile-interact"
-          onTouchStart={() => { keysRef.current['e'] = true; setTimeout(() => keysRef.current['e'] = false, 100); }}
-          onMouseDown={() => { keysRef.current['e'] = true; setTimeout(() => keysRef.current['e'] = false, 100); }}>E</button>
+        {['left','right','jump'].map((dir,i)=><button key={dir} className={`mobile-btn mobile-${dir}`} aria-label={['Mover para esquerda','Mover para direita','Pular'][i]}
+          onPointerDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);handleTouch(dir,true);}}
+          onPointerUp={()=>handleTouch(dir,false)} onPointerCancel={()=>handleTouch(dir,false)}
+          onClick={()=>{handleTouch(dir,true);setTimeout(()=>handleTouch(dir,false),120);}}>{['◀','▶','▲'][i]}</button>)}
+        <button className="mobile-btn mobile-interact" aria-label="Interagir com selo" onClick={()=>{keysRef.current.e=true;setTimeout(()=>{keysRef.current.e=false;},150);}}>E</button>
       </div>
     </div>
   );

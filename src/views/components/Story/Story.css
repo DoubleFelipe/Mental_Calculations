@@ -1,0 +1,43 @@
+/* Narrative layers retain the illustrated canvas and chalk interface. */
+.numeria-heart { display:flex; align-items:center; gap:8px; font-size:12px; color:#d4eee7; }
+.numeria-heart svg { width:56px; height:52px; flex-shrink:0; }
+.numeria-heart.large { flex-direction:column; font-size:18px; margin:12px auto; }
+.numeria-heart.large svg { width:180px; height:160px; filter:drop-shadow(0 0 25px #62d7ae66); }
+.numeria-cinema { height:100dvh; overflow:auto; position:relative; background:#071c29; color:#e8f6e9; isolation:isolate; }
+.numeria-cinema header { position:absolute; z-index:3; width:100%; display:flex; justify-content:space-between; align-items:center; gap:12px; padding:20px 5vw; font-size:11px; letter-spacing:2px; }
+.story-link { color:#c6ecde; background:#123b41; border:1px solid #91bcb766; padding:8px 14px; border-radius:8px; }
+.cinema-scene { position:absolute; inset:0; overflow:hidden; background:radial-gradient(ellipse at 52% 25%,#216d76,#091e30 70%); transition:filter 1s; }
+.broken .cinema-scene { filter:hue-rotate(45deg) saturate(.65); }
+.cinema-moon { position:absolute; left:48%; top:12%; width:140px; height:140px; border-radius:50%; background:#caf4d8; box-shadow:0 0 120px #8ef3d67a; animation:relicPulse 4s ease-in-out infinite; }
+.cinema-mountains { position:absolute; inset:30% -10% 0; background:#123c48; clip-path:polygon(0 55%,10% 15%,20% 40%,35% 0,50% 45%,65% 15%,75% 35%,90% 0,100% 60%,100% 100%,0 100%); transform:scale(1.2); }
+.cinema-temple { position:absolute; width:300px; height:210px; left:calc(50% - 150px); top:27%; border-top:28px solid #80b9ad; border-bottom:25px solid #6d9b94; background:#11333ddd; box-shadow:0 25px 90px #0007; }
+.cinema-temple:before { content:''; position:absolute; top:-95px; left:-30px; border-left:180px solid transparent; border-right:180px solid transparent; border-bottom:65px solid #426d71; }
+.cinema-temple i { position:absolute; top:0; bottom:0; width:20px; background:linear-gradient(90deg,#497c7d,#b0d1b9,#497c7d); }
+.cinema-temple i:nth-child(1){left:20px}.cinema-temple i:nth-child(2){left:140px}.cinema-temple i:nth-child(3){right:20px}
+.cinema-relic { position:absolute; left:140px; top:70px; color:#b1ffe3; filter:drop-shadow(0 0 14px #82ffcd); }
+.cinema-relic b { position:absolute; font-size:30px; transform:rotate(calc(var(--i)*51.4deg)) translateY(-22px); transition:transform 1.3s; }
+.broken .cinema-relic b { transform:rotate(calc(var(--i)*51.4deg)) translateY(-110px); animation:relicPulse 3s infinite; }
+.cinema-zero { position:absolute; left:60%; top:28%; font-size:140px; color:#180d2e; text-shadow:0 0 30px #f48fb1; animation:relicPulse 2s infinite; }
+.cinema-leo { position:absolute; top:45%; left:25%; font-size:65px; color:#ffd381; transform:rotate(-5deg); }
+.cinema-leo span { display:block; font-size:12px; text-align:center; }
+.cinema-river { position:absolute; inset:53% -20% 0; background:linear-gradient(170deg,#6dcbbc40,transparent 60%); transform:skewX(-30deg); }
+.cinema-runes { position:absolute; top:18%; left:10%; font-size:35px; opacity:.22; letter-spacing:20px; animation:relicPulse 6s infinite; }
+.cinema-caption { position:relative; margin:0 auto; padding:55vh 24px 35px; width:min(760px,100%); text-shadow:0 2px 10px #000; animation:storyEnter .5s ease; }
+.cinema-caption:before { content:''; position:absolute; inset:45vh -50vw -50px; background:linear-gradient(transparent,#071c29 20%); z-index:-1; }
+.story-eyebrow { font-size:11px; letter-spacing:2px; color:#92d5bc; margin-bottom:10px; }
+.cinema-caption h1 { font-family:var(--font-chalk); font-size:clamp(26px,4vw,44px); margin-bottom:12px; }
+.cinema-caption strong { color:#ffd381; }.cinema-caption p:not(.story-eyebrow) { font-size:clamp(16px,2vw,20px); line-height:1.6; margin:8px 0 20px; }
+.story-modal-backdrop { position:fixed; inset:0; z-index:1000; background:#04121c99; display:grid; place-items:center; padding:16px; backdrop-filter:blur(3px); }
+.story-modal { width:min(620px,100%); max-height:calc(100dvh - 32px); overflow:auto; border:2px solid #99d6bc; border-radius:18px; padding:clamp(18px,4vw,32px); background:linear-gradient(145deg,#153a3c,#102b35); box-shadow:0 24px 80px #0008; }
+.story-modal h2 { font-family:var(--font-chalk); font-size:26px; margin:6px 0 14px; }.story-modal p { line-height:1.6; margin:12px 0; }
+.story-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; }
+.story-options { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0; }.story-options button { white-space:normal; overflow-wrap:anywhere; font-size:20px; }
+.story-feedback { border-left:3px solid #ffd381; padding-left:12px; color:#ffe0a2; }.story-feedback.success { border-color:#8ee6af; color:#adf5c2; }
+.story-objective { padding:10px 20px; color:#d3eadb; font-size:13px; background:#071e29; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.story-completion { height:100dvh; overflow:auto; text-align:center; padding:35px 20px; background:radial-gradient(ellipse at top,#245c54,#081f2c); }.story-completion h1 { color:#ffe0a2; font-family:var(--font-chalk); font-size:clamp(28px,5vw,54px); }.story-completion p { max-width:680px; margin:20px auto; line-height:1.7; }.story-completion .story-actions { justify-content:center; }
+.fragment-list { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:20px auto; max-width:720px; }.fragment-list span { padding:8px 14px; border:1px solid #6da9a2; border-radius:8px; }
+@keyframes relicPulse { 50% { opacity:.65; } } @keyframes storyEnter { from {opacity:0;transform:translateY(15px)} to {opacity:1;transform:translateY(0)} }
+@media(max-width:600px) { .numeria-heart { gap:2px; font-size:10px; }.numeria-heart svg{width:35px}.game-hud{grid-template-columns:1fr 1fr!important;padding:6px 10px!important}.hud-center{grid-column:1/-1;grid-row:2}.cinema-temple{transform:scale(.75);transform-origin:center top}.cinema-caption{padding-top:51vh}.cinema-caption:before{inset:40vh -50vw -50px}.cinema-leo{left:8%}.cinema-runes{display:none}.story-options button{font-size:17px}.story-objective{font-size:11px;padding:6px 10px} }
+@media(prefers-reduced-motion:reduce) { .numeria-cinema *, .story-modal * { animation:none!important;transition:none!important; } }
+
+.numeria-cinema { overflow-x:hidden; }

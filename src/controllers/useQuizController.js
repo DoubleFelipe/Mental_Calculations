@@ -3,14 +3,14 @@
  * Controla a lógica da partida de quiz, cronômetro, áudios, diagnósticos pedagógicos e pontuação.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { generateQuestionSet } from '../services/mathGenerator';
+import { generateAdventureSet } from '../services/adventureMath';
 import { getLevelDifficulty } from '../models/GameModel';
 import { getDifficultyLabel, getQuestionTimeLimit } from '../models/SettingsModel';
 import useGameState from './GameController';
 import useTimer from '../hooks/useTimer';
 import useAudio from '../hooks/useAudio';
 import worlds from '../data/worlds';
-import { progressApi, shopApi } from '../services/apiService';
+import { shopApi } from '../services/apiService';
 
 export default function useQuizController({ worldIndex, levelIndex, onComplete }) {
   const { settings, gameState, consumePowerUp, isOnline, recordConceptualError } = useGameState();
@@ -26,7 +26,7 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
 
   // Geração acoplada com a matriz pedagógica da fase
   const [questions, setQuestions] = useState(() =>
-    generateQuestionSet(questionsCount, difficulty, worldIndex, levelIndex)
+    generateAdventureSet(questionsCount, worldIndex, levelIndex)
   );
 
   const [currentQ, setCurrentQ] = useState(0);
@@ -230,15 +230,6 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   };
 
   const startQuiz = async () => {
-    if (isOnline) {
-      try {
-        const levelId = worldIndex * 5 + levelIndex + 1;
-        const attempt = await progressApi.startLevel(levelId);
-        attemptIdRef.current = attempt.attemptId;
-      } catch (error) {
-        setPowerUpMessage(`Sessão online indisponível: ${error.message}`);
-      }
-    }
     setShowIntro(false);
   };
 

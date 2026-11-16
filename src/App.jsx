@@ -1,3 +1,7 @@
+import Cinematic from './views/components/Story/Cinematic';
+import Conclusion from './views/components/Story/Conclusion';
+import { isStoryComplete } from './data/story';
+import { calculateStars } from './models/GameModel';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GameProvider } from './controllers/GameController';
 import useGameState from './controllers/GameController';
@@ -15,7 +19,7 @@ import { getStoredUser, isAuthenticated } from './services/authService';
 
 function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onMenu, onMap }) {
   const { completeLevelAction } = useGameState();
-  const [resolved, setResolved] = useState(null);
+  const [resolved, setResolved] = useState(() => result?.practice ? {passed:result.correct/result.total>=.6,stars:calculateStars(result.correct,result.total),score:0,credits:0} : null);
   const [error, setError] = useState(null);
   const processedRef = useRef(false);
   const completeActionRef = useRef(completeLevelAction);
@@ -28,6 +32,7 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
     if (!result || processedRef.current) return undefined;
 
     processedRef.current = true;
+    if (result.practice) return undefined;
     completeActionRef.current(
       worldIndex,
       levelIndex,
@@ -65,7 +70,7 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
 }
 
 function AppContent() {
-  const { handleLogin, handleLogout } = useGameState();
+  const { handleLogin, handleLogout, gameState, updateStory } = useGameState();
   const [loginDone, setLoginDone] = useState(() => {
     if (window.location.search.includes('token=') || window.location.search.includes('error=')) return false;
     return isAuthenticated() || getStoredUser() !== null || localStorage.getItem('mc_guest_mode') === 'true';
@@ -76,7 +81,7 @@ function AppContent() {
   const [quizResult, setQuizResult] = useState(null);
   const [quizKey, setQuizKey] = useState(0);
 
-  const navigate = useCallback((page) => { setCurrentPage(page); }, []);
+  const navigate = useCallback((page) => { setCurrentPage(page === 'worldSelect' && !gameState.story.introSeen ? 'intro' : page); }, [gameState.story.introSeen]);
   const handleAuthDone = useCallback((user) => {
     handleLogin(user);
     if (!user) localStorage.setItem('mc_guest_mode', 'true');
@@ -103,7 +108,7 @@ function AppContent() {
     setCurrentPage('quiz');
   }, []);
   const handleQuizComplete = useCallback((correct, total, avgTime, creditMultiplier = 1, attemptId = null) => {
-    setQuizResult({ correct, total, avgTime, creditMultiplier, attemptId });
+    setQuizResult({ correct, total, avgTime, creditMultiplier, attemptId, practice:true });
     setCurrentPage('result');
   }, []);
   const handleRetry = useCallback(() => {
@@ -115,6 +120,9 @@ function AppContent() {
   if (!loginDone) return <Login onAuthenticated={handleAuthDone} />;
 
   switch (currentPage) {
+    case 'intro': return <Cinematic onFinish={() => { updateStory({introSeen:true});setCurrentPage('worldSelect'); }} />;
+    case 'ending': return isStoryComplete(gameState) ? <Cinematic ending onFinish={() => {updateStory({endingSeen:true});setCurrentPage('conclusion');}} /> : <WorldSelect onNavigate={navigate} onSelectWorld={handleSelectWorld} />;
+    case 'conclusion': return <Conclusion onNavigate={navigate} />;
     case 'mainMenu': return <MainMenu onNavigate={navigate} onLogout={handleLogoutDone} />;
     case 'worldSelect': return <WorldSelect onNavigate={navigate} onSelectWorld={handleSelectWorld} />;
     case 'platformGame': return <PlatformGame worldIndex={selectedWorld} levelIndex={selectedLevel} onStartQuiz={handleStartQuiz} onNavigate={navigate} />;

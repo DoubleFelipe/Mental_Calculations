@@ -1,3 +1,6 @@
+import Heart from '../../components/Story/Heart';
+import { isStoryComplete } from '../../../data/story';
+import '../../components/Story/Story.css';
 /**
  * Mental Calculations — Seleção de Mundo
  */
@@ -8,11 +11,11 @@ import './WorldSelect.css';
 
 export default function WorldSelect({ onNavigate, onSelectWorld }) {
   const { gameState } = useGameState();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => Math.max(0, gameState.unlockedWorlds.findLastIndex(Boolean)));
 
   const world = worlds[currentIndex];
   const isUnlocked = gameState.unlockedWorlds[currentIndex];
-  const totalStars = gameState.levelStars[currentIndex].reduce((a, b) => a + b, 0);
+  const totalStars = (gameState.levelStars[currentIndex] || []).reduce((a, b) => a + b, 0);
   const maxStars = world.levels.length * 3;
 
   const goLeft = () => setCurrentIndex(prev => (prev - 1 + worlds.length) % worlds.length);
@@ -40,7 +43,7 @@ export default function WorldSelect({ onNavigate, onSelectWorld }) {
             estrelas do mundo
           </div>
           <p className="world-hint">
-            {isUnlocked ? 'Explore o mapa e converse com os 5 personagens' : 'Conclua o mundo anterior para desbloquear'}
+            {isUnlocked ? `Restaure os mecanismos e enfrente ${world.boss}` : 'Conclua o mundo anterior para desbloquear'}
           </p>
           {isUnlocked && <button className="chalk-btn chalk-btn-green world-play-btn" onClick={(event) => { event.stopPropagation(); handleSelectWorld(); }}>Explorar mundo</button>}
         </div>
@@ -48,6 +51,8 @@ export default function WorldSelect({ onNavigate, onSelectWorld }) {
         <button className="chalk-arrow-btn" onClick={goRight}>▶</button>
       </div>
 
+      <Heart gameState={gameState}/>
+      {isStoryComplete(gameState) && <button className="story-link" onClick={()=>onNavigate('conclusion')}>Guardião dos Números · Ver conquista</button>}
       <div className="world-dots">
         {worlds.map((_, i) => (
           <button

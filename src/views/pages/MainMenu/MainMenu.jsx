@@ -67,10 +67,11 @@ export default function MainMenu({ onNavigate, onLogout }) {
           <h1 className="menu-title chalk-text-strong">Calculations</h1>
         </div>
 
+        <p className="chalk-text" style={{textAlign:"center",marginBottom:18}}>A Lenda dos Números Perdidos</p>
         {/* Botões */}
         <div className="menu-buttons">
           <button className="chalk-btn chalk-btn-green stagger-1 animate-fadeInUp" onClick={handlePlay}>
-            ▶ Jogar
+            ▶ Aventura em Numeria
           </button>
           <button className="chalk-btn chalk-btn-blue stagger-2 animate-fadeInUp" onClick={() => handleClick('profile')}>
             👤 Perfil

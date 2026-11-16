@@ -1,7 +1,9 @@
-import { createContext, useContext, useCallback, useEffect, useRef } from 'react';
+import { createContext, useContext, useCallback, useEffect, useRef, useMemo } from 'react';
+import worlds from '../data/worlds';
 import useLocalStorage from '../hooks/useLocalStorage';
 import {
   DEFAULT_GAME_STATE,
+  migrateGameState,
   processLevelComplete,
   addCredits as addCreditsModel,
   collectMoneyBag as collectMoneyBagModel,
@@ -24,7 +26,8 @@ import { isAuthenticated, clearAuth, getStoredUser } from '../services/authServi
 const GameContext = createContext(null);
 
 export function GameProvider({ children }) {
-  const [gameState, setGameState] = useLocalStorage('mc_game_state', { ...DEFAULT_GAME_STATE });
+  const [storedGameState, setGameState] = useLocalStorage('mc_game_state', { ...DEFAULT_GAME_STATE });
+  const gameState = useMemo(() => migrateGameState(storedGameState), [storedGameState]);
   const [settings, setSettings] = useLocalStorage('mc_settings', { ...DEFAULT_SETTINGS });
   const [profile, setProfile] = useLocalStorage('mc_profile', createProfile());
 
@@ -60,8 +63,8 @@ export function GameProvider({ children }) {
   // Garantir integridade do estado em migrações
   // -----------------------------------------------
   useEffect(() => {
-    const merged = { ...DEFAULT_GAME_STATE, ...gameState };
-    if (JSON.stringify(merged) !== JSON.stringify(gameState)) {
+    const merged = migrateGameState(storedGameState);
+    if (JSON.stringify(merged) !== JSON.stringify(storedGameState)) {
       setGameState(merged);
     }
   }, []); // eslint-disable-line
@@ -126,47 +129,36 @@ export function GameProvider({ children }) {
   // Helpers de mapeamento servidor → local
   // -----------------------------------------------
   function mapWorldUnlocks(worldProgress = []) {
-    const result = [true, false, false, false];
+    const result = worlds.map((_, i) => i === 0);
     worldProgress.forEach((wp) => {
       const idx = (wp.world_id || wp.world?.id || 0) - 1;
-      if (idx >= 0 && idx < 4) result[idx] = !!wp.is_unlocked;
+      if (idx >= 0 && idx < worlds.length) result[idx] = !!wp.is_unlocked;
     });
     return result;
   }
 
   function mapLevelUnlocks(levelProgress = [], field) {
-    const result = [
-      [false, false, false, false, false],
-      [false, false, false, false, false],
-      [false, false, false, false, false],
-      [false, false, false, false, false],
-    ];
-    // Primeiro level de cada mundo começa desbloqueado
-    result[0][0] = true; result[1][0] = true; result[2][0] = true; result[3][0] = true;
+    const result = worlds.map(() => Array(5).fill(false));
+    if (field === 'is_unlocked') result.forEach(row => { row[0] = true; });
 
     levelProgress.forEach((lp) => {
       const levelId = lp.level_id || lp.level?.id;
       if (!levelId) return;
       const wi = Math.floor((levelId - 1) / 5);
       const li = (levelId - 1) % 5;
-      if (wi < 4 && li < 5) result[wi][li] = !!lp[field];
+      if (wi < worlds.length && li < 5) result[wi][li] = !!lp[field];
     });
     return result;
   }
 
   function mapLevelStars(levelProgress = []) {
-    const result = [
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0],
-    ];
+    const result = worlds.map(() => Array(5).fill(0));
     levelProgress.forEach((lp) => {
       const levelId = lp.level_id || lp.level?.id;
       if (!levelId) return;
       const wi = Math.floor((levelId - 1) / 5);
       const li = (levelId - 1) % 5;
-      if (wi < 4 && li < 5) result[wi][li] = lp.best_stars || 0;
+      if (wi < worlds.length && li < 5) result[wi][li] = lp.best_stars || 0;
     });
     return result;
   }
@@ -202,8 +194,8 @@ export function GameProvider({ children }) {
     // não deve ser apresentado ao jogador como uma reprovação.
     if (isAuthenticated() && attemptId) {
       try {
-        const levelId = worldIndex * 5 + levelIndex + 1; // IDs de 1 a 20
-        return await progressApi.completeLevel(
+        const levelId = worldIndex * 5 + levelIndex + 1; // IDs de 1 a 25
+        const serverResult = await progressApi.completeLevel(
           levelId,
           correct,
           total,
@@ -211,6 +203,7 @@ export function GameProvider({ children }) {
           attemptId,
           creditMultiplier === 2,
         );
+        return { ...serverResult, newState: result.newState };
       } catch (err) {
         setGameState(gameState);
         if (err instanceof Error) throw err;
@@ -335,6 +328,7 @@ export function GameProvider({ children }) {
     syncFromServer,
     // Setters
     setGameState,
+    updateStory: (patch) => setGameState(prev => ({ ...prev, story: { ...DEFAULT_GAME_STATE.story, ...prev.story, ...patch } })),
     setSettings,
     setProfile,
     // Ações

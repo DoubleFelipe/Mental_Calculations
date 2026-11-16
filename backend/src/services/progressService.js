@@ -24,6 +24,7 @@ const DIFFICULTY_MAP = [
   ['easy', 'medium', 'medium', 'hard', 'hard'],
   ['medium', 'medium', 'hard', 'hard', 'hard'],
   ['medium', 'hard', 'hard', 'hard', 'hard'],
+  ['medium', 'hard', 'hard', 'hard', 'hard'],
 ];
 
 function getLevelDifficulty(worldIndex, levelIndex) {
@@ -95,6 +96,10 @@ async function initializeUserProgress(userId) {
 // Buscar progresso completo do jogador
 // =========================================================
 async function getFullProgress(userId) {
+  // Backfill only missing rows when a campaign gains a world. Existing progress survives.
+  await initializeUserProgress(userId);
+  const previousBoss = await UserLevelProgress.findOne({where:{user_id:userId,level_id:20,is_completed:1}});
+  if(previousBoss) await UserWorldProgress.update({is_unlocked:1},{where:{user_id:userId,world_id:5}});
   const [gameState, worldProgress, levelProgress, purchasedItems] = await Promise.all([
     UserGameState.findOne({ where: { user_id: userId } }),
     UserWorldProgress.findAll({
@@ -129,6 +134,11 @@ async function startLevelAttempt(userId, levelId) {
   ]);
   if (!worldProgress || !levelProgress) {
     throw Object.assign(new Error('Esta fase ainda não está desbloqueada.'), { status: 403 });
+  }
+  if (levelId === 25) {
+    const fragmentLevels = [3,5,8,10,15,20,24];
+    const recovered = await UserLevelProgress.count({ where: { user_id:userId, level_id:fragmentLevels, is_completed:1 } });
+    if(recovered !== 7) throw Object.assign(new Error('Recupere os sete fragmentos antes de enfrentar Zero Absoluto.'), {status:403});
   }
   return LevelAttempt.create({ user_id: userId, level_id: levelId });
 }

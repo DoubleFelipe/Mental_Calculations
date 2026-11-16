@@ -64,18 +64,8 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
         <div className="quiz-intro">
           <h2 className="chalk-text-strong">📐 {level?.name}</h2>
           <p className="chalk-text">
-            {worldIndex === 0 && levelIndex === 0
-              ? 'Pratique fatoração direta e raízes simples sem complicação!'
-              : worldIndex === 1 && levelIndex === 0
-              ? 'Identifique com precisão os coeficientes a, b e c da equação!'
-              : worldIndex === 2
-              ? 'Analise o sinal do discriminante (Δ) para desvendar a natureza das raízes.'
-              : 'Para resolver equações do 2º grau, aplique as propriedades e a fórmula de Bhaskara:'}
+            Treino livre: pratique os conhecimentos deste reino. Os selos, chefes e fragmentos são conquistados no cenário da aventura.
           </p>
-          <div className="formula-display">
-            <span className="formula-text">x = (-b ± √(b² - 4ac)) / 2a</span>
-          </div>
-          <p className="chalk-text">Onde Δ = b² - 4ac é o discriminante.</p>
           <div className="intro-info">
             <span>📝 {questionsCount} questões</span>
             <span>⏱️ {timeLimit}s por questão ({selectedDifficultyLabel})</span>

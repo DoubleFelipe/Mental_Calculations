@@ -1,3 +1,4 @@
+import worlds from '../data/worlds.js';
 /**
  * Mental Calculations — Game Model
  * Representa os dados e as regras de negócio puras do estado do jogo.
@@ -6,27 +7,11 @@
 export const DEFAULT_GAME_STATE = {
   currentWorld: 0,
   currentLevel: 0,
-  unlockedWorlds: [true, false, false, false],
-  // Cada mundo tem 5 fases: true = desbloqueada
-  unlockedLevels: [
-    [true, false, false, false, false],
-    [true, false, false, false, false],
-    [true, false, false, false, false],
-    [true, false, false, false, false],
-  ],
-  completedLevels: [
-    [false, false, false, false, false],
-    [false, false, false, false, false],
-    [false, false, false, false, false],
-    [false, false, false, false, false],
-  ],
-  // Estrelas por fase (0-3)
-  levelStars: [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-  ],
+  unlockedWorlds: worlds.map((_, i) => i === 0),
+  unlockedLevels: worlds.map(() => [true, false, false, false, false]),
+  completedLevels: worlds.map(() => Array(5).fill(false)),
+  levelStars: worlds.map(() => Array(5).fill(0)),
+  story: { introSeen: false, seenWorlds: [], charges: {}, endingSeen: false },
   worldPositions: {},
   collectedMoneyBags: [],
   credits: 100,
@@ -91,6 +76,7 @@ export function getLevelDifficulty(worldIndex, levelIndex) {
     ['easy', 'medium', 'medium', 'hard', 'hard'],
     ['medium', 'medium', 'hard', 'hard', 'hard'],
     ['medium', 'hard', 'hard', 'hard', 'hard'],
+    ['medium', 'hard', 'hard', 'hard', 'hard'],
   ];
   return map[worldIndex]?.[levelIndex] || 'easy';
 }
@@ -112,13 +98,13 @@ export function processLevelComplete(gameState, worldIndex, levelIndex, correct,
   }
 
   // Marcar fase como concluída
-  newState.completedLevels[worldIndex][levelIndex] = true;
+  if (passed) newState.completedLevels[worldIndex][levelIndex] = true;
 
   // Desbloquear próxima fase se passou
   if (passed) {
     if (levelIndex + 1 < 5) {
       newState.unlockedLevels[worldIndex][levelIndex + 1] = true;
-    } else if (worldIndex + 1 < 4) {
+    } else if (worldIndex + 1 < worlds.length) {
       // Desbloquear próximo mundo
       newState.unlockedWorlds[worldIndex + 1] = true;
     }
@@ -292,3 +278,15 @@ export function clearErrorNotebook(gameState) {
   };
 }
 
+
+/** Pad legacy four-world saves before any view can read them. Keep earned progress. */
+export function migrateGameState(saved = {}) {
+  const state = { ...DEFAULT_GAME_STATE, ...saved };
+  for (const field of ['unlockedLevels', 'completedLevels', 'levelStars']) {
+    state[field] = worlds.map((_, w) => Array.from({length: 5}, (_, l) =>
+      saved[field]?.[w]?.[l] ?? DEFAULT_GAME_STATE[field][w][l]));
+  }
+  state.unlockedWorlds = worlds.map((_, w) => Boolean(w === 0 || saved.unlockedWorlds?.[w] || state.levelStars[w-1]?.[4] > 0));
+  state.story = { ...DEFAULT_GAME_STATE.story, ...saved.story };
+  return state;
+}

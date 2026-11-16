@@ -171,3 +171,6 @@
   .mobile-controls { padding-inline: 0.5rem; }
   .mobile-btn { width: 50px; height: 50px; }
 }
+
+@media(max-width:768px) { .mobile-controls { display:flex!important; } .game-instructions { padding-bottom:85px; } }
+.mobile-btn { touch-action:none; }

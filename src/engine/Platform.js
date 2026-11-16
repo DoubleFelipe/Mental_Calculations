@@ -2,8 +2,8 @@
  * Mental Calculations — Platforms & Portals
  * Plataformas, elevadores, perigos e NPCs para cada mundo
  */
-import { WORLD_SECRET_AREAS } from './SecretAreas';
-import { getGameplayDifficulty } from '../models/SettingsModel';
+import { WORLD_SECRET_AREAS } from './SecretAreas.js';
+import { getGameplayDifficulty } from '../models/SettingsModel.js';
 
 // =============================================================================
 // PLATAFORMAS DE CADA MUNDO (Layouts exclusivos e variados)
@@ -200,6 +200,7 @@ export const WORLD_PLATFORMS_MAP = {
   1: WORLD_1_PLATFORMS,
   2: WORLD_2_PLATFORMS,
   3: WORLD_3_PLATFORMS,
+  4: WORLD_2_PLATFORMS.map(p => ({ ...p })),
 };
 
 /** Cria definições de plataformas para o mapa de um mundo com clones desacoplados. */
@@ -215,6 +216,7 @@ export function createWorldPlatforms(worldIndex = 0, difficulty = 'medium') {
     ...(secretArea?.routePlatforms || []),
   ].map((plat) => ({
     ...plat,
+    ...(plat.x === 4300 ? { width: 450 } : {}),
     ...(plat.moving || plat.elevator
       ? { speed: (plat.speed || (plat.elevator ? 0.0018 : 0.002)) * platformSpeedMultiplier }
       : {}),
@@ -310,6 +312,7 @@ export const WORLD_NPCS_MAP = {
   1: WORLD_1_NPCS,
   2: WORLD_2_NPCS,
   3: WORLD_3_NPCS,
+  4: WORLD_2_NPCS,
 };
 
 /** Cria os cinco personagens que representam as fases do mundo. */
@@ -352,7 +355,7 @@ export function alignCharacterToPlatform(character, platforms) {
   const platform = platforms[character.platformIndex];
   if (!platform) return character;
 
-  character.x = platform.x + (platform.width - character.width) / 2;
+  character.x = platform.x + (platform.width - character.width) * (character.offsetRatio ?? 0.5);
   character.y = platform.y - character.height;
   character.isGrounded = true;
   return character;
@@ -617,7 +620,13 @@ export function drawPlatform(ctx, plat, cameraX, cameraY, worldIndex = 0) {
   // --- 3. Renderização Temática do Corpo e Borda da Plataforma ---
   ctx.save();
 
-  if (worldIndex === 1) {
+  if ([1,3,4].includes(worldIndex)) {
+    const colors={1:['#153749','#75dce7'],3:['#353248','#b39ddb'],4:['#4f436a','#f1b6df']};
+    ctx.fillStyle=colors[worldIndex][0];ctx.fillRect(x,y,plat.width,plat.height);
+    ctx.strokeStyle=colors[worldIndex][1];ctx.lineWidth=2;ctx.strokeRect(x,y,plat.width,plat.height);
+    ctx.fillStyle=colors[worldIndex][1];ctx.fillRect(x,y,plat.width,5);
+    ctx.globalAlpha=.4;for(let i=12;i<plat.width;i+=24){ctx.fillRect(x+i,y+12,7,3);}ctx.globalAlpha=1;
+  } else   if (worldIndex === 1) {
     // ================= MUNDO 1: COSTA & CORAIS MARINHOS =================
     // Corpo: Rocha oceânica / Madeira salina
     const woodGrad = ctx.createLinearGradient(x, y + 6, x, y + plat.height);

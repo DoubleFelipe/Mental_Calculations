@@ -21,7 +21,7 @@ export function createPlayer(x = 100, y = 300) {
 }
 
 const SKINS = {
-  default: { color: '#222' },
+  default: { color: '#ffe3ba' },
   skin_ninja: { color: '#263238', accent: '#D32F2F' },
   skin_astronaut: { color: '#ECEFF1', accent: '#42A5F5' },
   skin_wizard: { color: '#1565C0', accent: '#FFD54F' },
@@ -95,6 +95,12 @@ export function drawPlayer(ctx, player, cameraX, cameraY, skinId = 'default') {
   ctx.lineTo(cx + 8 - legSwing, py + player.height);
   ctx.stroke();
 
+  // Léo keeps the original line-art silhouette with an explorer's scarf and satchel.
+  if (skinId === 'default') {
+    ctx.fillStyle='#e9aa55';ctx.fillRect(cx-9,headY-8,18,4);ctx.fillRect(cx-13,headY-4,26,3);
+    ctx.fillStyle='#62cfb1';ctx.fillRect(cx-8,py+16,16,5);ctx.beginPath();ctx.moveTo(cx+4,py+18);ctx.lineTo(cx+20,py+22+armSwing*.2);ctx.lineTo(cx+8,py+25);ctx.fill();
+    ctx.fillStyle='#ad7542';ctx.fillRect(cx-13,py+23,9,13);ctx.strokeStyle='#ffe3ba';ctx.lineWidth=1;ctx.strokeRect(cx-13,py+23,9,13);
+  }
   // Roupa e acessórios ficam por cima do personagem para cada skin ser reconhecível.
   if (skinId === 'skin_ninja') {
     ctx.strokeStyle = skin.accent;

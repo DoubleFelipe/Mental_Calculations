@@ -63,12 +63,8 @@ async function ensureAuthColumns() {
 
 async function seedWorlds() {
   const { World } = require('../models/index');
-  const worlds = [
-    { id: 1, name: 'Mundo das Equações', subtitle: 'Primeiros passos com equações do 2º grau', color_hex: '#4CAF50', icon: '🌿', sort_order: 0 },
-    { id: 2, name: 'Mundo dos Coeficientes', subtitle: 'Dominando a, b e c', color_hex: '#42A5F5', icon: '🌊', sort_order: 1 },
-    { id: 3, name: 'Mundo do Delta', subtitle: 'Explorando o discriminante', color_hex: '#FFD54F', icon: '⚡', sort_order: 2 },
-    { id: 4, name: 'Mundo dos Mestres', subtitle: 'Para verdadeiros gênios!', color_hex: '#EF5350', icon: '🔥', sort_order: 3 },
-  ];
+  const { default: definitions } = await import('../../../src/data/worlds.js');
+  const worlds = definitions.map(w => ({id:w.id+1,name:w.name,subtitle:w.subtitle,color_hex:w.color,icon:w.icon,sort_order:w.id}));
   for (const world of worlds) {
     await World.upsert(world);
   }
@@ -84,34 +80,22 @@ async function seedLevels() {
     ['medium', 'medium', 'hard', 'hard', 'hard'],
     ['medium', 'hard', 'hard', 'hard', 'hard'],
   ];
-  const levelNames = [
-    ['Raízes Simples', 'Discriminante', 'Soma e Produto', 'Bhaskara I', 'Desafio Final'],
-    ['Identificando Coeficientes', 'Relações de Vieta', 'Equações Incompletas', 'Bhaskara II', 'Desafio Final'],
-    ['Delta Positivo', 'Delta Zero', 'Delta Negativo', 'Classificação', 'Desafio Final'],
-    ['Problemas Aplicados', 'Coeficientes Grandes', 'Raízes Inversas', 'Miscelânea', 'Desafio Supremo'],
-  ];
-  const questionCounts = [
-    [5, 5, 5, 5, 7],
-    [5, 5, 5, 5, 7],
-    [5, 5, 5, 5, 7],
-    [5, 5, 5, 5, 10],
-  ];
-
+  const { default: definitions } = await import('../../../src/data/worlds.js');
   let levelId = 1;
-  for (let wi = 0; wi < 4; wi++) {
+  for (let wi = 0; wi < definitions.length; wi++) {
     for (let li = 0; li < 5; li++) {
       await Level.upsert({
         id: levelId,
         world_id: wi + 1,
-        name: levelNames[wi][li],
-        questions_count: questionCounts[wi][li],
-        difficulty: difficultyMap[wi][li],
+        name: definitions[wi].levels[li].name,
+        questions_count: definitions[wi].levels[li].questionsCount,
+        difficulty: (difficultyMap[wi] || difficultyMap[3])[li],
         sort_order: li,
       });
       levelId++;
     }
   }
-  console.log('  → Levels inseridos (20 fases)');
+  console.log('  → Levels inseridos (25 fases)');
 }
 
 async function seedShopItems() {

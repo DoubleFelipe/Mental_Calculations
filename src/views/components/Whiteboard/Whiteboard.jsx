@@ -32,7 +32,7 @@ const STROKE_WIDTHS = [
 
 export default function Whiteboard({ question = null }) {
   // Modo de visualização: 'structured' (fórmulas) ou 'freehand' (desenho livre e bloco de notas)
-  const [mode, setMode] = useState('structured');
+  const [mode, setMode] = useState(question?.a !== undefined ? 'structured' : 'freehand');
   const [fields, setFields] = useState(INITIAL_FIELDS);
 
   // Estados do Modo Rascunho Livre
