@@ -11,6 +11,7 @@ import Settings from './views/pages/Settings/Settings';
 import Shop from './views/pages/Shop/Shop';
 import Victory from './views/pages/Results/Victory';
 import Defeat from './views/pages/Results/Defeat';
+import { StoryEvents } from './views/components/Story/StoryDialog';
 import { getStoredUser, isAuthenticated } from './services/authService';
 
 function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onMenu, onMap }) {
@@ -49,6 +50,7 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
   if (error) return <Defeat correct={result.correct} total={result.total} error={error} onRetry={onRetry} onMenu={onMenu} onMap={onMap} />;
 
   return resolved.passed ? (
+    <>
     <Victory
       stars={resolved.stars}
       score={resolved.score}
@@ -59,6 +61,8 @@ function ResultScreen({ worldIndex, levelIndex, result, onContinue, onRetry, onM
       onContinue={onContinue}
       onRetry={onRetry}
     />
+    <StoryEvents />
+    </>
   ) : (
     <Defeat correct={result.correct} total={result.total} onRetry={onRetry} onMenu={onMenu} onMap={onMap} />
   );

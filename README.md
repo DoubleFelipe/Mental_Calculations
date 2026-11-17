@@ -63,6 +63,12 @@ npm run lint
 npm run build
 ```
 
+Testes de inicialização e tratamento do login Google: `npm test --prefix backend`.
+
+Em desenvolvimento, se o Mental Calculations já responder na porta configurada, uma segunda inicialização informa que a API está em execução e encerra sem derrubar a instância ativa. Se a porta pertencer a outro serviço, a inicialização falha com uma mensagem explicativa. Em produção, conflitos de porta continuam sendo erros.
+
+O backend precisa de acesso HTTPS externo ao Google para concluir o OAuth. Um erro `EACCES` nessa conexão indica bloqueio de rede/permissão no ambiente que executa o Node. Execute-o em um terminal com acesso à rede. Falhas ou cancelamentos no OAuth retornam à tela de login; email/senha e modo convidado continuam disponíveis.
+
 ## Recursos disponíveis
 
 - Mapa 2D com teclado e controles touch para telas com ponteiro coarse.

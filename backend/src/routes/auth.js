@@ -13,6 +13,7 @@ const {
 } = require('../controllers/authController');
 const authMiddleware = require('../middleware/auth');
 const { authLimiter } = require('../middleware/rateLimiter');
+const { createGoogleCallback } = require('../middleware/googleOAuth');
 
 const router = express.Router();
 
@@ -28,11 +29,7 @@ router.get('/google', authLimiter, passport.authenticate('google', {
 
 // Callback do Google
 router.get('/google/callback',
-  passport.authenticate('google', {
-    session: false,
-    failureRedirect: `${(process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim()}/auth/callback?error=auth_failed`,
-  }),
-  googleCallback
+  createGoogleCallback(passport, googleCallback, (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim())
 );
 
 // Buscar dados do usuário autenticado

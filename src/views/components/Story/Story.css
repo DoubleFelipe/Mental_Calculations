@@ -1,0 +1,31 @@
+.story-overlay { position: fixed; inset: 0; z-index: 100; background: #071605dd; display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
+.story-dialog { width: min(100%, 640px); max-height: 100%; overflow-y: auto; padding: clamp(16px, 4vw, 32px); border-radius: 12px; text-align: center; box-shadow: 0 0 60px #0008; animation: story-enter 250ms ease-out; }
+.story-dialog-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-family: var(--font-ui); font-size: .75rem; color: var(--text-chalk-dim); letter-spacing: 1px; }
+.story-skip { background: transparent; color: var(--text-chalk); border: 0; text-decoration: underline; padding: 8px; font-size: .85rem; }
+.story-heart { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 16px auto; font-family: var(--font-handwriting); color: var(--chalk-yellow); }
+.story-heart svg { width: 74px; height: 80px; overflow: visible; filter: drop-shadow(0 0 8px #ffd54f55); }
+.story-heart polygon { fill: #ffffff10; stroke: #ffe7a0; stroke-width: 1.5; transition: fill .4s ease; }
+.story-heart polygon.recovered { fill: #ffd54f; }
+.story-heart-compact { margin: 0; font-size: 1rem; }
+.story-heart-compact svg { width: 28px; height: 30px; }
+.story-portrait { width: 68px; height: 68px; display: grid; place-items: center; margin: 0 auto 10px; border: 2px dashed #ffffff80; border-radius: 50%; background: #ffffff0c; font-size: 2.4rem; color: var(--chalk-yellow); }
+.story-villain { color: #e6b7ff; background: #1c102c; border-color: #ba81dc; }
+.story-speaker { font-family: var(--font-handwriting); color: var(--chalk-yellow); font-size: 1.2rem; margin-bottom: 8px; }
+.story-scene h2 { font-size: clamp(1.3rem, 4vw, 1.8rem); margin-bottom: 16px; }
+.story-text { font-family: var(--font-handwriting); font-size: clamp(1.15rem, 3.8vw, 1.4rem); line-height: 1.5; color: var(--text-chalk-strong); }
+.story-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 24px; }
+.story-actions .chalk-btn { min-width: 0; font-size: 1.1rem; padding: 12px 20px; flex: 1 1 180px; }
+.story-objective { max-width: 640px; padding: 12px 16px; border: 1px dashed #ffd54f80; border-radius: 8px; font-family: var(--font-handwriting); font-size: 1.1rem; line-height: 1.4; background: #0002; text-align: center; }
+.story-objective strong { color: var(--chalk-yellow); }
+.story-journal { width: min(100%, 640px); margin: auto; font-family: var(--font-handwriting); }
+.story-journal summary { cursor: pointer; padding: 12px; color: var(--chalk-yellow); }
+.story-journal ol { padding-left: 28px; font-size: 1rem; line-height: 1.7; }
+.story-journal button { margin: 8px 0; }
+.story-battle { width: min(100%, 700px); display: flex; align-items: center; gap: 12px; border: 1px solid #ba81dc; border-radius: 8px; padding: 10px 14px; background: #25133299; font-family: var(--font-handwriting); }
+.story-battle-symbol { font-size: 2.3rem; color: #d5a9f3; }
+.story-battle-hit { animation: story-glow 600ms ease; }
+.story-battle p { margin: 0; }
+@keyframes story-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes story-glow { 50% { box-shadow: 0 0 22px #ffd54f99; border-color: #ffd54f; } }
+@media (max-width: 600px) { .story-heart-label { display: none; } .story-dialog .story-heart { margin: 10px auto; } .story-dialog .story-heart svg { width: 45px; height: 50px; } .story-portrait { width: 48px; height: 48px; font-size: 1.8rem; } .story-dialog h2 { margin-bottom: 10px; } .story-actions { margin-top: 16px; } }
+@media (prefers-reduced-motion: reduce) { .story-dialog, .story-scene, .story-battle-hit { animation: none; } .story-heart polygon { transition: none; } }

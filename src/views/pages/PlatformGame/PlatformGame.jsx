@@ -2,16 +2,18 @@
  * Mental Calculations — Tela da Plataforma 2D
  * Controla o canvas do jogo + HUD + pause
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import GameCanvas from '../../../engine/GameCanvas';
 import useGameState from '../../../controllers/GameController';
 import worlds from '../../../data/worlds';
+import { getNPCStoryScenes, getPendingStoryEvents, getStoryPlayerKey, getStoryProgress } from '../../../models/StoryModel';
+import { StoryDialog, StoryEvents, StoryHeart } from '../../components/Story/StoryDialog';
 import './PlatformGame.css';
 
 const EMPTY_COLLECTED_MONEY_BAGS = [];
 
 export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
-  const { gameState, settings, loseLife, resetLives, saveWorldPosition, clearWorldPosition, collectMoneyBag } = useGameState();
+  const { gameState, authUser, settings, loseLife, resetLives, saveWorldPosition, clearWorldPosition, collectMoneyBag } = useGameState();
   const [isPaused, setIsPaused] = useState(false);
   const [dialogue, setDialogue] = useState(null);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -19,16 +21,8 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
   const world = worlds[worldIndex];
   const savedPosition = gameState.worldPositions?.[worldIndex] || null;
 
-  useEffect(() => {
-    if (!dialogue) return undefined;
-
-    const timer = window.setTimeout(() => {
-      if (!dialogue.locked) onStartQuiz(worldIndex, dialogue.levelIndex);
-      setDialogue(null);
-    }, dialogue.locked ? 1800 : 1400);
-
-    return () => window.clearTimeout(timer);
-  }, [dialogue, onStartQuiz, worldIndex]);
+  const storyProgress = getStoryProgress(gameState);
+  const hasStoryEvent = getPendingStoryEvents(gameState, getStoryPlayerKey(authUser), { worldIndex }).length > 0;
 
   const handleNPCInteract = useCallback((character, playerPos) => {
     const pos = playerPos || { x: character.x, y: character.y };
@@ -70,9 +64,10 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
         </div>
         <div className="hud-center">
           <span className="hud-world">{world?.name}</span>
-          <span className="hud-level">Mapa do mundo · 5 personagens</span>
+          <span className="hud-level">Léo · Explore Numeria com os 5 guardiões</span>
         </div>
         <div className="hud-right">
+          <StoryHeart fragments={storyProgress.fragments} compact />
           <button className="hud-pause-btn" onClick={() => setIsPaused(true)}>⏸️</button>
         </div>
       </div>
@@ -87,7 +82,7 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
           onMoneyBagCollect={collectMoneyBag}
           collectedMoneyBags={gameState.collectedMoneyBags || EMPTY_COLLECTED_MONEY_BAGS}
           levelProgress={levelProgress}
-          isPaused={isPaused || Boolean(dialogue) || isGameOver}
+          isPaused={isPaused || Boolean(dialogue) || isGameOver || hasStoryEvent}
           equippedSkin={gameState.equippedSkin}
           doubleJumpEnabled={Boolean(settings.doubleJump)}
           difficulty={settings.difficulty}
@@ -100,19 +95,19 @@ export default function PlatformGame({ worldIndex, onStartQuiz, onNavigate }) {
       </div>
 
       {dialogue && (
-        <div className="dialogue-overlay animate-fadeIn" role="dialog" aria-live="polite">
-          <div className="dialogue-card chalkboard animate-scaleIn">
-            <div className="dialogue-character">△</div>
-            <div>
-              <p className="dialogue-name">{dialogue.phaseName || dialogue.levelName}</p>
-              <p className="dialogue-text">
-                {dialogue.message}
-              </p>
-              {!dialogue.locked && <span className="dialogue-loading">A fase começará em instantes...</span>}
-            </div>
-          </div>
-        </div>
+        <StoryDialog
+          scenes={getNPCStoryScenes(dialogue, worldIndex, gameState)}
+          fragments={storyProgress.fragments}
+          finishLabel={dialogue.locked ? 'Voltar ao mapa' : 'Iniciar desafio →'}
+          onCancel={() => setDialogue(null)}
+          skippable={false}
+          onComplete={() => {
+            if (!dialogue.locked) onStartQuiz(worldIndex, dialogue.levelIndex);
+            setDialogue(null);
+          }}
+        />
       )}
+      <StoryEvents worldIndex={worldIndex} />
 
       {/* Tela de Pause */}
       {isPaused && (
