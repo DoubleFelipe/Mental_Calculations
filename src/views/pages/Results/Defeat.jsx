@@ -27,7 +27,7 @@ export default function Defeat({ correct, total, error, onRetry, onMenu, onMap }
           </div>
         </div>
 
-        {!error && <p className="result-hint chalk-text-dim">💡 Dica: Revise a fórmula de Bhaskara e tente novamente!</p>}
+        {!error && <><p className="result-hint chalk-text-dim">📐 Mestra Álgebra: Léo, cada tentativa ensina algo. Numeria conta com você; vamos tentar outra vez!</p><p className="result-hint chalk-text-dim">💡 Dica: Revise a fórmula de Bhaskara e tente novamente!</p></>}
 
         <div className="result-buttons">
           <button className="chalk-btn chalk-btn-green" onClick={onRetry}>🔄 Tentar Novamente</button>

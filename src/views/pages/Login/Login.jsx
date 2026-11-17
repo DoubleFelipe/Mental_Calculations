@@ -34,7 +34,9 @@ export default function Login({ onAuthenticated }) {
         setTimeout(() => {
           setLoading(false);
           setIsCallback(false);
-          setError('Falha no login. Tente novamente.');
+          setError(result.error === 'google_auth_failed'
+            ? 'Não foi possível concluir o login com Google. Tente novamente ou entre com email e senha.'
+            : 'Falha no login. Tente novamente.');
           window.history.replaceState({}, document.title, '/');
         }, 0);
       }

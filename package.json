@@ -7,6 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "test": "node --test tests/*.test.js",
+    "test:tutorial": "node --test tests/tutorial.test.js",
+    "test:story": "node --test tests/story.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

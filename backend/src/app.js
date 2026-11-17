@@ -9,7 +9,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const session = require('express-session');
 const passport = require('./config/passport');
-const { testConnection } = require('./config/database');
+const { testConnection, sequelize } = require('./config/database');
+const { startHttpServer } = require('./services/serverStartup');
 
 // Models (registra todos no Sequelize antes de qualquer uso)
 require('./models/index');
@@ -114,8 +115,14 @@ app.use(errorHandler);
 // Inicialização
 // =============================================
 async function startServer() {
-  await testConnection();
-  app.listen(PORT, () => {
+  const server = await startHttpServer({
+    app,
+    port: Number(PORT),
+    connect: testConnection,
+    disconnect: () => sequelize.close(),
+    environment: process.env.NODE_ENV,
+  });
+  if (server) {
     console.log(`🚀 Mental Calculations API rodando em http://localhost:${PORT}`);
     console.log(`🌍 Frontend esperado em: ${FRONTEND_URL}`);
     console.log(`📋 Docs das rotas disponíveis em: http://localhost:${PORT}/api/health`);
@@ -132,9 +139,9 @@ async function startServer() {
     console.log(`  POST /api/shop/equip`);
     console.log(`  GET  /api/ranking/global`);
     console.log(`  GET  /api/ranking/level/:levelId`);
-  });
+  }
 }
 
-startServer();
+if (require.main === module) startServer();
 
 module.exports = app;

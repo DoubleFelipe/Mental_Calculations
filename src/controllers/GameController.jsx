@@ -18,6 +18,8 @@ import {
 } from '../models/GameModel';
 import { DEFAULT_SETTINGS, isValidDifficulty, isValidVolume } from '../models/SettingsModel';
 import { createProfile } from '../models/ProfileModel';
+import { getStoryPlayerKey, markStoryEventSeen } from '../models/StoryModel';
+import { completeTutorials } from '../models/TutorialModel';
 import { progressApi, shopApi, authApi } from '../services/apiService';
 import { isAuthenticated, clearAuth, getStoredUser } from '../services/authService';
 
@@ -294,6 +296,14 @@ export function GameProvider({ children }) {
     setGameState((prev) => clearErrorNotebookModel(prev));
   }, [setGameState]);
 
+  const markNarrativeEvent = useCallback((eventId) => {
+    setGameState((prev) => markStoryEventSeen(prev, getStoryPlayerKey(authUser), eventId));
+  }, [authUser, setGameState]);
+
+  const markTutorialsComplete = useCallback((ids) => {
+    setGameState((prev) => completeTutorials(prev, getStoryPlayerKey(authUser), ids));
+  }, [authUser, setGameState]);
+
   const resetAll = useCallback(() => {
     setGameState({ ...DEFAULT_GAME_STATE });
     setSettings({ ...DEFAULT_SETTINGS });
@@ -353,6 +363,8 @@ export function GameProvider({ children }) {
     clearWorldPosition,
     recordConceptualError,
     clearErrorNotebook,
+    markNarrativeEvent,
+    markTutorialsComplete,
     resetAll,
   };
 
