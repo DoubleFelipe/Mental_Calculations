@@ -41,6 +41,7 @@ export const DEFAULT_GAME_STATE = {
   equippedSkin: 'default',
   errorNotebook: [],
   story: { viewedByPlayer: {} },
+  tutorials: { completedByPlayer: {} },
 };
 
 /**

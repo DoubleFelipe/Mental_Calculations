@@ -2,14 +2,26 @@
  * Mental Calculations — Tela de Quiz (View)
  * Mostra questões uma por vez com timer desacoplado, feedback diagnóstico e rodada de fixação.
  */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import useQuizController from '../../../controllers/useQuizController';
+import useGameState from '../../../controllers/GameController';
+import { getStoryPlayerKey } from '../../../models/StoryModel';
+import { getLevelTutorialIds, getPendingTutorialIds, getQuestionTutorialId } from '../../../models/TutorialModel';
+import { TUTORIALS } from '../../../data/tutorials';
+import Tutorial from '../../components/Tutorial/Tutorial';
+import QuestionHelp from '../../components/Tutorial/QuestionHelp';
 import Whiteboard from '../../components/Whiteboard/Whiteboard.jsx';
 import { WORLD_STORIES } from '../../../data/story';
 import '../../components/Story/Story.css';
 import './Quiz.css';
 
 export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
+  const { gameState, authUser, markTutorialsComplete } = useGameState();
+  const pendingTutorials = getPendingTutorialIds(gameState, getStoryPlayerKey(authUser), worldIndex, levelIndex);
+  const lessonIds = getLevelTutorialIds(worldIndex, levelIndex);
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
+  // Capture a sessão para que salvar o progresso não altere a lição em leitura.
+  const [tutorialSession, setTutorialSession] = useState(() => pendingTutorials.length ? { ids: pendingTutorials, review: false } : null);
   const {
     level,
     difficulty,
@@ -26,10 +38,9 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
     setShowExplanation,
     showIntro,
     startQuiz,
+    isStarting,
     timeLeft,
     percentage,
-    pauseTimer,
-    resumeTimer,
     isApprenticeMode,
     toggleApprenticeMode,
     isReviewPhase,
@@ -40,57 +51,51 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
     powerUpMessage,
     powerUpUses,
     shieldActive,
-  } = useQuizController({ worldIndex, levelIndex, onComplete });
+  } = useQuizController({ worldIndex, levelIndex, onComplete, isStudyPaused: showWhiteboard || !!tutorialSession });
 
-  const [showWhiteboard, setShowWhiteboard] = useState(false);
   const btnColors = ['chalk-btn-green', 'chalk-btn-blue', 'chalk-btn-red', 'chalk-btn-yellow'];
   const isFinalBattle = worldIndex === 3 && levelIndex === 4;
-
-  // Pausar o timer automaticamente ao abrir o Quadro Branco e retomar ao fechar
-  useEffect(() => {
-    if (showWhiteboard) {
-      pauseTimer();
-    } else {
-      resumeTimer();
-    }
-  }, [showWhiteboard, pauseTimer, resumeTimer]);
 
   const handleExit = () => {
     if (!showIntro && !window.confirm('Sair desta fase? O resultado desta tentativa não será salvo.')) return;
     onExit?.();
   };
 
+  const tutorialView = tutorialSession && (
+      <Tutorial ids={tutorialSession.ids} review={tutorialSession.review}
+        onClose={() => setTutorialSession(null)}
+        onComplete={() => {
+          if (!tutorialSession.review) markTutorialsComplete(tutorialSession.ids);
+          setTutorialSession(null);
+        }} />
+  );
+
   // Tela de introdução/explicação
   if (showIntro) {
     return (
       <div className="quiz-page chalkboard chalkboard-frame animate-fadeIn">
+        {tutorialView}
+        <div className="quiz-content" hidden={!!tutorialSession}>
         <div className="quiz-intro">
           <h2 className="chalk-text-strong">📐 {level?.name}</h2>
           <p className="story-objective"><strong>{isFinalBattle ? '∅ Confronto com Zero Absoluto' : '🧭 Missão de Léo'}</strong><br />{WORLD_STORIES[worldIndex].levels[levelIndex]}</p>
-          <p className="chalk-text">
-            {worldIndex === 0 && levelIndex === 0
-              ? 'Pratique fatoração direta e raízes simples sem complicação!'
-              : worldIndex === 1 && levelIndex === 0
-              ? 'Identifique com precisão os coeficientes a, b e c da equação!'
-              : worldIndex === 2
-              ? 'Analise o sinal do discriminante (Δ) para desvendar a natureza das raízes.'
-              : 'Para resolver equações do 2º grau, aplique as propriedades e a fórmula de Bhaskara:'}
-          </p>
-          <div className="formula-display">
-            <span className="formula-text">x = (-b ± √(b² - 4ac)) / 2a</span>
-          </div>
-          <p className="chalk-text">Onde Δ = b² - 4ac é o discriminante.</p>
+          <p className="chalk-text">📐 Mestra Álgebra: {pendingTutorials.length ? 'Vamos preparar os conhecimentos desta fase antes de começar!' : 'Você concluiu a preparação! Vamos usar o que aprendeu para ajudar Numeria.'}</p>
+          <ul className="quiz-lesson-list">{lessonIds.map((id) => <li key={id}>{pendingTutorials.includes(id) ? '○' : '✓'} {TUTORIALS[id].title}</li>)}</ul>
           <div className="intro-info">
             <span>📝 {questionsCount} questões</span>
             <span>⏱️ {timeLimit}s por questão ({selectedDifficultyLabel})</span>
             <span>📊 Nível: {difficulty === 'easy' ? 'Fácil' : difficulty === 'medium' ? 'Médio' : 'Difícil'}</span>
           </div>
-          <button className="chalk-btn chalk-btn-green" onClick={startQuiz}>
-            Começar! →
+          <button className="chalk-btn chalk-btn-blue" onClick={() => setTutorialSession({ ids: pendingTutorials.length ? pendingTutorials : lessonIds, review: !pendingTutorials.length })}>
+            {pendingTutorials.length ? 'Continuar preparação →' : '📖 Rever conteúdo'}
+          </button>
+          <button className="chalk-btn chalk-btn-green" disabled={pendingTutorials.length > 0 || isStarting} onClick={startQuiz}>
+            {isStarting ? 'Preparando fase…' : 'Começar! →'}
           </button>
           <button className="chalk-btn chalk-btn-red quiz-exit-btn" onClick={handleExit} aria-label="Sair da fase e voltar ao mapa">
             ← Sair da fase
           </button>
+        </div>
         </div>
       </div>
     );
@@ -100,6 +105,8 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
 
   return (
     <div className="quiz-page chalkboard chalkboard-frame">
+      {tutorialView}
+      <div className="quiz-content" hidden={!!tutorialSession}>
       {/* Header com Timer Desacoplado */}
       <div className="quiz-header">
         <span className="quiz-counter">
@@ -168,12 +175,6 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
         {question.topic && <div className="quiz-topic-badge">📚 {question.topic}</div>}
         <p className="question-text chalk-text-strong">{question.text}</p>
         
-        {question.mentalTip && (
-          <div className="quiz-mental-tip">
-            <span>💡 <strong>Dica de cálculo mental:</strong> {question.mentalTip}</span>
-          </div>
-        )}
-
         <div className="quiz-wb-toggle" style={{ marginTop: 12 }}>
           <button
             className={`chalk-btn ${showWhiteboard ? 'chalk-btn-yellow' : 'chalk-btn-blue'}`}
@@ -183,6 +184,9 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
           </button>
         </div>
       </div>
+
+      <QuestionHelp key={`${isReviewPhase}-${currentQ}`} question={question}
+        onReview={() => setTutorialSession({ ids: [getQuestionTutorialId(question), ...lessonIds.filter((id) => id !== getQuestionTutorialId(question))], review: true })} />
 
       {showWhiteboard && (
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
@@ -221,7 +225,7 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
               key={i}
               className={`chalk-btn ${btnColors[i % btnColors.length]} quiz-alt ${hidden ? 'powerup-hidden' : ''} ${extraClass} ${showFeedback && i === question.correctIndex ? 'animate-pulse' : ''} ${showFeedback && i === selected && !isCorrect ? 'animate-shake' : ''}`}
               onClick={() => handleAnswer(i)}
-              disabled={showFeedback || hidden}
+              disabled={showFeedback || hidden || showWhiteboard}
             >
               {alt}
             </button>
@@ -279,6 +283,7 @@ export default function Quiz({ worldIndex, levelIndex, onComplete, onExit }) {
       <button className="chalk-btn chalk-btn-red quiz-exit-btn" onClick={handleExit} aria-label="Sair da fase e voltar ao mapa">
         ← Sair da fase
       </button>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,6 @@
 /* Quiz Styles */
+.quiz-content { display: contents; }
+.quiz-content[hidden] { display: none; }
 .quiz-page {
   width: 100%; min-height: 100svh; height: 100dvh;
   position: relative;
@@ -185,7 +187,11 @@
   gap: var(--space-lg);
   text-align: center;
   max-width: 500px;
+  margin-top: 3rem;
 }
+
+.quiz-lesson-list { width: 100%; padding-left: 1.4rem; text-align: left; font: 1rem/1.8 var(--font-handwriting); color: var(--chalk-blue-light); }
+.quiz-intro button:disabled { opacity: .5; cursor: not-allowed; }
 
 .quiz-intro h2 { font-size: var(--fs-3xl); }
 .quiz-intro p { font-family: var(--font-handwriting); font-size: var(--fs-lg); }

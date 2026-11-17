@@ -12,7 +12,7 @@ import useAudio from '../hooks/useAudio';
 import worlds from '../data/worlds';
 import { progressApi, shopApi } from '../services/apiService';
 
-export default function useQuizController({ worldIndex, levelIndex, onComplete }) {
+export default function useQuizController({ worldIndex, levelIndex, onComplete, isStudyPaused = false }) {
   const { settings, gameState, consumePowerUp, isOnline, recordConceptualError } = useGameState();
   const { playCorrect, playWrong } = useAudio(settings);
 
@@ -37,6 +37,7 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   const [score, setScore] = useState({ correct: 0, wrong: 0, times: [] });
   const [showExplanation, setShowExplanation] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
+  const [isStarting, setIsStarting] = useState(false);
   const [hiddenAlternatives, setHiddenAlternatives] = useState([]);
   const [shieldActive, setShieldActive] = useState(false);
   const [creditMultiplier, setCreditMultiplier] = useState(1);
@@ -49,7 +50,9 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   const [reviewSuccessCount, setReviewSuccessCount] = useState(0);
 
   const questionStartRef = useRef(null);
+  const questionElapsedRef = useRef(0);
   const attemptIdRef = useRef(null);
+  const startingRef = useRef(false);
 
   const registerWrongAnswer = useCallback(
     (elapsed, chosenIndex) => {
@@ -95,46 +98,42 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   );
 
   const handleTimeUp = useCallback(() => {
-    if (showFeedback || isApprenticeMode) return;
+    if (showFeedback || isApprenticeMode || showIntro || isStudyPaused) return;
     setShowFeedback(true);
     registerWrongAnswer(timeLimit * 1000, null);
     playWrong();
-  }, [showFeedback, isApprenticeMode, timeLimit, playWrong, registerWrongAnswer]);
+  }, [showFeedback, isApprenticeMode, showIntro, isStudyPaused, timeLimit, playWrong, registerWrongAnswer]);
 
   const { timeLeft, percentage, start, pause, reset, addTime } = useTimer(timeLimit, handleTimeUp);
 
   useEffect(() => {
-    if (!showIntro && !isApprenticeMode) {
-      questionStartRef.current = Date.now();
-      start();
-    }
-  }, [currentQ, showIntro, isApprenticeMode]); // eslint-disable-line
+    questionElapsedRef.current = 0;
+  }, [currentQ, isReviewPhase, showIntro]);
 
-  const pauseTimer = useCallback(() => {
-    pause();
-  }, [pause]);
-
-  const resumeTimer = useCallback(() => {
-    if (!isApprenticeMode && !showFeedback && !showIntro) {
-      start();
+  // Uma única decisão de pausa: estudo e quadro nunca disputam o cronômetro.
+  // O tempo de leitura também fica fora do tempo usado na pontuação.
+  useEffect(() => {
+    if (showIntro || showFeedback || isStudyPaused) {
+      pause();
+      return undefined;
     }
-  }, [isApprenticeMode, showFeedback, showIntro, start]);
+    questionStartRef.current = Date.now();
+    if (isApprenticeMode) pause();
+    else start();
+    return () => {
+      questionElapsedRef.current += Date.now() - questionStartRef.current;
+      questionStartRef.current = null;
+      pause();
+    };
+  }, [currentQ, isReviewPhase, showIntro, showFeedback, isStudyPaused, isApprenticeMode, pause, start]);
 
   const toggleApprenticeMode = useCallback(() => {
-    setIsApprenticeMode((prev) => {
-      const next = !prev;
-      if (next) {
-        pause();
-      } else {
-        start();
-      }
-      return next;
-    });
-  }, [pause, start]);
+    setIsApprenticeMode((prev) => !prev);
+  }, []);
 
   const handleAnswer = (index) => {
-    if (showFeedback || selected !== null) return;
-    const elapsed = Date.now() - (questionStartRef.current || Date.now());
+    if (showIntro || isStudyPaused || showFeedback || selected !== null) return;
+    const elapsed = questionElapsedRef.current + (questionStartRef.current === null ? 0 : Date.now() - questionStartRef.current);
     setSelected(index);
 
     const q = questions[currentQ];
@@ -230,6 +229,9 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
   };
 
   const startQuiz = async () => {
+    if (startingRef.current || !showIntro) return;
+    startingRef.current = true;
+    setIsStarting(true);
     if (isOnline) {
       try {
         const levelId = worldIndex * 5 + levelIndex + 1;
@@ -240,6 +242,8 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
       }
     }
     setShowIntro(false);
+    setIsStarting(false);
+    startingRef.current = false;
   };
 
   return {
@@ -260,10 +264,9 @@ export default function useQuizController({ worldIndex, levelIndex, onComplete }
     setShowExplanation,
     showIntro,
     startQuiz,
+    isStarting,
     timeLeft,
     percentage,
-    pauseTimer,
-    resumeTimer,
     isApprenticeMode,
     toggleApprenticeMode,
     isReviewPhase,
