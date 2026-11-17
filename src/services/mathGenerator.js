@@ -700,7 +700,7 @@ function gen_3_2() {
   const isSymmetric = Math.random() > 0.5;
   if (isSymmetric) {
     const k = randInt(3, 8);
-    const text = `Para quais condições a equação\nax² + bx + c = 0 possui raízes SIMÉTRICAS (x₁ = -x₂)?`;
+    const text = `Para quais condições a equação\nax² + bx + c = 0 possui duas raízes reais NÃO NULAS e SIMÉTRICAS (x₁ = -x₂)?`;
     const correct = 'Quando b = 0 e a·c < 0';
     const explanation = 'Raízes simétricas somam zero: x₁ + x₂ = -b/a = 0 ➔ b = 0. E para serem reais, x² = -c/a > 0 ➔ a·c < 0.';
 
@@ -729,7 +729,7 @@ function gen_3_2() {
       mentalTip: 'Raízes simétricas têm soma nula: logo -b/a = 0, o que exige b = 0.',
     }, distractors);
   } else {
-    const text = `Para qual condição a equação\nax² + bx + c = 0 possui raízes INVERSAS (x₁ · x₂ = 1)?`;
+    const text = `Sabendo que as raízes são reais, para qual condição a equação\nax² + bx + c = 0 possui raízes INVERSAS (x₁ · x₂ = 1)?`;
     const correct = 'Quando a = c (e a ≠ 0)';
     const explanation = 'O produto das raízes é P = c/a. Para o produto ser 1 (inversas), devemos ter c/a = 1 ➔ a = c.';
 

@@ -61,6 +61,7 @@ Abra `http://localhost:5173`. A API responde em `http://localhost:3001/api/healt
 ```bash
 npm run lint
 npm run build
+npm test
 ```
 
 Testes de inicialização e tratamento do login Google: `npm test --prefix backend`.
@@ -73,6 +74,7 @@ O backend precisa de acesso HTTPS externo ao Google para concluir o OAuth. Um er
 
 - Mapa 2D com teclado e controles touch para telas com ponteiro coarse.
 - Quiz cronometrado, feedback e quadro branco.
+- Preparação interativa antes das fases, exemplos resolvidos, prática guiada, revisão e dicas progressivas. Veja [a documentação dos tutoriais](docs/tutorials.md).
 - Vidas, pausa e fluxo de fim de jogo.
 - Mundos e fases desbloqueados por progresso.
 - Perfil, configurações e loja simulada no modo convidado.
