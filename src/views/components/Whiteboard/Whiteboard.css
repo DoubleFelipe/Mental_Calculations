@@ -454,6 +454,11 @@
 
 .fraction-line {
   justify-content: center;
+  gap: 4px;
+}
+
+.fraction-line .math-input {
+  width: 64px;
 }
 
 .fraction-divider {

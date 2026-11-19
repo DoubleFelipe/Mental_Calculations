@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { getQuestionTutorialId } from '../../../models/TutorialModel.js';
 import './Whiteboard.css';
 
 const INITIAL_FIELDS = {
@@ -30,6 +31,25 @@ const STROKE_WIDTHS = [
   { label: 'Grosso', value: 8 },
 ];
 
+// Orientações de processo: não usar mentalTip, pois algumas dicas contêm respostas.
+const SUPPORT_TIPS = {
+  introduction: 'Organize a equação e observe o expoente de x antes de escolher como resolver.',
+  coefficients: 'Organize a equação com zero à direita. Identifique quem acompanha x², quem acompanha x e o termo independente, incluindo os sinais.',
+  factoring: 'Procure uma fatoração e resolva cada fator separadamente. Confira os valores que você encontrar na equação original.',
+  delta: 'Use Δ = b² − 4ac. Faça a potência e as multiplicações antes da subtração, com atenção aos sinais.',
+  bhaskara: 'Calcule Δ e use x = (−b ± √Δ)/(2a). Faça uma conta com + e outra com −, dividindo todo o numerador por 2a.',
+  bhaskaraAdvanced: 'Ao usar Bhaskara, coloque os coeficientes entre parênteses e divida todo o numerador por 2a.',
+  incomplete: 'Observe qual termo está ausente. Considere colocar um fator em evidência ou isolar x² e resolva as etapas no seu rascunho.',
+  sumProduct: 'Confira se a pergunta pede soma ou produto. Use S = −b/a para a soma e P = c/a para o produto, prestando atenção aos sinais.',
+  vieta: 'Some e multiplique as raízes dadas. Use os valores que você encontrar para montar x² − Sx + P = 0.',
+  deltaPositive: 'Calcule o discriminante e compare seu resultado com zero antes de interpretar a quantidade de raízes reais.',
+  deltaZero: 'Calcule o discriminante e observe como o valor encontrado afeta os dois sinais na fórmula de Bhaskara.',
+  deltaNegative: 'Compare b² e 4ac para determinar o sinal do discriminante. Depois, interprete o que esse sinal indica sobre as raízes reais.',
+  applied: 'Defina a incógnita, traduza as informações do enunciado em uma equação e confira se as soluções encontradas fazem sentido no problema.',
+  simplification: 'Procure um divisor comum a todos os coeficientes. Divida todos os termos pelo mesmo número antes de resolver.',
+  rootProperties: 'Traduza a relação entre as raízes em uma soma ou um produto. Use S = −b/a e P = c/a para deduzir a condição pedida.',
+};
+
 export default function Whiteboard({ question = null }) {
   // Modo de visualização: 'structured' (fórmulas) ou 'freehand' (desenho livre e bloco de notas)
   const [mode, setMode] = useState('structured');
@@ -43,30 +63,6 @@ export default function Whiteboard({ question = null }) {
 
   const canvasRef = useRef(null);
   const isDrawingRef = useRef(false);
-
-  // Auto-preencher se a questão tiver coeficientes definidos
-  const handleLoadFromQuestion = () => {
-    if (!question) return;
-    const aVal = question.a !== undefined ? String(question.a) : '1';
-    const bVal = question.b !== undefined ? String(question.b) : '0';
-    const cVal = question.c !== undefined ? String(question.c) : '0';
-    const deltaVal = question.delta !== undefined ? String(question.delta) : '';
-
-    setFields({
-      a: aVal,
-      b: bVal,
-      c: cVal,
-      deltaB: bVal,
-      deltaA: aVal,
-      deltaC: cVal,
-      deltaValue: deltaVal,
-      bhaskaraB: bVal,
-      bhaskaraDelta: deltaVal,
-      bhaskaraA: aVal,
-      x1: question.roots?.[0] !== undefined ? String(question.roots[0]) : '',
-      x2: question.roots?.[1] !== undefined ? String(question.roots[1]) : '',
-    });
-  };
 
   const updateField = (field, value) => {
     setFields((current) => ({ ...current, [field]: value }));
@@ -159,12 +155,7 @@ export default function Whiteboard({ question = null }) {
     setFreehandText('');
   };
 
-  const aNum = parseFloat(fields.a);
-  const bNum = parseFloat(fields.b);
-  const cNum = parseFloat(fields.c);
-  const hasValidCoeffs = !isNaN(aNum) && !isNaN(bNum) && !isNaN(cNum);
-  const calcDelta = hasValidCoeffs ? (bNum * bNum - 4 * aNum * cNum) : null;
-  const sqrtDelta = calcDelta !== null && calcDelta >= 0 ? Math.sqrt(calcDelta) : null;
+  const supportTip = question ? SUPPORT_TIPS[getQuestionTutorialId(question)] : SUPPORT_TIPS.introduction;
 
   return (
     <section className="whiteboard-root" aria-label="Quadro de apoio para cálculos">
@@ -172,7 +163,7 @@ export default function Whiteboard({ question = null }) {
       <div className="whiteboard-header">
         <div>
           <h3>📐 Quadro de Apoio ao Cálculo</h3>
-          <p>Organize suas contas passo a passo ou rascunhe livremente sem perder tempo.</p>
+          <p>Use as fórmulas como guia e preencha seus cálculos, ou rascunhe livremente.</p>
         </div>
 
         <div className="whiteboard-actions">
@@ -185,17 +176,6 @@ export default function Whiteboard({ question = null }) {
           >
             {mode === 'structured' ? '✏️ Alternar para Rascunho Livre' : '📐 Alternar para Modo Estruturado'}
           </button>
-
-          {mode === 'structured' && question && (question.a !== undefined || question.text) && (
-            <button
-              className="chalk-btn whiteboard-load-btn"
-              type="button"
-              onClick={handleLoadFromQuestion}
-              title="Preenche a, b e c da questão atual automaticamente"
-            >
-              ⚡ Usar dados da questão
-            </button>
-          )}
 
           <button
             className="chalk-btn whiteboard-clear"
@@ -231,12 +211,10 @@ export default function Whiteboard({ question = null }) {
       </div>
 
       {/* Banner de Dica de Cálculo Mental (visível em ambos os modos para apoio contínuo) */}
-      {question?.mentalTip && (
-        <div className="whiteboard-tip-banner">
-          <span className="tip-icon">💡</span>
-          <span><strong>Dica de cálculo mental:</strong> {question.mentalTip}</span>
-        </div>
-      )}
+      <div className="whiteboard-tip-banner">
+        <span className="tip-icon">💡</span>
+        <span><strong>Como começar:</strong> {supportTip}</span>
+      </div>
 
       {/* PAINEL 1: Modo Estruturado (inputs guiados para Delta e Bhaskara) */}
       <div
@@ -254,7 +232,7 @@ export default function Whiteboard({ question = null }) {
                 value={fields.a}
                 onChange={(event) => updateField('a', event.target.value)}
                 inputMode="decimal"
-                placeholder="Ex: 1"
+                placeholder="a"
               />
             </label>
             <label>
@@ -263,7 +241,7 @@ export default function Whiteboard({ question = null }) {
                 value={fields.b}
                 onChange={(event) => updateField('b', event.target.value)}
                 inputMode="decimal"
-                placeholder="Ex: -5"
+                placeholder="b"
               />
             </label>
             <label>
@@ -272,7 +250,7 @@ export default function Whiteboard({ question = null }) {
                 value={fields.c}
                 onChange={(event) => updateField('c', event.target.value)}
                 inputMode="decimal"
-                placeholder="Ex: 6"
+                placeholder="c"
               />
             </label>
           </div>
@@ -309,23 +287,11 @@ export default function Whiteboard({ question = null }) {
               />
             </div>
 
-            {hasValidCoeffs && (
-              <div className="calc-steps-box animate-fadeIn">
-                <span className="calc-step-line">
-                  Δ = ({bNum})² - 4·({aNum})·({cNum})
-                </span>
-                <span className="calc-step-line">
-                  Δ = {bNum * bNum} {(-4 * aNum * cNum) >= 0 ? `+ ${-4 * aNum * cNum}` : `- ${Math.abs(-4 * aNum * cNum)}`} = <strong>{calcDelta}</strong>
-                </span>
-                {calcDelta !== null && (
-                  <span className={`calc-nature-badge ${calcDelta > 0 ? 'nature-pos' : calcDelta === 0 ? 'nature-zero' : 'nature-neg'}`}>
-                    {calcDelta > 0 && `Δ > 0 ➔ 2 raízes reais distintas (√Δ = ${sqrtDelta !== null && Number.isInteger(sqrtDelta) ? sqrtDelta : sqrtDelta?.toFixed(2)})`}
-                    {calcDelta === 0 && `Δ = 0 ➔ 1 raiz real dupla`}
-                    {calcDelta < 0 && `Δ < 0 ➔ Sem raízes reais`}
-                  </span>
-                )}
-              </div>
-            )}
+            <div className="calc-steps-box">
+              <span className="calc-step-line">
+                Calcule b² e 4 · a · c separadamente. Depois subtraia, conferindo os sinais.
+              </span>
+            </div>
 
             <div className="formula-row result-row">
               <span>Seu resultado para Δ =</span>
@@ -346,21 +312,41 @@ export default function Whiteboard({ question = null }) {
             <div className="fraction-formula">
               <div className="fraction-line fraction-top">
                 <span>x =</span>
-                <span>-({fields.bhaskaraB || 'b'}) ± √({fields.bhaskaraDelta || 'Δ'})</span>
+                <span>−(</span>
+                <MathInput
+                  value={fields.bhaskaraB}
+                  onChange={(value) => updateField('bhaskaraB', value)}
+                  label="valor de b em Bhaskara"
+                  placeholder="b"
+                />
+                <span>) ± √(</span>
+                <MathInput
+                  value={fields.bhaskaraDelta}
+                  onChange={(value) => updateField('bhaskaraDelta', value)}
+                  label="seu delta em Bhaskara"
+                  placeholder="Δ"
+                />
+                <span>)</span>
               </div>
               <div className="fraction-divider" />
               <div className="fraction-line fraction-bottom">
-                <span>2 · ({fields.bhaskaraA || 'a'})</span>
+                <span>2 · (</span>
+                <MathInput
+                  value={fields.bhaskaraA}
+                  onChange={(value) => updateField('bhaskaraA', value)}
+                  label="valor de a em Bhaskara"
+                  placeholder="a"
+                />
+                <span>)</span>
               </div>
             </div>
 
-            {hasValidCoeffs && calcDelta !== null && calcDelta >= 0 && (
-              <div className="calc-steps-box animate-fadeIn">
-                <span className="calc-step-line">
-                  x = ({-bNum} ± {sqrtDelta !== null && Number.isInteger(sqrtDelta) ? sqrtDelta : sqrtDelta?.toFixed(2)}) / {2 * aNum}
-                </span>
-              </div>
-            )}
+            <div className="calc-steps-box">
+              <span className="calc-step-line">
+                Use o Δ que você calculou e verifique se há raiz quadrada real.
+                Quando houver, resolva uma vez com + e outra com −, dividindo cada numerador inteiro por 2a.
+              </span>
+            </div>
 
             <div className="roots-grid">
               <label>
